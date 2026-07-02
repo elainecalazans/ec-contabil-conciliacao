@@ -1,0 +1,971 @@
+<!doctype html>
+<html lang="pt-BR">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=1280" />
+<title>Contábil · Exceção alta confiança · Operador Autopilot · Protótipo</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script src="https://unpkg.com/lucide@latest/dist/umd/lucide.min.js"></script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+  .done-block{margin-top:4px;background:var(--success-bg,#f0fdf4);border:1px solid #bbf7d0;border-radius:10px;padding:14px 16px;display:flex;flex-direction:column;gap:9px;}
+  .done-title{font-size:14px;font-weight:600;color:var(--text-primary);}
+  .done-row{display:flex;align-items:flex-start;gap:9px;font-size:13px;color:var(--text-primary);line-height:1.45;}
+  .done-row svg{width:17px;height:17px;color:var(--success);stroke:var(--success);stroke-width:2.25;flex-shrink:0;margin-top:1px;}
+  .problem-block{margin-top:20px;}
+  .stopped-card{background:#fef2f2;border:1px solid #fecaca;border-radius:10px;padding:14px 16px;}
+  .problem-head{display:flex;align-items:center;gap:9px;font-size:15px;font-weight:600;color:var(--text-primary);}
+  .problem-head svg{width:19px;height:19px;color:var(--danger);stroke:var(--danger);stroke-width:2.25;flex-shrink:0;}
+  .problem-text{margin-top:9px;font-size:14px;color:var(--text-secondary);line-height:1.65;}
+  .pipeline-wrap{margin-top:16px;border:1px solid var(--border);border-radius:10px;overflow:hidden;}
+  .pipeline-title-row{display:flex;align-items:center;gap:8px;padding:10px 14px;background:var(--surface-subtle,#f7f7f8);border-bottom:1px solid var(--border);}
+  .pipeline-title-row svg{width:15px;height:15px;color:var(--text-secondary);}
+  .pipeline-title-text{font-size:12px;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.06em;}
+  .pipeline-row{display:flex;align-items:flex-start;gap:10px;padding:10px 14px;border-bottom:1px solid var(--border);}
+  .pipeline-row:last-child{border-bottom:none;}
+  .pipeline-icon{width:22px;height:22px;border-radius:50%;display:flex;align-items:center;justify-content:center;flex-shrink:0;margin-top:1px;}
+  .pipeline-icon.ok{background:#dcfce7;}
+  .pipeline-icon.ok svg{width:13px;height:13px;color:#16a34a;stroke:#16a34a;stroke-width:2.5;}
+  .pipeline-icon.skipped{background:var(--surface-muted,#f4f4f5);}
+  .pipeline-icon.skipped svg{width:13px;height:13px;color:var(--text-tertiary);stroke:var(--text-tertiary);stroke-width:2.5;}
+  .pipeline-layer-tag{font-size:10px;font-weight:700;letter-spacing:0.04em;padding:2px 6px;border-radius:4px;background:var(--surface-muted,#f4f4f5);color:var(--text-secondary);font-family:'JetBrains Mono',monospace;flex-shrink:0;margin-top:2px;}
+  .pipeline-content{flex:1;}
+  .pipeline-label{font-size:13px;font-weight:500;color:var(--text-primary);line-height:1.4;}
+  .pipeline-detail{font-size:12px;color:var(--text-secondary);margin-top:2px;line-height:1.4;}
+  .score-wrap{display:flex;align-items:center;gap:10px;margin-top:14px;padding:12px 14px;background:#eff6ff;border:1px solid #bfdbfe;border-radius:10px;}
+  .score-badge{font-size:22px;font-weight:700;color:#1d4ed8;font-family:'JetBrains Mono',monospace;}
+  .score-label{font-size:13px;color:#1e40af;font-weight:500;}
+  .score-sub{font-size:12px;color:#3b82f6;margin-top:2px;}
+  .transacao-card{margin-top:14px;border:1px solid var(--border);border-radius:10px;padding:12px 14px;background:var(--surface-subtle,#f7f7f8);}
+  .transacao-row{display:flex;align-items:center;gap:8px;margin-bottom:4px;}
+  .transacao-label{font-size:11px;font-weight:600;color:var(--text-tertiary);text-transform:uppercase;letter-spacing:0.06em;width:90px;flex-shrink:0;}
+  .transacao-val{font-size:13px;color:var(--text-primary);}
+  .transacao-val.mono{font-family:'JetBrains Mono',monospace;}
+  .transacao-val.valor{font-size:15px;font-weight:700;color:#dc2626;}
+  .nf-list{margin-top:14px;display:flex;flex-direction:column;gap:8px;}
+  .nf-card{border:1px solid var(--border);border-radius:10px;padding:12px 14px;background:#fff;display:flex;align-items:center;gap:12px;cursor:pointer;transition:border-color .15s;}
+  .nf-card:hover{border-color:var(--brand-pink);}
+  .nf-card.selected{border-color:#16a34a;background:#f0fdf4;}
+  .nf-rank{width:24px;height:24px;border-radius:50%;background:var(--surface-muted);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:var(--text-secondary);flex-shrink:0;}
+  .nf-card.selected .nf-rank{background:#dcfce7;color:#16a34a;}
+  .nf-info{flex:1;}
+  .nf-num{font-size:13px;font-weight:600;color:var(--text-primary);}
+  .nf-detail{font-size:12px;color:var(--text-secondary);margin-top:2px;}
+  .nf-score{font-size:12px;font-weight:700;font-family:'JetBrains Mono',monospace;padding:2px 8px;border-radius:5px;flex-shrink:0;}
+  .nf-score.high{background:#dcfce7;color:#16a34a;}
+  .nf-section-label{font-size:12px;font-weight:600;color:var(--text-secondary);text-transform:uppercase;letter-spacing:0.06em;margin-top:14px;margin-bottom:6px;}
+  .materiais-accordion{margin-top:18px;border:1px solid var(--border);border-radius:10px;overflow:hidden;}
+  .materiais-head{display:flex;align-items:center;gap:9px;padding:12px 14px;cursor:pointer;background:var(--surface-subtle);user-select:none;}
+  .materiais-head:hover{background:#f4f4f5;}
+  .materiais-head svg{width:16px;height:16px;color:var(--text-secondary);flex-shrink:0;}
+  .materiais-title{font-size:13px;font-weight:600;color:var(--text-primary);}
+  .materiais-count{font-size:11px;font-weight:600;color:var(--text-secondary);background:#fff;border:1px solid var(--border);border-radius:20px;padding:1px 8px;}
+  .materiais-chevron{margin-left:auto;transition:transform 0.2s;color:var(--text-secondary);}
+  .materiais-accordion.open .materiais-chevron{transform:rotate(180deg);}
+  .materiais-body{padding:12px 14px;display:none;flex-wrap:wrap;gap:8px;}
+  .materiais-accordion.open .materiais-body{display:flex;}
+  .material-chip{display:inline-flex;align-items:center;gap:7px;padding:4px 6px 4px 10px;background:#fff;border:1px solid var(--border);border-radius:8px;transition:border-color .15s;}
+  .material-chip:hover{border-color:var(--border-strong);}
+  .material-chip>svg{width:15px;height:15px;color:var(--text-tertiary);flex-shrink:0;}
+  .material-chip-name{font-size:12.5px;color:var(--text-primary);white-space:nowrap;}
+  .material-chip-tag{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.03em;padding:2px 7px;border-radius:5px;flex-shrink:0;}
+  .material-chip-tag.tag-ext{background:#eff6ff;color:#2563eb;}
+  .material-chip-tag.tag-doc{background:var(--surface-subtle);color:var(--text-secondary);}
+  .material-chip-actions{display:inline-flex;align-items:center;gap:1px;margin-left:2px;padding-left:6px;border-left:1px solid var(--border);flex-shrink:0;}
+  .material-chip-btn{width:24px;height:24px;border-radius:5px;display:inline-flex;align-items:center;justify-content:center;background:transparent;border:none;color:var(--text-tertiary);cursor:pointer;transition:all .12s;padding:0;}
+  .material-chip-btn:hover{background:var(--surface-muted);color:var(--brand-pink);}
+  .material-chip-btn svg{width:14px;height:14px;stroke:currentColor;}
+  .need-box{margin-top:18px;background:#fff;border:1px dashed var(--border-strong);border-left:3px solid var(--brand-pink);border-radius:10px;padding:13px 16px;display:flex;align-items:flex-start;gap:11px;}
+  .need-box svg{width:18px;height:18px;color:var(--brand-pink);flex-shrink:0;margin-top:1px;}
+  .need-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;color:var(--brand-pink);margin-bottom:3px;}
+  .need-text{font-size:14px;color:var(--text-primary);font-weight:500;line-height:1.5;}
+  .tip{color:var(--brand-pink);font-weight:600;}
+
+  /* ── extraído de conciliacao.html ── */
+  .mono{font-family:'JetBrains Mono',monospace;}
+  .fw-600{font-weight:600;}
+  .text-muted{color:var(--text-secondary);}
+  .text-xs{font-size:11.5px;}
+  .btn-sm{padding:5px 12px;font-size:12px;}
+  .btn-xs{padding:3px 9px;font-size:11px;}
+  .btn-success{background:var(--success);color:#fff;border:none;}
+  .btn-success:hover{background:#15803d;}
+
+  .conf-badge{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:4px;font-size:10.5px;font-weight:600;border:1px solid;}
+  .conf-alta{background:#dbeafe;color:#1d4ed8;border-color:#93c5fd;}
+  .conf-media{background:#fef3c7;color:#b45309;border-color:#fcd34d;}
+  .conf-baixa{background:#ffedd5;color:#c2410c;border-color:#fdba74;}
+
+  .dap-pill{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:4px;font-size:10.5px;font-weight:600;border:1px solid;}
+  .dap-aprovado{background:var(--success-soft);color:var(--success);border-color:#86efac;}
+  .dap-pendente{background:#fff;color:#71717a;border-color:#d4d4d8;}
+  .dap-aguardando{background:#ede9fe;color:#6d28d9;border-color:#c4b5fd;}
+  .dap-nf-pendente{background:var(--warning-soft);color:var(--warning);border-color:#fcd34d;}
+  .dap-na-nota{background:#f4f4f5;color:#52525b;border-color:#d4d4d8;}
+
+  .tabs-bar{display:flex;gap:2px;padding:10px 16px 0;background:var(--surface);border-bottom:1px solid var(--border);flex-shrink:0;overflow-x:auto;}
+  .tab-item{padding:7px 14px;font-size:12.5px;font-weight:500;cursor:pointer;color:var(--text-secondary);border-bottom:2px solid transparent;white-space:nowrap;transition:all .15s;}
+  .tab-item:hover{color:var(--text-primary);}
+  .tab-item.active{color:var(--brand-pink);border-bottom-color:var(--brand-pink);font-weight:600;}
+  .tab-count{display:inline-flex;align-items:center;justify-content:center;min-width:18px;height:18px;padding:0 5px;border-radius:999px;font-size:11px;font-weight:700;background:var(--surface-muted);color:var(--text-secondary);margin-left:5px;}
+
+  .section-group-label{display:flex;align-items:center;gap:8px;padding:8px 0 6px;font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.06em;color:var(--text-tertiary);}
+  .section-group-label .dot{width:8px;height:8px;border-radius:50%;}
+
+  .concil-wrap{margin-top:14px;border:1px solid var(--border);border-radius:10px;overflow:hidden;}
+  .concil-topbar-row{display:flex;align-items:center;gap:12px;padding:12px 16px;background:var(--surface);border-bottom:1px solid var(--border);}
+  .concil-table-scroll{overflow:auto;background:var(--surface);}
+  .concil-table{width:100%;border-collapse:collapse;}
+  .concil-table th{padding:7px 10px;text-align:left;font-size:10.5px;font-weight:600;text-transform:uppercase;letter-spacing:.05em;color:var(--text-tertiary);border-bottom:1px solid var(--border);background:var(--surface);position:sticky;top:0;z-index:1;}
+  .concil-table td{padding:9px 10px;border-bottom:1px solid var(--border);vertical-align:middle;font-size:12.5px;}
+  .concil-row.resultado-aprovado{outline:2px solid #86efac;outline-offset:-1px;background:#f8fef9;}
+  .concil-row.resultado-ignorado{outline:2px solid #fca5a5;outline-offset:-1px;background:#fff9f9;}
+  .concil-row{cursor:pointer;transition:background .1s;}
+  .concil-row:hover{background:#fafafa;}
+  .concil-row.selected-row{background:#fff9f9;}
+  .concil-desc{font-weight:500;color:var(--text-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:200px;}
+  .concil-sub{font-size:11px;color:var(--text-tertiary);margin-top:2px;}
+
+  .cell-select{width:100%;min-width:130px;padding:4px 8px;border:1px solid var(--border);border-radius:6px;font-size:11.5px;font-family:inherit;color:var(--text-primary);background:#fff;cursor:pointer;outline:none;}
+  .cell-select:focus{border-color:var(--brand-pink);box-shadow:0 0 0 2px var(--brand-pink-soft);}
+
+  .bulk-bar{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:#18181b;color:#fff;border-radius:12px;padding:12px 20px;display:flex;align-items:center;gap:14px;font-size:13px;font-weight:500;box-shadow:0 8px 30px rgba(0,0,0,0.25);transition:transform .25s cubic-bezier(.34,1.56,.64,1),opacity .2s;opacity:0;z-index:50;pointer-events:none;}
+  .bulk-bar.visible{transform:translateX(-50%) translateY(0);opacity:1;pointer-events:auto;}
+  .bulk-divider{width:1px;height:20px;background:#3f3f46;}
+
+  .drawer-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.25);z-index:40;opacity:0;pointer-events:none;transition:opacity .2s;}
+  .drawer-overlay.open{opacity:1;pointer-events:auto;}
+  .drawer{position:fixed;top:0;right:0;height:100%;width:480px;background:var(--surface);border-left:1px solid var(--border);z-index:50;display:flex;flex-direction:column;transform:translateX(100%);transition:transform .25s cubic-bezier(.25,.46,.45,.94);}
+  .drawer.open{transform:translateX(0);}
+  .drawer-header{padding:16px 20px;border-bottom:1px solid var(--border);flex-shrink:0;display:flex;align-items:flex-start;gap:12px;}
+  .drawer-title{font-size:15px;font-weight:700;color:var(--text-primary);line-height:1.3;}
+  .drawer-body{flex:1;overflow-y:auto;padding:16px 20px;display:flex;flex-direction:column;gap:16px;}
+  .drawer-footer{padding:14px 20px;border-top:1px solid var(--border);display:flex;align-items:center;gap:8px;flex-shrink:0;background:var(--surface);}
+  .drawer-block{background:var(--surface-subtle);border:1px solid var(--border);border-radius:10px;padding:14px 16px;}
+  .db-label{font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:.07em;color:var(--text-tertiary);margin-bottom:10px;}
+
+  .nf-candidate{display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border:1px solid var(--border);border-radius:8px;cursor:pointer;transition:border-color .15s;background:#fff;margin-bottom:6px;}
+  .nf-candidate:last-child{margin-bottom:0;}
+  .nf-candidate:hover{border-color:var(--brand-pink);}
+  .nf-candidate.selected-nf{border-color:var(--success);background:var(--success-soft);}
+  .nf-info{font-size:13px;color:var(--text-primary);}
+  .nf-valor{font-size:12.5px;font-weight:600;font-family:'JetBrains Mono',monospace;color:var(--text-primary);white-space:nowrap;margin-left:12px;}
+
+  .hist-item{padding:8px 0;border-bottom:1px solid var(--border);font-size:12.5px;color:var(--text-primary);line-height:1.45;}
+  .hist-item:last-child{border-bottom:none;}
+  .hist-period{font-size:11px;color:var(--text-tertiary);margin-bottom:2px;}
+
+  .conta-select{width:100%;padding:6px 10px;border:1px solid var(--border-strong);border-radius:7px;font-size:12.5px;font-family:inherit;color:var(--text-primary);background:#fff;outline:none;margin-top:6px;}
+  .conta-select:focus{border-color:var(--brand-pink);box-shadow:0 0 0 2px var(--brand-pink-soft);}
+  .learn-hint{font-size:11px;color:var(--text-tertiary);margin-top:6px;display:flex;align-items:center;gap:5px;}
+  .learn-hint svg{width:12px;height:12px;color:var(--brand-blue);}
+
+  .conta-feedback{display:inline-flex;align-items:center;margin-left:4px;flex-shrink:0;transition:opacity .2s;}
+  .conta-feedback.hidden{opacity:0;pointer-events:none;}
+  .conta-spinner{width:12px;height:12px;border:2px solid var(--border);border-top-color:var(--brand-blue);border-radius:50%;animation:concilspin .6s linear infinite;display:inline-block;}
+  @keyframes concilspin{to{transform:rotate(360deg);}}
+  .conta-check{width:14px;height:14px;color:var(--success);}
+
+  .toast-wrap{position:fixed;bottom:24px;right:24px;display:flex;flex-direction:column;gap:8px;z-index:99;}
+  .toast{padding:11px 16px;border-radius:10px;font-size:13px;font-weight:500;color:#fff;display:flex;align-items:center;gap:8px;animation:toastIn .3s ease;box-shadow:0 4px 14px rgba(0,0,0,.15);}
+  .toast svg{width:15px;height:15px;}
+  .toast-success{background:#16a34a;}
+  .toast-warning{background:#d97706;}
+  @keyframes toastIn{from{opacity:0;transform:translateY(10px);}to{opacity:1;transform:translateY(0);}}
+
+  /* ── Resolução adaptativa ── */
+  .resolucao-intro{font-size:13px;color:var(--text-secondary);margin-bottom:14px;line-height:1.5;}
+  .resolucao-nf-wrap{display:flex;flex-direction:column;gap:10px;}
+  .resolucao-nf-selected{border:1px solid #16a34a;background:#f0fdf4;border-radius:10px;padding:12px 14px;display:flex;align-items:center;gap:10px;}
+  .resolucao-nf-selected svg{width:18px;height:18px;color:#16a34a;flex-shrink:0;}
+  .resolucao-nf-nome{font-size:13px;font-weight:600;color:var(--text-primary);}
+  .resolucao-nf-detail{font-size:12px;color:var(--text-secondary);margin-top:2px;}
+  .resolucao-nf-trocar{font-size:12px;color:var(--brand-pink);cursor:pointer;text-decoration:underline;margin-top:2px;display:inline-block;}
+  .answer-label{font-size:13.5px;font-weight:600;color:var(--text-primary);margin-bottom:4px;}
+  .answer-hint{font-size:12.5px;color:var(--text-secondary);margin-bottom:10px;line-height:1.5;}
+  .answer-textarea{width:100%;min-height:80px;padding:13px 14px;border:1px solid var(--border-strong);border-radius:10px;font-family:inherit;font-size:13.5px;resize:vertical;outline:none;color:var(--text-primary);}
+  .answer-textarea:focus{border-color:var(--brand-pink);box-shadow:0 0 0 3px var(--brand-pink-soft);}
+  .btn-attach{display:inline-flex;align-items:center;gap:6px;padding:8px 14px;background:#fff;border:1px solid var(--border-strong);border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;color:var(--text-primary);margin-top:14px;}
+  .btn-attach:hover{border-color:var(--brand-pink);color:var(--brand-pink);}
+
+  .proc-confirm{display:flex;flex-direction:column;align-items:center;text-align:center;padding:26px 16px 10px;gap:12px;}
+  .proc-icon{width:64px;height:64px;border-radius:50%;display:flex;align-items:center;justify-content:center;background:var(--surface-subtle);transition:background .3s;}
+  .proc-icon svg{width:30px;height:30px;color:var(--text-secondary);}
+  .proc-icon.done{background:var(--success-soft);}
+  .proc-icon.done svg{color:var(--success);}
+  .proc-headline{font-size:19px;font-weight:700;color:var(--text-primary);}
+  .proc-sub{font-size:13.5px;color:var(--text-secondary);margin-top:-4px;}
+  #proc-btn:disabled,#btn-enviar-resolucao:disabled{opacity:0.5;cursor:not-allowed;}
+  .spin{animation:rbspin 1s linear infinite;}
+  @keyframes rbspin{to{transform:rotate(360deg);}}
+  #form-tabs,#form-edit-btn,#form-collab-strip,#task-sla-inline,#task-deadline,#attachments-block{display:none!important;}
+  .decision-card{display:none!important;}
+  #exec-solicitante-tags,#exec-sla-inline,#exec-deadline{display:none!important;}
+</style>
+</head>
+<body>
+<script>
+window.FLOW_CONFIG = {
+  operacaoLabel: 'Operação Contábil',
+  TYPE_METADATA: {
+    excecao_conciliacao: {
+      icon: 'landmark',
+      label: 'Exceção de conciliação',
+      desc: 'Transação do extrato que o Motor Contábil não conseguiu vincular automaticamente.',
+      color: '#f25461',
+    },
+  },
+  EXEC_STEPS: 'geral',
+  FORM_TABS_BY_TYPE: {
+    excecao_conciliacao: [{ id: 'resumo', label: 'Resumo' }],
+  },
+  getInitialState() {
+    return {
+      queue: [
+        {
+          id: 'CTB-0091', type: 'Conciliação de Extratos', typeCode: 'conciliacao_extratos',
+          clientName: 'Padaria São Luís', clientFantasy: 'Padaria São Luís',
+          cnpj: '12.345.678/0001-90', logoText: 'ES', sla: '4h', slaStatus: 'risk', receivedAt: '09:15',
+          clientMessage: '', senderName: 'Autopilot · Motor Contábil', senderScopes: [],
+          attachments: [
+            { name: 'Extrato_BB_mai2026_CC3421.pdf', tag: 'Extrato' },
+            { name: 'Boleto_INSS_abr2026.pdf', tag: 'Documento' },
+          ],
+          formData: { abas: { resumo: {} } },
+        },
+        {
+          id: 'CTB-0092', type: 'Conciliação de Extratos', typeCode: 'conciliacao_extratos',
+          clientName: 'Padaria Bom Dia ME', clientFantasy: 'Bom Dia',
+          cnpj: '18.452.771/0001-09', logoText: 'PB', sla: '8h', slaStatus: 'normal', receivedAt: '09:40',
+          clientMessage: '', senderName: 'Autopilot · Motor Contábil', senderScopes: [],
+          attachments: [{ name: 'Extrato_Itau_mai2026_CC8810.pdf', tag: 'Extrato' }],
+          formData: { abas: { resumo: {} } },
+        },
+      ],
+      stationed: [], completed: [], messages: {},
+      notifications: [
+        { id: 1, text: 'Conciliação de Extratos — Padaria Bom Dia ME', time: '09:15', unread: true },
+      ],
+    };
+  },
+
+  renderFormTab(tabId, abaData) {
+    setTimeout(montarResolucaoSeparada, 0);
+    setTimeout(montarConciliacao, 0);
+    return `
+      <div class="need-box">
+        <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" data-lucide="hand-helping" aria-hidden="true" class="lucide lucide-hand-helping"><path d="M11 12h2a2 2 0 1 0 0-4h-3c-.6 0-1.1.2-1.4.6L3 14"></path><path d="m7 18 1.6-1.4c.3-.4.8-.6 1.4-.6h4c1.1 0 2.1-.4 2.8-1.2l4.6-4.4a2 2 0 0 0-2.75-2.91l-4.2 3.9"></path><path d="m2 13 6 6"></path></svg>
+        <div>
+          <div class="need-label">O que precisa ser feito</div>
+          <div class="need-text">Os lançamentos já foram classificados pelo motor Autopilot. Analise para aprovar ou corrigir o que for necessário. 
+          <br>
+          <span class="tip"><strong>Dica:</strong></span> Você pode selecionar todos ou vários lançamentos classificados como <span class="tip"><strong>Alta Confiança</strong></span> e <span class="tip"><strong>Aprovar</strong></span> todos de uma só vez!</div>
+        </div>
+      </div>
+      <div id="concil-mount"></div>
+    `;
+  },
+  successMessage(task) {
+    return 'O lançamento do INSS foi confirmado e registrado pelo Motor Contábil.';
+  },
+};
+
+/* ── estado da NF selecionada ── */
+var _nfSelecionada = { id: 'nf-contexto-1', nome: 'Guia INSS — GFIP abr/2026', detalhe: 'Competência 04/2026 · Venc. 15/05/2026 · R$ 1.847,20' };
+
+var _envioTimers = [];
+function _roboTask() {
+  return (typeof getTaskById === 'function' && getTaskById(state.currentTaskId)) || state.active || (state.queue && state.queue[0]);
+}
+function enviarAoRobo() {
+  var task = _roboTask();
+  if (task) {
+    var a = document.querySelector('#exec-type-label'); if (a) a.textContent = task.type;
+    var b = document.querySelector('#exec-client-label'); if (b) b.textContent = task.clientName;
+    var c = document.querySelector('#exec-client-cnpj'); if (c) c.textContent = task.cnpj;
+    var d = document.querySelector('#exec-solicitante'); if (d) d.textContent = 'Autopilot · Motor Contábil';
+  }
+  if (typeof renderTimelineHorizontal === 'function') renderTimelineHorizontal(document.querySelector('#exec-timeline'), 2, task);
+  var stepsCard = document.querySelector('#exec-steps') && document.querySelector('#exec-steps').closest('.section-card');
+  if (stepsCard) {
+    Array.prototype.forEach.call(stepsCard.children, function(ch) { if (ch.id !== 'exec-steps') ch.style.display = 'none'; });
+    var nota = stepsCard.nextElementSibling;
+    if (nota && nota.classList && nota.classList.contains('section-card')) nota.style.display = 'none';
+  }
+  document.querySelector('#exec-steps').innerHTML =
+    '<div class="proc-confirm">'
+    + '<div class="proc-icon" id="proc-icon"><i data-lucide="loader-circle" class="spin"></i></div>'
+    + '<div class="proc-headline" id="proc-headline">Enviando…</div>'
+    + '<div class="proc-sub" id="proc-sub">Devolvendo sua resolução ao Autopilot…</div>'
+    + '<button class="btn btn-primary btn-lg" id="proc-btn" disabled onclick="voltarParaTarefas()"><i data-lucide="arrow-left" class="w-4 h-4"></i>Voltar para minhas tarefas</button>'
+    + '</div>';
+  if (typeof showScreen === 'function') showScreen('execution');
+  if (typeof refreshIcons === 'function') refreshIcons();
+  _envioTimers.forEach(clearTimeout); _envioTimers = [];
+  _envioTimers.push(setTimeout(concluirEnvio, 2100));
+}
+function concluirEnvio() {
+  var task = _roboTask();
+  var icon = document.querySelector('#proc-icon'); if (icon) { icon.classList.add('done'); icon.innerHTML = '<i data-lucide="circle-check"></i>'; }
+  var h = document.querySelector('#proc-headline'); if (h) h.textContent = 'Tarefa finalizada';
+  var sub = document.querySelector('#proc-sub'); if (sub) sub.textContent = 'Você fez sua parte.';
+  var btn = document.querySelector('#proc-btn'); if (btn) btn.removeAttribute('disabled');
+  if (typeof renderTimelineHorizontal === 'function') renderTimelineHorizontal(document.querySelector('#exec-timeline'), 3, task);
+  if (typeof refreshIcons === 'function') refreshIcons();
+}
+function voltarParaTarefas() {
+  var id = state.currentTaskId;
+  if (id && state.queue) {
+    var i = state.queue.findIndex(function(t) { return t.id === id; });
+    if (i > -1) { var done = state.queue.splice(i, 1)[0]; done.completedAt = 'agora mesmo'; state.completed.push(done); }
+  }
+  if (typeof goHome === 'function') goHome();
+}
+window._resolucaoFiles = [];
+function anexarResolucao(e) {
+  Array.prototype.slice.call(e.target.files || []).forEach(function(f) {
+    var kb = Math.round(f.size / 1024);
+    window._resolucaoFiles.push({ name: f.name, size: kb > 1024 ? (kb/1024).toFixed(1)+' MB' : kb+' KB' });
+  });
+  e.target.value = '';
+  renderAnexosResolucao();
+}
+function renderAnexosResolucao() {
+  var box = document.querySelector('#resolucao-anexos');
+  if (!box) return;
+  box.innerHTML = window._resolucaoFiles.map(function(f, i) {
+    return (typeof renderFileItem === 'function') ? renderFileItem(f, { removable: true, removeFn: 'removerAnexoResolucao('+i+')' }) : '';
+  }).join('');
+  if (typeof refreshIcons === 'function') refreshIcons();
+  atualizarBotaoEnviar();
+}
+function removerAnexoResolucao(i) { window._resolucaoFiles.splice(i, 1); renderAnexosResolucao(); }
+function atualizarBotaoEnviar() {
+  var btn = document.querySelector('#btn-enviar-resolucao');
+  if (!btn) return;
+  var tudoAprovado = typeof TRANSACOES_CONCIL !== 'undefined'
+    && TRANSACOES_CONCIL.length > 0
+    && TRANSACOES_CONCIL.every(function(t) { return estadoInfoConcil(t).label === 'Aprovado'; });
+  btn.disabled = !tudoAprovado;
+  if (!tudoAprovado) {
+    btn.title = 'Necessário aprovar todos os lançamentos para finalizar a conciliação!';
+  } else {
+    btn.removeAttribute('title');
+  }
+}
+function confirmarEnvio() {
+  if (typeof showConfirmModal === 'function') {
+    showConfirmModal({ title: 'Confirmar e registrar?', message: 'O lançamento será vinculado à guia INSS e registrado. Depois de enviar, sua parte na tarefa fica concluída.', confirmLabel: 'Confirmar', cancelLabel: 'Revisar antes', onConfirm: enviarAoRobo });
+  } else { enviarAoRobo(); }
+}
+function resolucaoHTML() {
+  return `
+    <div class="section-title"><i data-lucide="square-pen"></i>Resolução</div>
+    <p class="resolucao-intro">Após a aprovação de todos os lançamentos, finalize a conciliação.</p>
+    <div style="display:flex;justify-content:flex-end;margin-top:20px;">
+      <button class="btn btn-primary btn-lg" id="btn-enviar-resolucao" onclick="confirmarEnvio()"><i data-lucide="send" class="w-4 h-4"></i>Finalizar conciliação</button>
+    </div>
+  `;
+}
+function trocarNF() {
+  alert('Em produção: abre busca manual de documentos no GDocs.');
+}
+function montarResolucaoSeparada() {
+  var form = document.querySelector('#form-content');
+  if (!form) return;
+  var dadosCard = form.closest('.section-card');
+  if (!dadosCard) return;
+  if (document.querySelector('#resolucao-card')) { if (typeof refreshIcons === 'function') refreshIcons(); return; }
+  var card = document.createElement('div');
+  card.className = 'section-card'; card.id = 'resolucao-card';
+  card.innerHTML = resolucaoHTML();
+  dadosCard.parentNode.insertBefore(card, dadosCard.nextSibling);
+  if (typeof refreshIcons === 'function') refreshIcons();
+  atualizarBotaoEnviar();
+}
+
+/* ═══════════════════════════════════════════════════════════
+   Conciliação de Extratos — extraído de conciliacao.html
+   (funções renomeadas com sufixo "Concil" para não colidir com
+   openDrawer/closeDrawer/currentTab já existentes no cockpit-core.js)
+   ═══════════════════════════════════════════════════════════ */
+const CONTAS_CONCIL = [
+  {id:'todos',    label:'Todas as contas'},
+  {id:'bb0001',   label:'Bradesco · CC 0001-9'},
+  {id:'itau0022', label:'Itaú · CC 0022-3'},
+  {id:'cef0088',  label:'CEF · CC 0088-1'},
+];
+
+const CONTA_OPCOES_CONCIL = [
+  '1.1.1.01 — Caixa e Equiv.',
+  '1.1.1.02 — Banco do Brasil',
+  '1.1.1.03 — Conta Corrente Itaú',
+  '1.1.2.01 — Clientes a receber',
+  '1.1.3.01 — Adiantamento a Fornecedores',
+  '2.1.1.01 — Fornecedores a pagar',
+  '2.1.3.01 — INSS a pagar',
+  '3.1.1.01 — Receita de Serviços',
+  '4.1.1.01 — Compras de mercad.',
+  '4.1.2.01 — Despesas operacionais',
+  '6.1.2.01 — Desp. Administrativas',
+];
+
+const TRANSACOES_RAW_CONCIL = [
+  {id:'t1',conta:'bb0001',desc:'Depósito em conta corrente',sub:'PIX recebido · Cliente ABC',valor:'R$ 12.500,00',data:'02/05',conf:'alta',score:'0.94',nf:'NF-1841',estado:'aprovado',debito:'1.1.1.01 — Caixa e Equiv.',credito:'3.1.1.01 — Receita de Serviços'},
+  {id:'t2',conta:'bb0001',desc:'PAGTO BOLETO — INSS abr/2026',sub:'Banco do Brasil · CC 3421',valor:'-R$ 1.847,20',data:'12/05',conf:'alta',score:'0.91',nf:'GFIP abr/2026',estado:'aprovado',debito:'2.1.3.01 — INSS a pagar',credito:'1.1.1.01 — Caixa e Equiv.'},
+  {id:'t3',conta:'bb0001',desc:'Pagamento fornecedor · Dist. ABC',sub:'TED · Bradesco',valor:'-R$ 8.750,00',data:'05/05',conf:'media',score:'0.81',nf:'NF-1845',estado:'pendente',debito:'4.1.1.01 — Compras de mercad.',credito:'1.1.1.01 — Caixa e Equiv.'},
+  {id:'t4',conta:'itau0022',desc:'PIX recebido · Fornecedor desconhecido',sub:'Remetente não identificado',valor:'R$ 4.750,00',data:'12/05',conf:'media',score:'0.75',nf:'—',estado:'pendente',debito:'',credito:''},
+  {id:'t5',conta:'itau0022',desc:'Reembolso funcionário · José Silva',sub:'PIX · Inter',valor:'-R$ 350,00',data:'15/05',conf:'media',score:'0.78',nf:'—',estado:'pendente',debito:'6.1.2.01 — Desp. Administrativas',credito:'1.1.1.03 — Conta Corrente Itaú'},
+  {id:'t6',conta:'bb0001',desc:'Transferência interna BB→Itaú',sub:'Transferência entre contas próprias',valor:'-R$ 5.000,00',data:'18/05',conf:'baixa',score:'0.61',nf:'—',estado:'pendente',debito:'',credito:''},
+  {id:'t7',conta:'cef0088',desc:'Débito cartão · Fornecedor XYZ',sub:'Débito automático · CEF',valor:'-R$ 890,00',data:'10/05',conf:'baixa',score:'0.44',nf:'—',estado:'pendente',debito:'',credito:''},
+  {id:'t8',conta:'cef0088',desc:'Pagamento fornecedor duplicado?',sub:'Possível duplicata identificada',valor:'-R$ 2.100,00',data:'09/05',conf:'baixa',score:'0.38',nf:'—',estado:'pendente',debito:'',credito:''},
+];
+
+const NF_CANDIDATAS_CONCIL = {
+  t1:[
+    {id:'NF-1841',fornecedor:'Cliente ABC Ltda',data:'02/05/2026',sim:'0.94',valor:'R$ 12.500,00',simClass:'nf-sim-alta'},
+    {id:'NF-1839',fornecedor:'Cliente ABC Ltda',data:'28/04/2026',sim:'0.61',valor:'R$ 12.500,00',simClass:'nf-sim-media'},
+    {id:'NF-1835',fornecedor:'Comercial XYZ',data:'25/04/2026',sim:'0.38',valor:'R$ 12.200,00',simClass:'nf-sim-baixa'},
+  ],
+  t2:[
+    {id:'GFIP abr/2026',fornecedor:'Guia INSS — competência 04/2026',data:'12/05/2026',sim:'0.91',valor:'R$ 1.847,20',simClass:'nf-sim-alta'},
+    {id:'GFIP mar/2026',fornecedor:'Guia INSS — competência 03/2026',data:'11/04/2026',sim:'0.54',valor:'R$ 1.847,20',simClass:'nf-sim-media'},
+    {id:'DARF-0088',fornecedor:'DARF IRPJ abr/2026',data:'10/05/2026',sim:'0.31',valor:'R$ 1.900,00',simClass:'nf-sim-baixa'},
+  ],
+  t3:[
+    {id:'NF-1845',fornecedor:'Dist. ABC Ltda',data:'05/05/2026',sim:'0.81',valor:'R$ 8.750,00',simClass:'nf-sim-alta'},
+    {id:'NF-1840',fornecedor:'Dist. ABC Ltda',data:'04/05/2026',sim:'0.60',valor:'R$ 8.500,00',simClass:'nf-sim-media'},
+    {id:'NF-1851',fornecedor:'Comercial Norte',data:'06/05/2026',sim:'0.44',valor:'R$ 9.100,00',simClass:'nf-sim-baixa'},
+  ],
+  t4:[
+    {id:'NF-2233',fornecedor:'Dist. Freitas Ltda',data:'12/05/2026',sim:'0.71',valor:'R$ 4.750,00',simClass:'nf-sim-alta'},
+    {id:'NF-2241',fornecedor:'Dist. Freitas Ltda',data:'14/05/2026',sim:'0.55',valor:'R$ 4.750,00',simClass:'nf-sim-media'},
+    {id:'NF-1998',fornecedor:'Comercial Bom Preço',data:'10/05/2026',sim:'0.42',valor:'R$ 4.600,00',simClass:'nf-sim-baixa'},
+  ],
+  t5:[
+    {id:'REC-0045',fornecedor:'Recibo de despesa · José Silva',data:'15/05/2026',sim:'0.78',valor:'R$ 350,00',simClass:'nf-sim-alta'},
+    {id:'REC-0041',fornecedor:'Recibo de despesa · José Silva',data:'14/04/2026',sim:'0.52',valor:'R$ 350,00',simClass:'nf-sim-media'},
+    {id:'REC-0038',fornecedor:'Recibo de despesa · M. Oliveira',data:'10/04/2026',sim:'0.29',valor:'R$ 320,00',simClass:'nf-sim-baixa'},
+  ],
+  t6:[
+    {id:'TRF-2026-05',fornecedor:'Transferência entre contas próprias',data:'18/05/2026',sim:'0.61',valor:'R$ 5.000,00',simClass:'nf-sim-media'},
+    {id:'TRF-2026-04',fornecedor:'Transferência entre contas próprias',data:'18/04/2026',sim:'0.40',valor:'R$ 5.000,00',simClass:'nf-sim-baixa'},
+    {id:'NF-2201',fornecedor:'Fornecedor Genérico SA',data:'17/05/2026',sim:'0.22',valor:'R$ 4.900,00',simClass:'nf-sim-baixa'},
+  ],
+  t7:[
+    {id:'NF-2198',fornecedor:'Fornecedor XYZ Ltda',data:'10/05/2026',sim:'0.44',valor:'R$ 890,00',simClass:'nf-sim-baixa'},
+    {id:'NF-2190',fornecedor:'Fornecedor XYZ Ltda',data:'09/04/2026',sim:'0.31',valor:'R$ 890,00',simClass:'nf-sim-baixa'},
+    {id:'NF-2185',fornecedor:'Comercial Delta',data:'08/04/2026',sim:'0.18',valor:'R$ 850,00',simClass:'nf-sim-baixa'},
+  ],
+  t8:[
+    {id:'NF-2177',fornecedor:'Fornecedor Duplicado SA',data:'09/05/2026',sim:'0.38',valor:'R$ 2.100,00',simClass:'nf-sim-baixa'},
+    {id:'NF-2176',fornecedor:'Fornecedor Duplicado SA',data:'08/05/2026',sim:'0.36',valor:'R$ 2.100,00',simClass:'nf-sim-baixa'},
+    {id:'NF-2165',fornecedor:'Comercial Sul',data:'05/05/2026',sim:'0.21',valor:'R$ 2.050,00',simClass:'nf-sim-baixa'},
+  ],
+};
+
+let TRANSACOES_CONCIL = JSON.parse(JSON.stringify(TRANSACOES_RAW_CONCIL));
+let selectedIdsConcil = new Set();
+let resultadoUltimaAcaoConcil = new Map();
+let currentTabConcil   = 'todos';
+let currentContaConcil = 'todos';
+let activeRowIdConcil  = null;
+let activeNFConcil     = null;
+let activeNAConcil     = false;
+
+function isEntradaConcil(t) { return !String(t.valor).trim().startsWith('-'); }
+function campoImpactoConcil(t) { return isEntradaConcil(t) ? 'credito' : 'debito'; }
+
+const ESTADO_MAP_CONCIL = {
+  aprovado:            {classe:'dap-aprovado',   label:'Aprovado'},
+  'aguardando-insumo': {classe:'dap-aguardando', label:'Aguardando Insumo'},
+  'na-nota':           {classe:'dap-aprovado',   label:'Aprovado'},
+  pendente:            {classe:'dap-pendente',   label:'Pendente'},
+};
+function estadoInfoConcil(t) { return ESTADO_MAP_CONCIL[t.estado] || ESTADO_MAP_CONCIL.pendente; }
+
+function montarConciliacao() {
+  var mount = document.querySelector('#concil-mount');
+  if (!mount) return;
+  garantirOverlaysConcil();
+  renderConciliacao();
+}
+
+function garantirOverlaysConcil() {
+  if (document.getElementById('concil-drawer-overlay')) return;
+  var wrap = document.createElement('div');
+  wrap.innerHTML = `
+    <div class="drawer-overlay" id="concil-drawer-overlay" onclick="fecharDrawerConcil()"></div>
+    <div class="drawer" id="concil-drawer">
+      <div class="drawer-header">
+        <div style="flex:1;min-width:0" id="concil-drawer-header-content"></div>
+        <button class="btn btn-ghost btn-xs" onclick="fecharDrawerConcil()"><i data-lucide="x" style="width:14px;height:14px"></i></button>
+      </div>
+      <div class="drawer-body" id="concil-drawer-body"></div>
+      <div class="drawer-footer" id="concil-drawer-footer"></div>
+    </div>
+    <div class="bulk-bar" id="concil-bulk-bar">
+      <i data-lucide="check-square" style="width:15px;height:15px;color:#a1a1aa"></i>
+      <span id="concil-bulk-label">0 selecionadas</span>
+      <div class="bulk-divider"></div>
+      <button class="btn btn-sm" style="background:#3f3f46;color:#a1a1aa;border:none" onclick="cancelarSelecaoConcil()"><i data-lucide="x" style="width:13px;height:13px"></i> Cancelar seleção</button>
+      <div class="bulk-divider"></div>
+      <button class="btn btn-success btn-sm" onclick="bulkAprovarConcil()"><i data-lucide="check" style="width:13px;height:13px"></i> Aprovar vínculo (seleção)</button>
+    </div>
+    <div class="toast-wrap" id="concil-toast-wrap"></div>
+  `;
+  while (wrap.firstChild) document.body.appendChild(wrap.firstChild);
+}
+
+function renderConciliacao() {
+  var mount = document.querySelector('#concil-mount');
+  if (!mount) return;
+  mount.innerHTML = renderConcilArea();
+  updateBulkBarConcil();
+  refreshIcons();
+  atualizarBotaoEnviar();
+}
+
+function renderConcilArea() {
+  var filtradas = getFiltradasConcil();
+  var contaOpts = CONTAS_CONCIL.map(function(c) {
+    return '<option value="'+c.id+'" '+(currentContaConcil===c.id?'selected':'')+'>'+c.label+'</option>';
+  }).join('');
+  var tabs = [
+    {id:'todos',label:'Todos'},{id:'alta',label:'Alta Confiança'},
+    {id:'media',label:'Média Confiança'},{id:'baixa',label:'Baixa Confiança'},
+  ];
+  return `
+  <div class="concil-wrap">
+    <div class="concil-topbar-row">
+      <label style="font-size:12px;font-weight:600;color:var(--text-secondary)">Conta bancária</label>
+      <select class="cell-select" style="max-width:240px" onchange="trocarContaConcil(this.value)">${contaOpts}</select>
+      <span class="text-xs text-muted" style="margin-left:auto">${filtradas.length} transações</span>
+    </div>
+    <div class="tabs-bar">
+      ${tabs.map(function(t){return '<div class="tab-item '+(currentTabConcil===t.id?'active':'')+'" onclick="trocarTabConcil(\''+t.id+'\')">'+t.label+'<span class="tab-count">'+getCountConcil(t.id)+'</span></div>';}).join('')}
+    </div>
+    <div class="concil-table-scroll">
+      ${renderConcilTabela(filtradas)}
+    </div>
+  </div>`;
+}
+
+function getFiltradasConcil() {
+  return TRANSACOES_CONCIL.filter(function(t) {
+    var cOk = currentContaConcil==='todos' || t.conta===currentContaConcil;
+    var tOk = currentTabConcil==='todos'   || t.conf===currentTabConcil;
+    return cOk && tOk;
+  });
+}
+
+function getCountConcil(tabId) {
+  var base = TRANSACOES_CONCIL.filter(function(t){ return currentContaConcil==='todos' || t.conta===currentContaConcil; });
+  return tabId==='todos' ? base.length : base.filter(function(t){ return t.conf===tabId; }).length;
+}
+
+function renderConcilTabela(filtradas) {
+  if (!filtradas.length) return '<div style="padding:40px;text-align:center;color:var(--text-tertiary)">Nenhuma transação nesta categoria.</div>';
+
+  var grupos = currentTabConcil==='todos' ? [
+    {key:'alta', label:'Alta Confiança', dot:'#2563eb', range:'score 0.88–1.00'},
+    {key:'media',label:'Média Confiança',dot:'var(--warning)',range:'score 0.50–0.87'},
+    {key:'baixa',label:'Baixa Confiança',dot:'var(--danger)', range:'score < 0.50'},
+  ] : [{key:currentTabConcil,label:'',dot:'',range:'',all:true}];
+
+  var allChk = filtradas.every(function(t){ return selectedIdsConcil.has(t.id); });
+  var html = `<table class="concil-table" style="width:100%">
+    <thead><tr>
+      <th style="width:32px"><input type="checkbox" ${allChk?'checked':''} onchange="toggleAllConcil(this.checked)" style="cursor:pointer"></th>
+      <th>Data</th><th style="min-width:160px">Descrição</th><th>Valor</th>
+      <th style="min-width:160px">Conta Débito</th><th style="min-width:160px">Conta Crédito</th>
+      <th>Documento</th><th>Score</th><th>Estado</th>
+    </tr></thead><tbody>`;
+
+  grupos.forEach(function(g) {
+    var items = g.all ? filtradas : filtradas.filter(function(t){ return t.conf===g.key; });
+    if (!items.length) return;
+    if (currentTabConcil==='todos') {
+      html += `<tr><td colspan="9" style="padding:10px 10px 4px;border-bottom:none">
+        <div class="section-group-label">
+          <div class="dot" style="background:${g.dot}"></div>
+          ${g.label}
+          <span style="font-weight:400;color:var(--text-tertiary);margin-left:2px">· ${g.range}</span>
+          <span style="margin-left:6px;font-size:11px;background:var(--surface-muted);border:1px solid var(--border);border-radius:999px;padding:1px 8px;color:var(--text-tertiary);font-weight:400;text-transform:none;letter-spacing:0">${items.length}</span>
+        </div></td></tr>`;
+    }
+    items.forEach(function(t) { html += renderConcilRow(t); });
+  });
+  html += '</tbody></table>';
+  return html;
+}
+
+function renderConcilRow(t) {
+  var cc = {alta:'conf-alta',media:'conf-media',baixa:'conf-baixa'}[t.conf];
+  var info = estadoInfoConcil(t); var ec = info.classe; var el = info.label;
+  var sel = selectedIdsConcil.has(t.id);
+  var res = resultadoUltimaAcaoConcil.get(t.id);
+  var resClass = res==='aprovado' ? 'resultado-aprovado' : res==='ignorado' ? 'resultado-ignorado' : '';
+  var dOpts = CONTA_OPCOES_CONCIL.map(function(o){ return '<option '+(t.debito===o?'selected':'')+'>'+o+'</option>'; }).join('');
+  var cOpts = CONTA_OPCOES_CONCIL.map(function(o){ return '<option '+(t.credito===o?'selected':'')+'>'+o+'</option>'; }).join('');
+  return `
+  <tr class="concil-row ${sel?'selected-row':''} ${resClass}" onclick="abrirDrawerConcil('${t.id}')">
+    <td onclick="event.stopPropagation()">
+      <input type="checkbox" ${sel?'checked':''} onchange="toggleSelectConcil(event,'${t.id}')" style="cursor:pointer">
+    </td>
+    <td class="mono" style="white-space:nowrap;color:var(--text-secondary)">${t.data}</td>
+    <td><div class="concil-desc">${t.desc}</div><div class="concil-sub">${t.sub}</div></td>
+    <td class="mono fw-600" style="white-space:nowrap;color:${isEntradaConcil(t)?'var(--success)':'var(--danger)'}">${t.valor}</td>
+    <td onclick="event.stopPropagation()">
+      <div style="display:flex;align-items:center;gap:4px">
+        <select class="cell-select" onchange="setContaConcil('${t.id}','debito',this.value);feedbackContaConcil('fb-${t.id}-debito')">
+          <option value="">Selecionar conta</option>${dOpts}
+        </select>
+        <span id="fb-${t.id}-debito" class="conta-feedback hidden"></span>
+      </div>
+    </td>
+    <td onclick="event.stopPropagation()">
+      <div style="display:flex;align-items:center;gap:4px">
+        <select class="cell-select" onchange="setContaConcil('${t.id}','credito',this.value);feedbackContaConcil('fb-${t.id}-credito')">
+          <option value="">Selecionar conta</option>${cOpts}
+        </select>
+        <span id="fb-${t.id}-credito" class="conta-feedback hidden"></span>
+      </div>
+    </td>
+    <td>${
+      t.estado === 'na-nota'
+        ? '<span class="dap-pill dap-na-nota">Não se aplica NF</span>'
+        : t.estado === 'aguardando-insumo'
+        ? '<span class="dap-pill dap-nf-pendente">NF Pendente</span>'
+        : `<span style="font-size:12px;color:${t.nf==='—'?'var(--text-tertiary)':'var(--text-primary)'}">${t.nf}</span>`
+    }</td>
+    <td><span class="conf-badge ${cc}">${t.score}</span></td>
+    <td><span class="dap-pill ${ec}">${el}</span></td>
+  </tr>`;
+}
+
+/* ── drawer ── */
+function abrirDrawerConcil(rowId) {
+  activeRowIdConcil = rowId;
+  var t = TRANSACOES_CONCIL.find(function(x){return x.id===rowId;}); if (!t) return;
+
+  var cands = NF_CANDIDATAS_CONCIL[t.id] || [];
+  activeNFConcil = t.conf === 'alta' && cands.length > 0 ? cands[0].id : null;
+  activeNAConcil = false;
+  if (t.contaSugerida === undefined) t.contaSugerida = t[campoImpactoConcil(t)] || '';
+  var cc = {alta:'conf-alta',media:'conf-media',baixa:'conf-baixa'}[t.conf];
+  var cl = {alta:'Alta Confiança',media:'Média Confiança',baixa:'Baixa Confiança'}[t.conf];
+  var info = estadoInfoConcil(t); var ec = info.classe; var el = info.label;
+
+  document.getElementById('concil-drawer-header-content').innerHTML = `
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
+      <span class="conf-badge ${cc}">${t.score} · ${cl}</span>
+      <span class="dap-pill ${ec}">${el}</span>
+    </div>
+    <div class="drawer-title">${t.desc}</div>
+    <div class="text-xs text-muted" style="margin-top:3px;font-family:'JetBrains Mono',monospace"><span style="color:${isEntradaConcil(t)?'var(--success)':'var(--danger)'};font-weight:600">${t.valor}</span> · ${t.data}</div>`;
+
+  renderDrawerConcilBody(t);
+  renderDrawerConcilFooter(t);
+  document.getElementById('concil-drawer-overlay').classList.add('open');
+  document.getElementById('concil-drawer').classList.add('open');
+  refreshIcons();
+}
+
+function renderDrawerConcilBody(t) {
+  var cands = NF_CANDIDATAS_CONCIL[t.id] || [];
+  var candsHtml = cands.length > 0
+    ? cands.map(function(nf){ return `
+      <div class="nf-candidate ${activeNFConcil===nf.id?'selected-nf':''}" onclick="selecionarNFConcil('${t.id}','${nf.id}')">
+        <div>
+          <div class="nf-info fw-600">${nf.id} · ${nf.fornecedor}</div>
+          <div class="text-xs text-muted mono">${nf.data} · ${nf.sim} similaridade</div>
+        </div>
+        <div class="nf-valor">${nf.valor}</div>
+      </div>`; }).join('')
+    : `<div style="font-size:12.5px;color:var(--text-tertiary);padding:8px 0">Nenhuma nota candidata identificada pelo Motor.</div>`;
+
+  var hist = t.conf==='alta'
+    ? [{p:'Fev/2026',tx:'Mesmo padrão de pagamento — classificado automaticamente pelo Motor.'},{p:'Jan/2026',tx:'Vinculado manualmente pelo analista.'}]
+    : t.conf==='media' ? [{p:'Mar/2026',tx:'Transação similar — NF vinculada manualmente.'}] : [];
+  var histHtml = hist.length
+    ? hist.map(function(h){ return `<div class="hist-item"><div class="hist-period">${h.p}</div>${h.tx}</div>`; }).join('')
+    : `<div style="font-size:12.5px;color:var(--text-tertiary);padding:6px 0">Sem histórico anterior.</div>`;
+
+  var debOpts  = CONTA_OPCOES_CONCIL.map(function(o){ return '<option '+(t.debito===o?'selected':'')+'>'+o+'</option>'; }).join('');
+  var credOpts = CONTA_OPCOES_CONCIL.map(function(o){ return '<option '+(t.credito===o?'selected':'')+'>'+o+'</option>'; }).join('');
+
+  document.getElementById('concil-drawer-body').innerHTML = `
+    <div class="drawer-block">
+      <div class="db-label">Documento</div>
+      <div style="font-size:11px;font-weight:600;color:var(--text-tertiary);margin-bottom:8px;text-transform:uppercase;letter-spacing:.05em">Candidatas do Motor (top-3)</div>
+      <div id="concil-nf-cands-list">${candsHtml}</div>
+      <div style="display:flex;align-items:center;gap:8px;margin:12px 0 10px">
+        <div style="flex:1;height:1px;background:var(--border)"></div>
+        <span style="font-size:11px;color:var(--text-tertiary);font-weight:500">ou</span>
+        <div style="flex:1;height:1px;background:var(--border)"></div>
+      </div>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-secondary btn-sm" id="concil-btn-na-nota" onclick="naNotaClickConcil('${t.id}')" style="${activeNAConcil==='na'?'background:var(--surface-muted);border-color:var(--text-primary);font-weight:600':''}">
+          <i data-lucide="slash" style="width:13px;height:13px"></i> Não se aplica NF
+        </button>
+        <button class="btn btn-secondary btn-sm" id="concil-btn-nf-pendente" onclick="nfPendenteClickConcil('${t.id}')" style="${activeNAConcil==='nf'?'background:var(--warning-soft);border-color:var(--warning);color:var(--warning);font-weight:600':''}">
+          <i data-lucide="clock" style="width:13px;height:13px"></i> NF Pendente
+        </button>
+      </div>
+    </div>
+    <div class="drawer-block">
+      <div class="db-label">Impacto contábil</div>
+      <div style="display:flex;gap:12px;margin-top:4px">
+        <div style="flex:1">
+          <div style="font-size:11px;font-weight:600;color:var(--text-tertiary);margin-bottom:4px;text-transform:uppercase;letter-spacing:.05em">Conta Débito</div>
+          <select class="conta-select" id="concil-drawer-select-debito" style="margin-top:0" onchange="setContaDrawerCampoConcil('${t.id}','debito',this.value)">
+            <option value="">Selecione a conta</option>${debOpts}
+          </select>
+        </div>
+        <div style="flex:1">
+          <div style="font-size:11px;font-weight:600;color:var(--text-tertiary);margin-bottom:4px;text-transform:uppercase;letter-spacing:.05em">Conta Crédito</div>
+          <select class="conta-select" id="concil-drawer-select-credito" style="margin-top:0" onchange="setContaDrawerCampoConcil('${t.id}','credito',this.value)">
+            <option value="">Selecione a conta</option>${credOpts}
+          </select>
+        </div>
+      </div>
+      <div class="learn-hint" style="margin-top:8px"><i data-lucide="sparkles"></i>O Motor aprenderá esta parametrização para lançamentos futuros.</div>
+    </div>
+    <div class="drawer-block">
+      <div class="db-label">Histórico semântico</div>
+      ${histHtml}
+    </div>`;
+  refreshIcons();
+}
+
+function renderDrawerConcilFooter(t) {
+  document.getElementById('concil-drawer-footer').innerHTML = `
+    <button class="btn btn-ghost btn-sm" onclick="fecharDrawerConcil()">Cancelar</button>
+    <div style="margin-left:auto;display:flex;align-items:center;gap:8px">
+      <span id="concil-drawer-validacao-hint" style="font-size:11px;color:var(--text-tertiary)"></span>
+      <button class="btn btn-primary btn-sm" id="concil-btn-aprovar-vinculo" onclick="aprovarVinculoConcil('${t.id}')">
+        <i data-lucide="check" style="width:13px;height:13px"></i> Aprovar vínculo
+      </button>
+    </div>`;
+  refreshIcons();
+  atualizarBotaoAprovarConcil(t);
+}
+
+function atualizarBotaoAprovarConcil(t) {
+  var btn  = document.getElementById('concil-btn-aprovar-vinculo');
+  var hint = document.getElementById('concil-drawer-validacao-hint');
+  if (!btn || !hint) return;
+
+  var faltando = [];
+  if (!t.debito)  faltando.push('Conta Débito');
+  if (!t.credito) faltando.push('Conta Crédito');
+  if (!activeNFConcil && !activeNAConcil) faltando.push('NF / Não se aplica / NF Pendente');
+
+  if (faltando.length > 0) {
+    btn.disabled = true;
+    btn.style.opacity = '0.5';
+    btn.style.cursor  = 'not-allowed';
+    hint.textContent  = 'Falta: Conta Débito e/ou Conta Crédito · Documento. Preencha todos os campos para Aprovar vínculo!';
+  } else {
+    btn.disabled = false;
+    btn.style.opacity = '';
+    btn.style.cursor  = '';
+    hint.textContent  = '';
+  }
+}
+
+function selecionarNFConcil(rowId, nfId) {
+  activeNFConcil = nfId;
+  activeNAConcil = false;
+  var btnNA = document.getElementById('concil-btn-na-nota');
+  var btnNF_ = document.getElementById('concil-btn-nf-pendente');
+  if (btnNA)  btnNA.style.cssText  = '';
+  if (btnNF_) btnNF_.style.cssText = '';
+
+  var t = TRANSACOES_CONCIL.find(function(x){return x.id===rowId;});
+  if (t) { t[campoImpactoConcil(t)] = t.contaSugerida || ''; renderContaSelectConcil(rowId); }
+  var t2 = TRANSACOES_CONCIL.find(function(x){return x.id===rowId;});
+  if (t2) atualizarBotaoAprovarConcil(t2);
+
+  var cands = NF_CANDIDATAS_CONCIL[rowId]||[];
+  document.getElementById('concil-nf-cands-list').innerHTML = cands.map(function(nf){ return `
+    <div class="nf-candidate ${activeNFConcil===nf.id?'selected-nf':''}" onclick="selecionarNFConcil('${rowId}','${nf.id}')">
+      <div>
+        <div class="nf-info fw-600">${nf.id} · ${nf.fornecedor}</div>
+        <div class="text-xs text-muted mono">${nf.data} · ${nf.sim} similaridade</div>
+      </div>
+      <div class="nf-valor">${nf.valor}</div>
+    </div>`; }).join('');
+}
+
+function renderNfCandsListConcil(rowId) {
+  var cands = NF_CANDIDATAS_CONCIL[rowId]||[];
+  var list = document.getElementById('concil-nf-cands-list');
+  if (!list) return;
+  list.innerHTML = cands.map(function(nf){ return `
+    <div class="nf-candidate ${activeNFConcil===nf.id?'selected-nf':''}" onclick="selecionarNFConcil('${rowId}','${nf.id}')">
+      <div>
+        <div class="nf-info fw-600">${nf.id} · ${nf.fornecedor}</div>
+        <div class="text-xs text-muted mono">${nf.data} · ${nf.sim} similaridade</div>
+      </div>
+      <div class="nf-valor">${nf.valor}</div>
+    </div>`; }).join('');
+}
+
+function renderContaSelectConcil(rowId) {
+  var t = TRANSACOES_CONCIL.find(function(x){return x.id===rowId;}); if(!t) return;
+  var selDeb  = document.getElementById('concil-drawer-select-debito');
+  var selCred = document.getElementById('concil-drawer-select-credito');
+  if (selDeb)  selDeb.innerHTML  = '<option value="">Selecione a conta</option>' + CONTA_OPCOES_CONCIL.map(function(o){ return '<option '+(t.debito===o?'selected':'')+'>'+o+'</option>'; }).join('');
+  if (selCred) selCred.innerHTML = '<option value="">Selecione a conta</option>' + CONTA_OPCOES_CONCIL.map(function(o){ return '<option '+(t.credito===o?'selected':'')+'>'+o+'</option>'; }).join('');
+}
+
+function naNotaClickConcil(rowId) {
+  activeNAConcil = activeNAConcil === 'na' ? false : 'na';
+  var t = TRANSACOES_CONCIL.find(function(x){return x.id===rowId;}); if(!t) return;
+  if (activeNAConcil === 'na') {
+    activeNFConcil = null;
+    renderNfCandsListConcil(rowId);
+    t.debito = ''; t.credito = '';
+    renderContaSelectConcil(rowId);
+  }
+  var btnNA = document.getElementById('concil-btn-na-nota');
+  var btnNF = document.getElementById('concil-btn-nf-pendente');
+  if (btnNA) btnNA.style.cssText = activeNAConcil==='na' ? 'background:var(--surface-muted);border-color:var(--text-primary);font-weight:600' : '';
+  if (btnNF) btnNF.style.cssText = '';
+  atualizarBotaoAprovarConcil(t);
+}
+
+function nfPendenteClickConcil(rowId) {
+  activeNAConcil = activeNAConcil === 'nf' ? false : 'nf';
+  var t = TRANSACOES_CONCIL.find(function(x){return x.id===rowId;}); if(!t) return;
+  if (activeNAConcil === 'nf') {
+    activeNFConcil = null;
+    renderNfCandsListConcil(rowId);
+    t[campoImpactoConcil(t)] = '1.1.3.01 — Adiantamento a Fornecedores';
+    renderContaSelectConcil(rowId);
+  }
+  var btnNA = document.getElementById('concil-btn-na-nota');
+  var btnNF = document.getElementById('concil-btn-nf-pendente');
+  if (btnNF) btnNF.style.cssText = activeNAConcil==='nf' ? 'background:var(--warning-soft);border-color:var(--warning);color:var(--warning);font-weight:600' : '';
+  if (btnNA) btnNA.style.cssText = '';
+  atualizarBotaoAprovarConcil(t);
+}
+
+function aprovarVinculoConcil(rowId) {
+  var t = TRANSACOES_CONCIL.find(function(x){return x.id===rowId;}); if(!t) return;
+  if      (activeNAConcil === 'na') t.estado = 'na-nota';
+  else if (activeNAConcil === 'nf') t.estado = 'aguardando-insumo';
+  else                              t.estado = 'aprovado';
+  resultadoUltimaAcaoConcil.delete(rowId);
+  fecharDrawerConcil();
+  var msgs = {aprovado:'Vínculo aprovado — transação registrada', 'aguardando-insumo':'Transação marcada como Aguardando Insumo', 'na-nota':'Transação marcada como Não se aplica NF'};
+  showToastConcil(msgs[t.estado], t.estado === 'aprovado' ? 'success' : 'warning');
+  renderConciliacao();
+}
+
+/* ── feedback inline nas células de conta da tabela ── */
+function feedbackContaConcil(spanId) {
+  var el = document.getElementById(spanId);
+  if (!el) return;
+  el.innerHTML = '<span class="conta-spinner"></span>';
+  el.classList.remove('hidden');
+  setTimeout(function() {
+    el.innerHTML = '<svg class="conta-check" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg"><path d="M3 8l3.5 3.5L13 4.5" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>';
+    setTimeout(function() {
+      el.classList.add('hidden');
+      setTimeout(function() { el.innerHTML = ''; }, 200);
+    }, 900);
+  }, 600);
+}
+
+function setContaConcil(rowId,tipo,val) { var t=TRANSACOES_CONCIL.find(function(x){return x.id===rowId;}); if(t) t[tipo]=val; }
+function setContaDrawerCampoConcil(rowId,campo,val) {
+  var t=TRANSACOES_CONCIL.find(function(x){return x.id===rowId;});
+  if(t) { t[campo]=val; atualizarBotaoAprovarConcil(t); }
+}
+
+function fecharDrawerConcil() {
+  document.getElementById('concil-drawer-overlay').classList.remove('open');
+  document.getElementById('concil-drawer').classList.remove('open');
+  activeRowIdConcil=null;
+}
+
+/* ── seleção / bulk ── */
+function toggleSelectConcil(evt,id) {
+  evt.stopPropagation();
+  resultadoUltimaAcaoConcil.clear();
+  selectedIdsConcil.has(id)?selectedIdsConcil.delete(id):selectedIdsConcil.add(id);
+  updateBulkBarConcil();
+  document.querySelectorAll('.concil-row').forEach(function(r){
+    var cb=r.querySelector('input[type=checkbox]');
+    if(!cb) return;
+    var m=(cb.getAttribute('onchange')||'').match(/'([^']+)'\)/);
+    if(m&&m[1]===id) r.classList.toggle('selected-row',selectedIdsConcil.has(id));
+  });
+}
+function toggleAllConcil(checked) {
+  resultadoUltimaAcaoConcil.clear();
+  getFiltradasConcil().forEach(function(t){ checked?selectedIdsConcil.add(t.id):selectedIdsConcil.delete(t.id); });
+  updateBulkBarConcil(); renderConciliacao();
+}
+function updateBulkBarConcil() {
+  var n=selectedIdsConcil.size;
+  var bar=document.getElementById('concil-bulk-bar');
+  if(!bar) return;
+  if (n>0) { bar.classList.add('visible'); document.getElementById('concil-bulk-label').textContent = n+' selecionada'+(n>1?'s':''); }
+  else bar.classList.remove('visible');
+}
+function transacaoValidaConcil(t) {
+  var temNF = t.nf && t.nf !== '—';
+  var temOpcao = temNF || t.estado === 'na-nota' || t.estado === 'aguardando-insumo';
+  return !!(t.debito && t.credito && temOpcao);
+}
+
+function bulkAprovarConcil() {
+  var aprovadas = 0; var ignoradas = 0;
+  resultadoUltimaAcaoConcil.clear();
+  selectedIdsConcil.forEach(function(id){
+    var t = TRANSACOES_CONCIL.find(function(x){return x.id===id;});
+    if (!t) return;
+    if (transacaoValidaConcil(t)) {
+      t.estado = 'aprovado'; aprovadas++;
+      resultadoUltimaAcaoConcil.set(id, 'aprovado');
+    } else {
+      ignoradas++;
+      resultadoUltimaAcaoConcil.set(id, 'ignorado');
+    }
+  });
+  selectedIdsConcil.clear(); updateBulkBarConcil();
+  if (aprovadas > 0 && ignoradas === 0) {
+    showToastConcil(aprovadas+' vínculo'+(aprovadas>1?'s aprovados':' aprovado'),'success');
+  } else if (aprovadas > 0 && ignoradas > 0) {
+    showToastConcil(aprovadas+' aprovado'+(aprovadas>1?'s':'')+' · '+ignoradas+' ignorado'+(ignoradas>1?'s':'')+' por estarem incompletos','warning');
+  } else {
+    showToastConcil('Nenhum lançamento aprovado — verifique Conta Débito e/ou Crédito e o Documento de cada item!','warning');
+  }
+  renderConciliacao();
+}
+function cancelarSelecaoConcil() { selectedIdsConcil.clear(); resultadoUltimaAcaoConcil.clear(); updateBulkBarConcil(); renderConciliacao(); }
+function trocarTabConcil(id){ currentTabConcil=id; selectedIdsConcil.clear(); resultadoUltimaAcaoConcil.clear(); renderConciliacao(); }
+function trocarContaConcil(id){ currentContaConcil=id; currentTabConcil='todos'; selectedIdsConcil.clear(); resultadoUltimaAcaoConcil.clear(); renderConciliacao(); }
+
+/* ── toast ── */
+function showToastConcil(msg,type) {
+  type = type || 'success';
+  var wrap=document.getElementById('concil-toast-wrap');
+  if (!wrap) return;
+  var el=document.createElement('div');
+  el.className='toast toast-'+type;
+  el.innerHTML='<i data-lucide="'+(type==='success'?'circle-check':'alert-triangle')+'"></i>'+msg;
+  wrap.appendChild(el);
+  refreshIcons();
+  setTimeout(function(){ el.style.opacity='0'; el.style.transform='translateY(10px)'; setTimeout(function(){el.remove();},300); },3000);
+}
+</script>
+<script src="cockpit-core.js"></script>
+</body>
+</html>
