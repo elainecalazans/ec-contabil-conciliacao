@@ -104,6 +104,8 @@
   .dap-aguardando{background:#ede9fe;color:#6d28d9;border-color:#c4b5fd;}
   .dap-nf-pendente{background:var(--warning-soft);color:var(--warning);border-color:#fcd34d;}
   .dap-na-nota{background:#f4f4f5;color:#52525b;border-color:#d4d4d8;}
+  .dap-nf-vinculada{background:#f0fdf4;color:#16a34a;border-color:#86efac;}
+  .dap-sem-nf{background:#fafafa;color:#a1a1aa;border-color:#e4e4e7;}
 
   .tabs-bar{display:flex;gap:2px;padding:10px 16px 0;background:var(--surface);border-bottom:1px solid var(--border);flex-shrink:0;overflow-x:auto;}
   .tab-item{padding:7px 14px;font-size:12.5px;font-weight:500;cursor:pointer;color:var(--text-secondary);border-bottom:2px solid transparent;white-space:nowrap;transition:all .15s;}
@@ -124,7 +126,7 @@
   .concil-row.resultado-ignorado{outline:2px solid #fca5a5;outline-offset:-1px;background:#fff9f9;}
   .concil-row{cursor:pointer;transition:background .1s;}
   .concil-row:hover{background:#fafafa;}
-  .concil-row.selected-row{background:#fff9f9;}
+  .concil-row.selected-row{background:#EFF6FF;}
   .concil-desc{font-weight:500;color:var(--text-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:200px;}
   .concil-sub{font-size:11px;color:var(--text-tertiary);margin-top:2px;}
 
@@ -134,6 +136,11 @@
   .bulk-bar{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:#18181b;color:#fff;border-radius:12px;padding:12px 20px;display:flex;align-items:center;gap:14px;font-size:13px;font-weight:500;box-shadow:0 8px 30px rgba(0,0,0,0.25);transition:transform .25s cubic-bezier(.34,1.56,.64,1),opacity .2s;opacity:0;z-index:50;pointer-events:none;}
   .bulk-bar.visible{transform:translateX(-50%) translateY(0);opacity:1;pointer-events:auto;}
   .bulk-divider{width:1px;height:20px;background:#3f3f46;}
+  .bulk-dropdown{position:relative;}
+  .bulk-dropdown-menu{display:none;position:absolute;bottom:calc(100% + 8px);left:0;background:#27272a;border:1px solid #3f3f46;border-radius:8px;padding:4px;min-width:190px;z-index:51;flex-direction:column;}
+  .bulk-dropdown-menu.open{display:flex;}
+  .bulk-dropdown-menu button{background:none;border:none;color:#e4e4e7;font-size:12.5px;font-weight:500;padding:8px 12px;border-radius:6px;cursor:pointer;text-align:left;display:flex;align-items:center;gap:7px;}
+  .bulk-dropdown-menu button:hover{background:#3f3f46;}
 
   .drawer-overlay{position:fixed;inset:0;background:rgba(0,0,0,0.25);z-index:40;opacity:0;pointer-events:none;transition:opacity .2s;}
   .drawer-overlay.open{opacity:1;pointer-events:auto;}
@@ -261,7 +268,7 @@ window.FLOW_CONFIG = {
           <div class="need-label">O que precisa ser feito</div>
           <div class="need-text">Os lançamentos já foram classificados pelo motor Autopilot. Analise para aprovar ou corrigir o que for necessário. 
           <br>
-          <span class="tip"><strong>Dica:</strong></span> Você pode selecionar todos ou vários lançamentos classificados como <span class="tip"><strong>Alta Confiança</strong></span> e <span class="tip"><strong>Aprovar</strong></span> todos de uma só vez!</div>
+          <span class="tip"><strong>Dica:</strong></span> Você pode selecionar todos ou vários lançamentos e <span class="tip"><strong>Aprová-los</strong></span> de uma só vez!</div>
         </div>
       </div>
       <div id="concil-mount"></div>
@@ -415,6 +422,7 @@ const CONTA_OPCOES_CONCIL = [
 const TRANSACOES_RAW_CONCIL = [
   {id:'t1',conta:'bb0001',desc:'Depósito em conta corrente',sub:'PIX recebido · Cliente ABC',valor:'R$ 12.500,00',data:'02/05',conf:'alta',score:'0.94',nf:'NF-1841',estado:'aprovado',debito:'1.1.1.01 — Caixa e Equiv.',credito:'3.1.1.01 — Receita de Serviços'},
   {id:'t2',conta:'bb0001',desc:'PAGTO BOLETO — INSS abr/2026',sub:'Banco do Brasil · CC 3421',valor:'-R$ 1.847,20',data:'12/05',conf:'alta',score:'0.91',nf:'GFIP abr/2026',estado:'aprovado',debito:'2.1.3.01 — INSS a pagar',credito:'1.1.1.01 — Caixa e Equiv.'},
+  {id:'t9',conta:'bb0001',desc:'Recebimento · Serviços Prestados',sub:'PIX recebido · Empresa Beta',valor:'R$ 3.600,00',data:'16/05',conf:'alta',score:'0.92',nf:'NF-1863',estado:'pendente',debito:'1.1.1.01 — Caixa e Equiv.',credito:'3.1.1.01 — Receita de Serviços'},
   {id:'t3',conta:'bb0001',desc:'Pagamento fornecedor · Dist. ABC',sub:'TED · Bradesco',valor:'-R$ 8.750,00',data:'05/05',conf:'media',score:'0.81',nf:'NF-1845',estado:'pendente',debito:'4.1.1.01 — Compras de mercad.',credito:'1.1.1.01 — Caixa e Equiv.'},
   {id:'t4',conta:'itau0022',desc:'PIX recebido · Fornecedor desconhecido',sub:'Remetente não identificado',valor:'R$ 4.750,00',data:'12/05',conf:'media',score:'0.75',nf:'—',estado:'pendente',debito:'',credito:''},
   {id:'t5',conta:'itau0022',desc:'Reembolso funcionário · José Silva',sub:'PIX · Inter',valor:'-R$ 350,00',data:'15/05',conf:'media',score:'0.78',nf:'—',estado:'pendente',debito:'6.1.2.01 — Desp. Administrativas',credito:'1.1.1.03 — Conta Corrente Itaú'},
@@ -424,6 +432,11 @@ const TRANSACOES_RAW_CONCIL = [
 ];
 
 const NF_CANDIDATAS_CONCIL = {
+  t9:[
+    {id:'NF-1863',fornecedor:'Empresa Beta Ltda',data:'15/05/2026',sim:'0.92',valor:'R$ 3.600,00',simClass:'nf-sim-alta'},
+    {id:'NF-1858',fornecedor:'Empresa Beta Ltda',data:'10/05/2026',sim:'0.65',valor:'R$ 3.600,00',simClass:'nf-sim-media'},
+    {id:'NF-1842',fornecedor:'Comercial Gamma',data:'08/05/2026',sim:'0.33',valor:'R$ 3.500,00',simClass:'nf-sim-baixa'},
+  ],
   t1:[
     {id:'NF-1841',fornecedor:'Cliente ABC Ltda',data:'02/05/2026',sim:'0.94',valor:'R$ 12.500,00',simClass:'nf-sim-alta'},
     {id:'NF-1839',fornecedor:'Cliente ABC Ltda',data:'28/04/2026',sim:'0.61',valor:'R$ 12.500,00',simClass:'nf-sim-media'},
@@ -473,7 +486,10 @@ let currentTabConcil   = 'todos';
 let currentContaConcil = 'todos';
 let activeRowIdConcil  = null;
 let activeNFConcil     = null;
-let activeNAConcil     = false;
+let activeNAConcil          = false;
+let autosugCampoConcil      = null;
+let bulkSumarioConcil       = null;
+let filtroIncompletosConcil = false;
 
 function isEntradaConcil(t) { return !String(t.valor).trim().startsWith('-'); }
 function campoImpactoConcil(t) { return isEntradaConcil(t) ? 'credito' : 'debito'; }
@@ -512,6 +528,13 @@ function garantirOverlaysConcil() {
       <div class="bulk-divider"></div>
       <button class="btn btn-sm" style="background:#3f3f46;color:#a1a1aa;border:none" onclick="cancelarSelecaoConcil()"><i data-lucide="x" style="width:13px;height:13px"></i> Cancelar seleção</button>
       <div class="bulk-divider"></div>
+      <div class="bulk-dropdown" id="concil-bulk-dropdown">
+        <button class="btn btn-sm" style="background:#3f3f46;color:#e4e4e7;border:none" onclick="toggleBulkDropdownConcil()"><i data-lucide="tag" style="width:13px;height:13px"></i> Marcar como <i data-lucide="chevron-up" style="width:12px;height:12px"></i></button>
+        <div class="bulk-dropdown-menu" id="concil-bulk-dropdown-menu">
+          <button onclick="bulkMarcarNaNotaConcil()"><i data-lucide="slash" style="width:12px;height:12px"></i> Não se aplica NF</button>
+          <button onclick="bulkMarcarAguardandoConcil()"><i data-lucide="clock" style="width:12px;height:12px"></i> Aguardando Insumo</button>
+        </div>
+      </div>
       <button class="btn btn-success btn-sm" onclick="bulkAprovarConcil()"><i data-lucide="check" style="width:13px;height:13px"></i> Aprovar vínculo (seleção)</button>
     </div>
     <div class="toast-wrap" id="concil-toast-wrap"></div>
@@ -526,6 +549,26 @@ function renderConciliacao() {
   updateBulkBarConcil();
   refreshIcons();
   atualizarBotaoEnviar();
+}
+
+function renderBulkBannerConcil() {
+  if (!bulkSumarioConcil || bulkSumarioConcil.ignoradas === 0) return '';
+  if (filtroIncompletosConcil) {
+    var n = Array.from(resultadoUltimaAcaoConcil.values()).filter(function(v){ return v==='ignorado'; }).length;
+    return '<div style="display:flex;align-items:center;gap:10px;padding:10px 16px;background:#fef3c7;border-bottom:1px solid #fcd34d;font-size:12.5px;">'
+      +'<i data-lucide="filter" style="width:14px;height:14px;color:#b45309;flex-shrink:0"></i>'
+      +'<span style="color:#92400e;font-weight:500">Filtrando: <strong>'+n+'</strong> lançamento'+(n>1?'s':'')+' incompleto'+(n>1?'s':'')+'</span>'
+      +'<button class="btn btn-xs" style="margin-left:auto;background:#fff;border:1px solid #fcd34d;color:#b45309" onclick="limparBulkSumarioConcil()">Limpar filtro</button>'
+      +'</div>';
+  }
+  var ig = bulkSumarioConcil.ignoradas;
+  var ap = bulkSumarioConcil.aprovadas;
+  return '<div style="display:flex;align-items:center;gap:10px;padding:10px 16px;background:#fef3c7;border-bottom:1px solid #fcd34d;font-size:12.5px;">'
+    +'<i data-lucide="alert-triangle" style="width:14px;height:14px;color:#b45309;flex-shrink:0"></i>'
+    +'<span style="color:#92400e;font-weight:500">'+(ap>0?ap+' aprovado'+(ap>1?'s':'')+' · ':'')+ig+' incompleto'+(ig>1?'s':'')+' — preencha Conta Débito, Crédito e/ou Documento</span>'
+    +'<button class="btn btn-xs" style="margin-left:auto;background:#fff;border:1px solid #fcd34d;color:#b45309;white-space:nowrap" onclick="ativarFiltroIncompletosConcil()">Mostrar apenas incompletos</button>'
+    +'<button class="btn btn-xs" style="background:transparent;border:none;color:#b45309;padding:3px 6px" onclick="limparBulkSumarioConcil()"><i data-lucide="x" style="width:12px;height:12px"></i></button>'
+    +'</div>';
 }
 
 function renderConcilArea() {
@@ -548,6 +591,7 @@ function renderConcilArea() {
       ${tabs.map(function(t){return '<div class="tab-item '+(currentTabConcil===t.id?'active':'')+'" onclick="trocarTabConcil(\''+t.id+'\')">'+t.label+'<span class="tab-count">'+getCountConcil(t.id)+'</span></div>';}).join('')}
     </div>
     <div class="concil-table-scroll">
+      ${renderBulkBannerConcil()}
       ${renderConcilTabela(filtradas)}
     </div>
   </div>`;
@@ -557,7 +601,8 @@ function getFiltradasConcil() {
   return TRANSACOES_CONCIL.filter(function(t) {
     var cOk = currentContaConcil==='todos' || t.conta===currentContaConcil;
     var tOk = currentTabConcil==='todos'   || t.conf===currentTabConcil;
-    return cOk && tOk;
+    var iOk = !filtroIncompletosConcil || resultadoUltimaAcaoConcil.get(t.id) === 'ignorado';
+    return cOk && tOk && iOk;
   });
 }
 
@@ -575,13 +620,14 @@ function renderConcilTabela(filtradas) {
     {key:'baixa',label:'Baixa Confiança',dot:'var(--danger)', range:'score < 0.50'},
   ] : [{key:currentTabConcil,label:'',dot:'',range:'',all:true}];
 
-  var allChk = filtradas.every(function(t){ return selectedIdsConcil.has(t.id); });
+  var selecionaveis = filtradas.filter(function(t){ return t.estado==='pendente'||t.estado==='aguardando-insumo'; });
+  var allChk = selecionaveis.length > 0 && selecionaveis.every(function(t){ return selectedIdsConcil.has(t.id); });
   var html = `<table class="concil-table" style="width:100%">
     <thead><tr>
       <th style="width:32px"><input type="checkbox" ${allChk?'checked':''} onchange="toggleAllConcil(this.checked)" style="cursor:pointer"></th>
       <th>Data</th><th style="min-width:160px">Descrição</th><th>Valor</th>
-      <th style="min-width:160px">Conta Débito</th><th style="min-width:160px">Conta Crédito</th>
-      <th>Documento</th><th>Score</th><th>Estado</th>
+      <th>Conta Débito</th><th>Conta Crédito</th>
+      <th>Documento</th><th>Estado</th>
     </tr></thead><tbody>`;
 
   grupos.forEach(function(g) {
@@ -608,8 +654,12 @@ function renderConcilRow(t) {
   var sel = selectedIdsConcil.has(t.id);
   var res = resultadoUltimaAcaoConcil.get(t.id);
   var resClass = res==='aprovado' ? 'resultado-aprovado' : res==='ignorado' ? 'resultado-ignorado' : '';
-  var dOpts = CONTA_OPCOES_CONCIL.map(function(o){ return '<option '+(t.debito===o?'selected':'')+'>'+o+'</option>'; }).join('');
-  var cOpts = CONTA_OPCOES_CONCIL.map(function(o){ return '<option '+(t.credito===o?'selected':'')+'>'+o+'</option>'; }).join('');
+  function contaHtml(valor) {
+    if (!valor) return '<span style="color:var(--text-tertiary)">—</span>';
+    var p = valor.split(' — ');
+    return '<span style="font-size:11.5px;font-weight:600;font-family:\'JetBrains Mono\',monospace;color:var(--text-primary)">'+p[0]+'</span>'
+      +(p[1]?'<div style="font-size:10.5px;color:var(--text-tertiary);margin-top:1px">'+p[1]+'</div>':'');
+  }
   return `
   <tr class="concil-row ${sel?'selected-row':''} ${resClass}" onclick="abrirDrawerConcil('${t.id}')">
     <td onclick="event.stopPropagation()">
@@ -618,30 +668,17 @@ function renderConcilRow(t) {
     <td class="mono" style="white-space:nowrap;color:var(--text-secondary)">${t.data}</td>
     <td><div class="concil-desc">${t.desc}</div><div class="concil-sub">${t.sub}</div></td>
     <td class="mono fw-600" style="white-space:nowrap;color:${isEntradaConcil(t)?'var(--success)':'var(--danger)'}">${t.valor}</td>
-    <td onclick="event.stopPropagation()">
-      <div style="display:flex;align-items:center;gap:4px">
-        <select class="cell-select" onchange="setContaConcil('${t.id}','debito',this.value);feedbackContaConcil('fb-${t.id}-debito')">
-          <option value="">Selecionar conta</option>${dOpts}
-        </select>
-        <span id="fb-${t.id}-debito" class="conta-feedback hidden"></span>
-      </div>
-    </td>
-    <td onclick="event.stopPropagation()">
-      <div style="display:flex;align-items:center;gap:4px">
-        <select class="cell-select" onchange="setContaConcil('${t.id}','credito',this.value);feedbackContaConcil('fb-${t.id}-credito')">
-          <option value="">Selecionar conta</option>${cOpts}
-        </select>
-        <span id="fb-${t.id}-credito" class="conta-feedback hidden"></span>
-      </div>
-    </td>
+    <td>${contaHtml(t.debito)}</td>
+    <td>${contaHtml(t.credito)}</td>
     <td>${
       t.estado === 'na-nota'
-        ? '<span class="dap-pill dap-na-nota">Não se aplica NF</span>'
+        ? '<span class="dap-pill dap-na-nota">Não se aplica</span>'
         : t.estado === 'aguardando-insumo'
-        ? '<span class="dap-pill dap-nf-pendente">NF Pendente</span>'
-        : `<span style="font-size:12px;color:${t.nf==='—'?'var(--text-tertiary)':'var(--text-primary)'}">${t.nf}</span>`
+        ? '<span class="dap-pill dap-aguardando">Aguardando</span>'
+        : t.nf !== '—'
+        ? '<span class="dap-pill dap-nf-vinculada">'+t.nf+'</span>'
+        : '<span class="dap-pill dap-sem-nf">Sem NF</span>'
     }</td>
-    <td><span class="conf-badge ${cc}">${t.score}</span></td>
     <td><span class="dap-pill ${ec}">${el}</span></td>
   </tr>`;
 }
@@ -652,8 +689,9 @@ function abrirDrawerConcil(rowId) {
   var t = TRANSACOES_CONCIL.find(function(x){return x.id===rowId;}); if (!t) return;
 
   var cands = NF_CANDIDATAS_CONCIL[t.id] || [];
-  activeNFConcil = t.conf === 'alta' && cands.length > 0 ? cands[0].id : null;
+  activeNFConcil = (t.nf && t.nf !== '—') ? t.nf : (t.conf === 'alta' && cands.length > 0 ? cands[0].id : null);
   activeNAConcil = false;
+  autosugCampoConcil = null;
   if (t.contaSugerida === undefined) t.contaSugerida = t[campoImpactoConcil(t)] || '';
   var cc = {alta:'conf-alta',media:'conf-media',baixa:'conf-baixa'}[t.conf];
   var cl = {alta:'Alta Confiança',media:'Média Confiança',baixa:'Baixa Confiança'}[t.conf];
@@ -732,6 +770,7 @@ function renderDrawerConcilBody(t) {
           </select>
         </div>
       </div>
+      <div id="concil-autosug-hint" style="display:none;align-items:center;gap:5px;margin-top:8px;font-size:11px;color:#b45309"><i data-lucide="sparkles" style="width:12px;height:12px;flex-shrink:0"></i><span id="concil-autosug-texto"></span></div>
       <div class="learn-hint" style="margin-top:8px"><i data-lucide="sparkles"></i>O Motor aprenderá esta parametrização para lançamentos futuros.</div>
     </div>
     <div class="drawer-block">
@@ -762,13 +801,14 @@ function atualizarBotaoAprovarConcil(t) {
   var faltando = [];
   if (!t.debito)  faltando.push('Conta Débito');
   if (!t.credito) faltando.push('Conta Crédito');
-  if (!activeNFConcil && !activeNAConcil) faltando.push('NF / Não se aplica / NF Pendente');
+  var temNFDado = t.nf && t.nf !== '—';
+  if (!temNFDado && !activeNAConcil) faltando.push('NF / Não se aplica / NF Pendente');
 
   if (faltando.length > 0) {
     btn.disabled = true;
     btn.style.opacity = '0.5';
     btn.style.cursor  = 'not-allowed';
-    hint.textContent  = 'Falta: Conta Débito e/ou Conta Crédito · Documento. Preencha todos os campos para Aprovar vínculo!';
+    hint.textContent  = 'Falta: ' + faltando.join(' · ');
   } else {
     btn.disabled = false;
     btn.style.opacity = '';
@@ -786,7 +826,7 @@ function selecionarNFConcil(rowId, nfId) {
   if (btnNF_) btnNF_.style.cssText = '';
 
   var t = TRANSACOES_CONCIL.find(function(x){return x.id===rowId;});
-  if (t) { t[campoImpactoConcil(t)] = t.contaSugerida || ''; renderContaSelectConcil(rowId); }
+  if (t) { t.nf = nfId; t[campoImpactoConcil(t)] = t.contaSugerida || ''; renderContaSelectConcil(rowId); }
   var t2 = TRANSACOES_CONCIL.find(function(x){return x.id===rowId;});
   if (t2) atualizarBotaoAprovarConcil(t2);
 
@@ -839,15 +879,36 @@ function naNotaClickConcil(rowId) {
   atualizarBotaoAprovarConcil(t);
 }
 
+function renderSugestaoContaConcil() {
+  var hint  = document.getElementById('concil-autosug-hint');
+  var texto = document.getElementById('concil-autosug-texto');
+  if (!hint || !texto) return;
+  if (autosugCampoConcil) {
+    texto.textContent = 'Conta ' + (autosugCampoConcil === 'debito' ? 'Débito' : 'Crédito') + ' preenchida automaticamente — confirme ou altere';
+    hint.style.display = 'flex';
+  } else {
+    hint.style.display = 'none';
+  }
+}
+
 function nfPendenteClickConcil(rowId) {
   activeNAConcil = activeNAConcil === 'nf' ? false : 'nf';
   var t = TRANSACOES_CONCIL.find(function(x){return x.id===rowId;}); if(!t) return;
   if (activeNAConcil === 'nf') {
     activeNFConcil = null;
     renderNfCandsListConcil(rowId);
-    t[campoImpactoConcil(t)] = '1.1.3.01 — Adiantamento a Fornecedores';
+    var campoImpacto = campoImpactoConcil(t);
+    if (!t[campoImpacto]) {
+      t[campoImpacto] = '1.1.3.01 — Adiantamento a Fornecedores';
+      autosugCampoConcil = campoImpacto;
+    } else {
+      autosugCampoConcil = null;
+    }
     renderContaSelectConcil(rowId);
+  } else {
+    autosugCampoConcil = null;
   }
+  renderSugestaoContaConcil();
   var btnNA = document.getElementById('concil-btn-na-nota');
   var btnNF = document.getElementById('concil-btn-nf-pendente');
   if (btnNF) btnNF.style.cssText = activeNAConcil==='nf' ? 'background:var(--warning-soft);border-color:var(--warning);color:var(--warning);font-weight:600' : '';
@@ -885,7 +946,11 @@ function feedbackContaConcil(spanId) {
 function setContaConcil(rowId,tipo,val) { var t=TRANSACOES_CONCIL.find(function(x){return x.id===rowId;}); if(t) t[tipo]=val; }
 function setContaDrawerCampoConcil(rowId,campo,val) {
   var t=TRANSACOES_CONCIL.find(function(x){return x.id===rowId;});
-  if(t) { t[campo]=val; atualizarBotaoAprovarConcil(t); }
+  if(t) {
+    t[campo]=val;
+    if (campo === autosugCampoConcil) { autosugCampoConcil = null; renderSugestaoContaConcil(); }
+    atualizarBotaoAprovarConcil(t);
+  }
 }
 
 function fecharDrawerConcil() {
@@ -897,7 +962,6 @@ function fecharDrawerConcil() {
 /* ── seleção / bulk ── */
 function toggleSelectConcil(evt,id) {
   evt.stopPropagation();
-  resultadoUltimaAcaoConcil.clear();
   selectedIdsConcil.has(id)?selectedIdsConcil.delete(id):selectedIdsConcil.add(id);
   updateBulkBarConcil();
   document.querySelectorAll('.concil-row').forEach(function(r){
@@ -908,16 +972,17 @@ function toggleSelectConcil(evt,id) {
   });
 }
 function toggleAllConcil(checked) {
-  resultadoUltimaAcaoConcil.clear();
-  getFiltradasConcil().forEach(function(t){ checked?selectedIdsConcil.add(t.id):selectedIdsConcil.delete(t.id); });
+  var selecionaveis = getFiltradasConcil().filter(function(t){ return t.estado==='pendente'||t.estado==='aguardando-insumo'; });
+  selecionaveis.forEach(function(t){ checked?selectedIdsConcil.add(t.id):selectedIdsConcil.delete(t.id); });
   updateBulkBarConcil(); renderConciliacao();
 }
 function updateBulkBarConcil() {
   var n=selectedIdsConcil.size;
   var bar=document.getElementById('concil-bulk-bar');
+  var wrap=document.querySelector('.concil-wrap');
   if(!bar) return;
-  if (n>0) { bar.classList.add('visible'); document.getElementById('concil-bulk-label').textContent = n+' selecionada'+(n>1?'s':''); }
-  else bar.classList.remove('visible');
+  if (n>0) { bar.classList.add('visible'); document.getElementById('concil-bulk-label').textContent = n+' selecionada'+(n>1?'s':''); if(wrap) wrap.style.paddingBottom='72px'; }
+  else { bar.classList.remove('visible'); if(wrap) wrap.style.paddingBottom=''; }
 }
 function transacaoValidaConcil(t) {
   var temNF = t.nf && t.nf !== '—';
@@ -927,6 +992,7 @@ function transacaoValidaConcil(t) {
 
 function bulkAprovarConcil() {
   var aprovadas = 0; var ignoradas = 0;
+  filtroIncompletosConcil = false;
   resultadoUltimaAcaoConcil.clear();
   selectedIdsConcil.forEach(function(id){
     var t = TRANSACOES_CONCIL.find(function(x){return x.id===id;});
@@ -940,6 +1006,7 @@ function bulkAprovarConcil() {
     }
   });
   selectedIdsConcil.clear(); updateBulkBarConcil();
+  bulkSumarioConcil = ignoradas > 0 ? { aprovadas: aprovadas, ignoradas: ignoradas } : null;
   if (aprovadas > 0 && ignoradas === 0) {
     showToastConcil(aprovadas+' vínculo'+(aprovadas>1?'s aprovados':' aprovado'),'success');
   } else if (aprovadas > 0 && ignoradas > 0) {
@@ -949,9 +1016,54 @@ function bulkAprovarConcil() {
   }
   renderConciliacao();
 }
-function cancelarSelecaoConcil() { selectedIdsConcil.clear(); resultadoUltimaAcaoConcil.clear(); updateBulkBarConcil(); renderConciliacao(); }
-function trocarTabConcil(id){ currentTabConcil=id; selectedIdsConcil.clear(); resultadoUltimaAcaoConcil.clear(); renderConciliacao(); }
-function trocarContaConcil(id){ currentContaConcil=id; currentTabConcil='todos'; selectedIdsConcil.clear(); resultadoUltimaAcaoConcil.clear(); renderConciliacao(); }
+function toggleBulkDropdownConcil() {
+  var menu = document.getElementById('concil-bulk-dropdown-menu');
+  if (!menu) return;
+  var isOpen = menu.classList.contains('open');
+  menu.classList.toggle('open');
+  if (!isOpen) {
+    setTimeout(function() {
+      document.addEventListener('click', function closeBulkDropdown(e) {
+        var dd = document.getElementById('concil-bulk-dropdown');
+        if (dd && !dd.contains(e.target)) { menu.classList.remove('open'); document.removeEventListener('click', closeBulkDropdown); }
+      });
+    }, 0);
+  }
+}
+function bulkMarcarNaNotaConcil() {
+  var marcadas = 0; var ignoradas = 0;
+  resultadoUltimaAcaoConcil.clear();
+  selectedIdsConcil.forEach(function(id) {
+    var t = TRANSACOES_CONCIL.find(function(x){ return x.id===id; }); if (!t) return;
+    if (t.debito && t.credito) { t.estado='na-nota'; marcadas++; resultadoUltimaAcaoConcil.set(id,'aprovado'); }
+    else { ignoradas++; resultadoUltimaAcaoConcil.set(id,'ignorado'); }
+  });
+  selectedIdsConcil.clear(); updateBulkBarConcil();
+  if (marcadas > 0 && ignoradas === 0) showToastConcil(marcadas+' marcado'+(marcadas>1?'s':'')+' como Não se aplica NF','success');
+  else if (marcadas > 0) showToastConcil(marcadas+' marcado'+(marcadas>1?'s':'')+' · '+ignoradas+' ignorado'+(ignoradas>1?'s':'')+' por falta de Conta Débito e/ou Crédito','warning');
+  else showToastConcil('Nenhum lançamento marcado — preencha Conta Débito e Crédito de cada item','warning');
+  renderConciliacao();
+}
+function bulkMarcarAguardandoConcil() {
+  var marcadas = 0; var ignoradas = 0;
+  resultadoUltimaAcaoConcil.clear();
+  selectedIdsConcil.forEach(function(id) {
+    var t = TRANSACOES_CONCIL.find(function(x){ return x.id===id; }); if (!t) return;
+    if (t.debito && t.credito) { t.estado='aguardando-insumo'; marcadas++; resultadoUltimaAcaoConcil.set(id,'aprovado'); }
+    else { ignoradas++; resultadoUltimaAcaoConcil.set(id,'ignorado'); }
+  });
+  selectedIdsConcil.clear(); updateBulkBarConcil();
+  if (marcadas > 0 && ignoradas === 0) showToastConcil(marcadas+' marcado'+(marcadas>1?'s':'')+' como Aguardando Insumo','success');
+  else if (marcadas > 0) showToastConcil(marcadas+' marcado'+(marcadas>1?'s':'')+' · '+ignoradas+' ignorado'+(ignoradas>1?'s':'')+' por falta de Conta Débito e/ou Crédito','warning');
+  else showToastConcil('Nenhum lançamento marcado — preencha Conta Débito e Crédito de cada item','warning');
+  renderConciliacao();
+}
+function cancelarSelecaoConcil() { selectedIdsConcil.clear(); resultadoUltimaAcaoConcil.clear(); bulkSumarioConcil=null; filtroIncompletosConcil=false; updateBulkBarConcil(); renderConciliacao(); }
+function trocarTabConcil(id){ currentTabConcil=id; selectedIdsConcil.clear(); resultadoUltimaAcaoConcil.clear(); bulkSumarioConcil=null; filtroIncompletosConcil=false; renderConciliacao(); }
+function trocarContaConcil(id){ currentContaConcil=id; currentTabConcil='todos'; selectedIdsConcil.clear(); resultadoUltimaAcaoConcil.clear(); bulkSumarioConcil=null; filtroIncompletosConcil=false; renderConciliacao(); }
+
+function ativarFiltroIncompletosConcil() { filtroIncompletosConcil = true; renderConciliacao(); }
+function limparBulkSumarioConcil() { bulkSumarioConcil = null; filtroIncompletosConcil = false; renderConciliacao(); }
 
 /* ── toast ── */
 function showToastConcil(msg,type) {
