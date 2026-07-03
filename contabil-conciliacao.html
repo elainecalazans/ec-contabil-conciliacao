@@ -125,7 +125,9 @@
   .concil-row.resultado-aprovado{outline:2px solid #86efac;outline-offset:-1px;background:#f8fef9;}
   .concil-row.resultado-ignorado{outline:2px solid #fca5a5;outline-offset:-1px;background:#fff9f9;}
   .concil-row{cursor:pointer;transition:background .1s;}
-  .concil-row:hover{background:#fafafa;}
+  .concil-row:not(.selected-row):not(.resultado-aprovado):not(.resultado-ignorado):hover{background:#f0f5ff;}
+  .row-chevron{color:#d4d4d8;display:flex;align-items:center;justify-content:center;transition:color .15s;}
+  .concil-row:hover .row-chevron{color:#6366f1;}
   .concil-row.selected-row{background:#EFF6FF;}
   .concil-desc{font-weight:500;color:var(--text-primary);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;max-width:200px;}
   .concil-sub{font-size:11px;color:var(--text-tertiary);margin-top:2px;}
@@ -627,7 +629,7 @@ function renderConcilTabela(filtradas) {
       <th style="width:32px"><input type="checkbox" ${allChk?'checked':''} onchange="toggleAllConcil(this.checked)" style="cursor:pointer"></th>
       <th>Data</th><th style="min-width:160px">Descrição</th><th>Valor</th>
       <th>Conta Débito</th><th>Conta Crédito</th>
-      <th>Documento</th><th>Estado</th>
+      <th>Documento</th><th>Estado</th><th style="width:28px"></th>
     </tr></thead><tbody>`;
 
   grupos.forEach(function(g) {
@@ -680,6 +682,7 @@ function renderConcilRow(t) {
         : '<span class="dap-pill dap-sem-nf">Sem NF</span>'
     }</td>
     <td><span class="dap-pill ${ec}">${el}</span></td>
+    <td><div class="row-chevron"><i data-lucide="chevron-right" style="width:14px;height:14px"></i></div></td>
   </tr>`;
 }
 
