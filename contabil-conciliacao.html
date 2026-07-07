@@ -101,11 +101,10 @@
   .dap-pill{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;border-radius:4px;font-size:10.5px;font-weight:600;border:1px solid;}
   .dap-aprovado{background:var(--success-soft);color:var(--success);border-color:#86efac;}
   .dap-pendente{background:#fff;color:#71717a;border-color:#d4d4d8;}
-  .dap-aguardando{background:#ede9fe;color:#6d28d9;border-color:#c4b5fd;}
-  .dap-nf-pendente{background:var(--warning-soft);color:var(--warning);border-color:#fcd34d;}
-  .dap-na-nota{background:#f4f4f5;color:#52525b;border-color:#d4d4d8;}
-  .dap-nf-vinculada{background:#f0fdf4;color:#16a34a;border-color:#86efac;}
-  .dap-sem-nf{background:#fafafa;color:#a1a1aa;border-color:#e4e4e7;}
+  .dap-pendente-incompleto{background:#fef3c7;color:#b45309;border-color:#fcd34d;}
+  .dap-pronto{background:#fff;color:#71717a;border-color:#d4d4d8;}
+  .dap-aguardando{background:#fef3c7;color:#b45309;border-color:#fcd34d;}
+
 
   .tabs-bar{display:flex;gap:2px;padding:10px 16px 0;background:var(--surface);border-bottom:1px solid var(--border);flex-shrink:0;overflow-x:auto;}
   .tab-item{padding:7px 14px;font-size:12.5px;font-weight:500;cursor:pointer;color:var(--text-secondary);border-bottom:2px solid transparent;white-space:nowrap;transition:all .15s;}
@@ -135,7 +134,7 @@
   .cell-select{width:100%;min-width:130px;padding:4px 8px;border:1px solid var(--border);border-radius:6px;font-size:11.5px;font-family:inherit;color:var(--text-primary);background:#fff;cursor:pointer;outline:none;}
   .cell-select:focus{border-color:var(--brand-pink);box-shadow:0 0 0 2px var(--brand-pink-soft);}
 
-  .bulk-bar{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:#18181b;color:#fff;border-radius:12px;padding:12px 20px;display:flex;align-items:center;gap:14px;font-size:13px;font-weight:500;box-shadow:0 8px 30px rgba(0,0,0,0.25);transition:transform .25s cubic-bezier(.34,1.56,.64,1),opacity .2s;opacity:0;z-index:50;pointer-events:none;}
+  .bulk-bar{position:fixed;bottom:24px;left:50%;transform:translateX(-50%) translateY(80px);background:rgba(24,24,27,0.75);backdrop-filter:blur(8px);-webkit-backdrop-filter:blur(8px);color:#fff;border-radius:12px;padding:8px 16px;display:flex;align-items:center;gap:10px;font-size:12.5px;font-weight:500;box-shadow:0 8px 30px rgba(0,0,0,0.2);transition:transform .25s cubic-bezier(.34,1.56,.64,1),opacity .2s;opacity:0;z-index:50;pointer-events:none;white-space:nowrap;}
   .bulk-bar.visible{transform:translateX(-50%) translateY(0);opacity:1;pointer-events:auto;}
   .bulk-divider{width:1px;height:20px;background:#3f3f46;}
   .bulk-dropdown{position:relative;}
@@ -326,10 +325,15 @@ function concluirEnvio() {
 }
 function voltarParaTarefas() {
   var id = state.currentTaskId;
-  if (id && state.queue) {
+  var done = null;
+  if (state.active && state.active.id === id) {
+    done = state.active;
+    state.active = null;
+  } else if (state.queue) {
     var i = state.queue.findIndex(function(t) { return t.id === id; });
-    if (i > -1) { var done = state.queue.splice(i, 1)[0]; done.completedAt = 'agora mesmo'; state.completed.push(done); }
+    if (i > -1) { done = state.queue.splice(i, 1)[0]; }
   }
+  if (done) { done.completedAt = 'agora mesmo'; state.completed.push(done); }
   if (typeof goHome === 'function') goHome();
 }
 window._resolucaoFiles = [];
@@ -422,8 +426,8 @@ const CONTA_OPCOES_CONCIL = [
 ];
 
 const TRANSACOES_RAW_CONCIL = [
-  {id:'t1',conta:'bb0001',desc:'Depósito em conta corrente',sub:'PIX recebido · Cliente ABC',valor:'R$ 12.500,00',data:'02/05',conf:'alta',score:'0.94',nf:'NF-1841',estado:'aprovado',debito:'1.1.1.01 — Caixa e Equiv.',credito:'3.1.1.01 — Receita de Serviços'},
-  {id:'t2',conta:'bb0001',desc:'PAGTO BOLETO — INSS abr/2026',sub:'Banco do Brasil · CC 3421',valor:'-R$ 1.847,20',data:'12/05',conf:'alta',score:'0.91',nf:'GFIP abr/2026',estado:'aprovado',debito:'2.1.3.01 — INSS a pagar',credito:'1.1.1.01 — Caixa e Equiv.'},
+  {id:'t1',conta:'bb0001',desc:'Depósito em conta corrente',sub:'PIX recebido · Cliente ABC',valor:'R$ 12.500,00',data:'02/05',conf:'alta',score:'0.94',nf:'NF-1841',estado:'pendente',debito:'1.1.1.01 — Caixa e Equiv.',credito:'3.1.1.01 — Receita de Serviços'},
+  {id:'t2',conta:'bb0001',desc:'PAGTO BOLETO — INSS abr/2026',sub:'Banco do Brasil · CC 3421',valor:'-R$ 1.847,20',data:'12/05',conf:'alta',score:'0.91',nf:'GFIP abr/2026',estado:'pendente',debito:'2.1.3.01 — INSS a pagar',credito:'1.1.1.01 — Caixa e Equiv.'},
   {id:'t9',conta:'bb0001',desc:'Recebimento · Serviços Prestados',sub:'PIX recebido · Empresa Beta',valor:'R$ 3.600,00',data:'16/05',conf:'alta',score:'0.92',nf:'NF-1863',estado:'pendente',debito:'1.1.1.01 — Caixa e Equiv.',credito:'3.1.1.01 — Receita de Serviços'},
   {id:'t3',conta:'bb0001',desc:'Pagamento fornecedor · Dist. ABC',sub:'TED · Bradesco',valor:'-R$ 8.750,00',data:'05/05',conf:'media',score:'0.81',nf:'NF-1845',estado:'pendente',debito:'4.1.1.01 — Compras de mercad.',credito:'1.1.1.01 — Caixa e Equiv.'},
   {id:'t4',conta:'itau0022',desc:'PIX recebido · Fornecedor desconhecido',sub:'Remetente não identificado',valor:'R$ 4.750,00',data:'12/05',conf:'media',score:'0.75',nf:'—',estado:'pendente',debito:'',credito:''},
@@ -486,6 +490,7 @@ let selectedIdsConcil = new Set();
 let resultadoUltimaAcaoConcil = new Map();
 let currentTabConcil   = 'todos';
 let currentContaConcil = 'todos';
+let currentEstadoConcil = 'todos';
 let activeRowIdConcil  = null;
 let activeNFConcil     = null;
 let activeNAConcil          = false;
@@ -525,19 +530,19 @@ function garantirOverlaysConcil() {
       <div class="drawer-footer" id="concil-drawer-footer"></div>
     </div>
     <div class="bulk-bar" id="concil-bulk-bar">
-      <i data-lucide="check-square" style="width:15px;height:15px;color:#a1a1aa"></i>
+      <i data-lucide="check-square" style="width:14px;height:14px;color:#a1a1aa"></i>
       <span id="concil-bulk-label">0 selecionadas</span>
       <div class="bulk-divider"></div>
-      <button class="btn btn-sm" style="background:#3f3f46;color:#a1a1aa;border:none" onclick="cancelarSelecaoConcil()"><i data-lucide="x" style="width:13px;height:13px"></i> Cancelar seleção</button>
-      <div class="bulk-divider"></div>
       <div class="bulk-dropdown" id="concil-bulk-dropdown">
-        <button class="btn btn-sm" style="background:#3f3f46;color:#e4e4e7;border:none" onclick="toggleBulkDropdownConcil()"><i data-lucide="tag" style="width:13px;height:13px"></i> Marcar como <i data-lucide="chevron-up" style="width:12px;height:12px"></i></button>
+        <button class="btn btn-sm" style="background:rgba(255,255,255,0.1);color:#e4e4e7;border:none;font-size:12px;padding:4px 10px" onclick="toggleBulkDropdownConcil()"><i data-lucide="tag" style="width:12px;height:12px"></i> Marcar como <i data-lucide="chevron-up" style="width:11px;height:11px"></i></button>
         <div class="bulk-dropdown-menu" id="concil-bulk-dropdown-menu">
           <button onclick="bulkMarcarNaNotaConcil()"><i data-lucide="slash" style="width:12px;height:12px"></i> Não se aplica NF</button>
           <button onclick="bulkMarcarAguardandoConcil()"><i data-lucide="clock" style="width:12px;height:12px"></i> Aguardando Insumo</button>
         </div>
       </div>
-      <button class="btn btn-success btn-sm" onclick="bulkAprovarConcil()"><i data-lucide="check" style="width:13px;height:13px"></i> Aprovar vínculo (seleção)</button>
+      <button class="btn btn-success btn-sm" style="font-size:12px;padding:4px 10px" onclick="bulkAprovarConcil()"><i data-lucide="check" style="width:12px;height:12px"></i> Aprovar vínculo</button>
+      <div class="bulk-divider"></div>
+      <button class="btn btn-sm" style="background:rgba(255,255,255,0.1);color:#a1a1aa;border:none;font-size:12px;padding:4px 10px" onclick="cancelarSelecaoConcil()"><i data-lucide="x" style="width:12px;height:12px"></i> Cancelar</button>
     </div>
     <div class="toast-wrap" id="concil-toast-wrap"></div>
   `;
@@ -578,19 +583,31 @@ function renderConcilArea() {
   var contaOpts = CONTAS_CONCIL.map(function(c) {
     return '<option value="'+c.id+'" '+(currentContaConcil===c.id?'selected':'')+'>'+c.label+'</option>';
   }).join('');
-  var tabs = [
-    {id:'todos',label:'Todos'},{id:'alta',label:'Alta Confiança'},
-    {id:'media',label:'Média Confiança'},{id:'baixa',label:'Baixa Confiança'},
-  ];
+  var confOpts = [
+    {id:'todos', label:'Todas as confianças'},
+    {id:'alta',  label:'Alta Confiança'},
+    {id:'media', label:'Média Confiança'},
+    {id:'baixa', label:'Baixa Confiança'},
+  ].map(function(o){ return '<option value="'+o.id+'" '+(currentTabConcil===o.id?'selected':'')+'>'+o.label+'</option>'; }).join('');
+  var estadoOpts = [
+    {id:'todos',              label:'Todos os estados'},
+    {id:'pendente',           label:'Pendente'},
+    {id:'aprovado',           label:'Aprovado'},
+    {id:'aguardando-insumo',  label:'Aguardando Insumo'},
+  ].map(function(o){ return '<option value="'+o.id+'" '+(currentEstadoConcil===o.id?'selected':'')+'>'+o.label+'</option>'; }).join('');
   return `
   <div class="concil-wrap">
     <div class="concil-topbar-row">
       <label style="font-size:12px;font-weight:600;color:var(--text-secondary)">Conta bancária</label>
-      <select class="cell-select" style="max-width:240px" onchange="trocarContaConcil(this.value)">${contaOpts}</select>
+      <select class="cell-select" style="max-width:200px" onchange="trocarContaConcil(this.value)">${contaOpts}</select>
+      <label style="font-size:12px;font-weight:600;color:var(--text-secondary);margin-left:8px">Confiança</label>
+      <select class="cell-select" style="max-width:180px" onchange="trocarConfiancaConcil(this.value)">${confOpts}</select>
+      <label style="font-size:12px;font-weight:600;color:var(--text-secondary);margin-left:8px">Estado</label>
+      <select class="cell-select" style="max-width:180px" onchange="trocarEstadoConcil(this.value)">${estadoOpts}</select>
+      ${(currentContaConcil!=='todos'||currentTabConcil!=='todos'||currentEstadoConcil!=='todos')
+        ? '<button class="btn btn-ghost btn-xs" style="margin-left:8px;color:var(--brand-pink);border-color:var(--brand-pink)" onclick="limparFiltrosConcil()"><i data-lucide="x" style="width:12px;height:12px"></i> Limpar filtros</button>'
+        : ''}
       <span class="text-xs text-muted" style="margin-left:auto">${filtradas.length} transações</span>
-    </div>
-    <div class="tabs-bar">
-      ${tabs.map(function(t){return '<div class="tab-item '+(currentTabConcil===t.id?'active':'')+'" onclick="trocarTabConcil(\''+t.id+'\')">'+t.label+'<span class="tab-count">'+getCountConcil(t.id)+'</span></div>';}).join('')}
     </div>
     <div class="concil-table-scroll">
       ${renderBulkBannerConcil()}
@@ -603,8 +620,12 @@ function getFiltradasConcil() {
   return TRANSACOES_CONCIL.filter(function(t) {
     var cOk = currentContaConcil==='todos' || t.conta===currentContaConcil;
     var tOk = currentTabConcil==='todos'   || t.conf===currentTabConcil;
+    var eOk = currentEstadoConcil==='todos'
+      || (currentEstadoConcil==='aprovado'          && (t.estado==='aprovado' || t.estado==='na-nota'))
+      || (currentEstadoConcil==='pendente'           && t.estado==='pendente')
+      || (currentEstadoConcil==='aguardando-insumo'  && t.estado==='aguardando-insumo');
     var iOk = !filtroIncompletosConcil || resultadoUltimaAcaoConcil.get(t.id) === 'ignorado';
-    return cOk && tOk && iOk;
+    return cOk && tOk && eOk && iOk;
   });
 }
 
@@ -653,17 +674,24 @@ function renderConcilTabela(filtradas) {
 function renderConcilRow(t) {
   var cc = {alta:'conf-alta',media:'conf-media',baixa:'conf-baixa'}[t.conf];
   var info = estadoInfoConcil(t); var ec = info.classe; var el = info.label;
+  var completo = !!(t.debito && t.credito && (t.nf !== '—' || t.estado === 'na-nota' || t.estado === 'aguardando-insumo'));
+  if (t.estado === 'pendente') {
+    ec = completo ? 'dap-pronto' : 'dap-pendente-incompleto';
+  }
+  var badgeHtml = ((t.estado === 'pendente' && !completo) || t.estado === 'aguardando-insumo')
+    ? '<span class="dap-pill '+ec+'"><i data-lucide="triangle-alert" style="width:11px;height:11px"></i>'+el+'</span>'
+    : '<span class="dap-pill '+ec+'">'+el+'</span>';
   var sel = selectedIdsConcil.has(t.id);
   var res = resultadoUltimaAcaoConcil.get(t.id);
   var resClass = res==='aprovado' ? 'resultado-aprovado' : res==='ignorado' ? 'resultado-ignorado' : '';
   function contaHtml(valor) {
-    if (!valor) return '<span style="color:var(--text-tertiary)">—</span>';
+    if (!valor) return '<span style="color:#f59e0b;display:flex;align-items:center;gap:5px"><i data-lucide="triangle-alert" style="width:14px;height:14px"></i><span style="font-weight:500;font-size:11.5px">Conta não definida</span></span>';
     var p = valor.split(' — ');
     return '<span style="font-size:11.5px;font-weight:600;font-family:\'JetBrains Mono\',monospace;color:var(--text-primary)">'+p[0]+'</span>'
       +(p[1]?'<div style="font-size:10.5px;color:var(--text-tertiary);margin-top:1px">'+p[1]+'</div>':'');
   }
   return `
-  <tr class="concil-row ${sel?'selected-row':''} ${resClass}" onclick="abrirDrawerConcil('${t.id}')">
+  <tr class="concil-row ${sel?'selected-row':''} ${resClass}" onclick="abrirDrawerConcil('${t.id}')" style="${(t.estado==='aprovado'||t.estado==='na-nota')?'background:#f0fdf4;':''}">
     <td onclick="event.stopPropagation()">
       <input type="checkbox" ${sel?'checked':''} onchange="toggleSelectConcil(event,'${t.id}')" style="cursor:pointer">
     </td>
@@ -674,14 +702,14 @@ function renderConcilRow(t) {
     <td>${contaHtml(t.credito)}</td>
     <td>${
       t.estado === 'na-nota'
-        ? '<span class="dap-pill dap-na-nota">Não se aplica</span>'
+        ? '<span style="font-size:12.5px;font-weight:500;color:var(--text-primary)">Não se aplica</span>'
         : t.estado === 'aguardando-insumo'
-        ? '<span class="dap-pill dap-aguardando">Aguardando</span>'
+        ? '<span style="font-size:12.5px;font-weight:500;color:var(--text-primary)">Aguardando</span>'
         : t.nf !== '—'
-        ? '<span class="dap-pill dap-nf-vinculada">'+t.nf+'</span>'
-        : '<span class="dap-pill dap-sem-nf">Sem NF</span>'
+        ? '<span style="font-size:12.5px;font-weight:500;color:var(--text-primary)">'+t.nf+'</span>'
+        : '<span style="font-size:12.5px;font-weight:500;color:var(--text-primary)">Sem NF</span>'
     }</td>
-    <td><span class="dap-pill ${ec}">${el}</span></td>
+    <td>${badgeHtml}</td>
     <td><div class="row-chevron"><i data-lucide="chevron-right" style="width:14px;height:14px"></i></div></td>
   </tr>`;
 }
@@ -699,11 +727,18 @@ function abrirDrawerConcil(rowId) {
   var cc = {alta:'conf-alta',media:'conf-media',baixa:'conf-baixa'}[t.conf];
   var cl = {alta:'Alta Confiança',media:'Média Confiança',baixa:'Baixa Confiança'}[t.conf];
   var info = estadoInfoConcil(t); var ec = info.classe; var el = info.label;
+  if (t.estado === 'pendente') {
+    var completo = !!(t.debito && t.credito && (t.nf !== '—' || t.estado === 'na-nota' || t.estado === 'aguardando-insumo'));
+    ec = completo ? 'dap-pronto' : 'dap-pendente-incompleto';
+  }
+  var drawerBadgeHtml = ((t.estado === 'pendente' && !(t.debito && t.credito && t.nf !== '—')) || t.estado === 'aguardando-insumo')
+    ? '<span class="dap-pill '+ec+'"><i data-lucide="triangle-alert" style="width:11px;height:11px"></i>'+el+'</span>'
+    : '<span class="dap-pill '+ec+'">'+el+'</span>';
 
   document.getElementById('concil-drawer-header-content').innerHTML = `
     <div style="display:flex;align-items:center;gap:8px;margin-bottom:4px">
       <span class="conf-badge ${cc}">${t.score} · ${cl}</span>
-      <span class="dap-pill ${ec}">${el}</span>
+      ${drawerBadgeHtml}
     </div>
     <div class="drawer-title">${t.desc}</div>
     <div class="text-xs text-muted" style="margin-top:3px;font-family:'JetBrains Mono',monospace"><span style="color:${isEntradaConcil(t)?'var(--success)':'var(--danger)'};font-weight:600">${t.valor}</span> · ${t.data}</div>`;
@@ -926,7 +961,7 @@ function aprovarVinculoConcil(rowId) {
   else                              t.estado = 'aprovado';
   resultadoUltimaAcaoConcil.delete(rowId);
   fecharDrawerConcil();
-  var msgs = {aprovado:'Vínculo aprovado — transação registrada', 'aguardando-insumo':'Transação marcada como Aguardando Insumo', 'na-nota':'Transação marcada como Não se aplica NF'};
+  var msgs = {aprovado:'Vínculo aprovado com sucesso', 'aguardando-insumo':'Lançamento aguardando insumo', 'na-nota':'Lançamento marcado como sem documento'};
   showToastConcil(msgs[t.estado], t.estado === 'aprovado' ? 'success' : 'warning');
   renderConciliacao();
 }
@@ -1013,9 +1048,9 @@ function bulkAprovarConcil() {
   if (aprovadas > 0 && ignoradas === 0) {
     showToastConcil(aprovadas+' vínculo'+(aprovadas>1?'s aprovados':' aprovado'),'success');
   } else if (aprovadas > 0 && ignoradas > 0) {
-    showToastConcil(aprovadas+' aprovado'+(aprovadas>1?'s':'')+' · '+ignoradas+' ignorado'+(ignoradas>1?'s':'')+' por estarem incompletos','warning');
+    showToastConcil(aprovadas+' aprovado'+(aprovadas>1?'s':'')+' · '+ignoradas+' ignorado'+(ignoradas>1?'s':'')+' — campos incompletos','warning');
   } else {
-    showToastConcil('Nenhum lançamento aprovado — verifique Conta Débito e/ou Crédito e o Documento de cada item!','warning');
+    showToastConcil('Nenhum aprovado — verifique os campos obrigatórios','warning');
   }
   renderConciliacao();
 }
@@ -1042,9 +1077,9 @@ function bulkMarcarNaNotaConcil() {
     else { ignoradas++; resultadoUltimaAcaoConcil.set(id,'ignorado'); }
   });
   selectedIdsConcil.clear(); updateBulkBarConcil();
-  if (marcadas > 0 && ignoradas === 0) showToastConcil(marcadas+' marcado'+(marcadas>1?'s':'')+' como Não se aplica NF','success');
-  else if (marcadas > 0) showToastConcil(marcadas+' marcado'+(marcadas>1?'s':'')+' · '+ignoradas+' ignorado'+(ignoradas>1?'s':'')+' por falta de Conta Débito e/ou Crédito','warning');
-  else showToastConcil('Nenhum lançamento marcado — preencha Conta Débito e Crédito de cada item','warning');
+  if (marcadas > 0 && ignoradas === 0) showToastConcil(marcadas+' lançamento'+(marcadas>1?'s marcados':' marcado')+' sem documento','success');
+  else if (marcadas > 0) showToastConcil(marcadas+' marcado'+(marcadas>1?'s':'')+' · '+ignoradas+' ignorado'+(ignoradas>1?'s':'')+' — campos incompletos','warning');
+  else showToastConcil('Nenhum marcado — preencha Débito e Crédito primeiro','warning');
   renderConciliacao();
 }
 function bulkMarcarAguardandoConcil() {
@@ -1056,14 +1091,17 @@ function bulkMarcarAguardandoConcil() {
     else { ignoradas++; resultadoUltimaAcaoConcil.set(id,'ignorado'); }
   });
   selectedIdsConcil.clear(); updateBulkBarConcil();
-  if (marcadas > 0 && ignoradas === 0) showToastConcil(marcadas+' marcado'+(marcadas>1?'s':'')+' como Aguardando Insumo','success');
-  else if (marcadas > 0) showToastConcil(marcadas+' marcado'+(marcadas>1?'s':'')+' · '+ignoradas+' ignorado'+(ignoradas>1?'s':'')+' por falta de Conta Débito e/ou Crédito','warning');
-  else showToastConcil('Nenhum lançamento marcado — preencha Conta Débito e Crédito de cada item','warning');
+  if (marcadas > 0 && ignoradas === 0) showToastConcil(marcadas+' lançamento'+(marcadas>1?'s marcados':' marcado')+' como Aguardando Insumo','success');
+  else if (marcadas > 0) showToastConcil(marcadas+' marcado'+(marcadas>1?'s':'')+' · '+ignoradas+' ignorado'+(ignoradas>1?'s':'')+' — campos incompletos','warning');
+  else showToastConcil('Nenhum marcado — preencha Débito e Crédito primeiro','warning');
   renderConciliacao();
 }
 function cancelarSelecaoConcil() { selectedIdsConcil.clear(); resultadoUltimaAcaoConcil.clear(); bulkSumarioConcil=null; filtroIncompletosConcil=false; updateBulkBarConcil(); renderConciliacao(); }
+function limparFiltrosConcil(){ currentContaConcil='todos'; currentTabConcil='todos'; currentEstadoConcil='todos'; selectedIdsConcil.clear(); resultadoUltimaAcaoConcil.clear(); bulkSumarioConcil=null; filtroIncompletosConcil=false; renderConciliacao(); }
 function trocarTabConcil(id){ currentTabConcil=id; selectedIdsConcil.clear(); resultadoUltimaAcaoConcil.clear(); bulkSumarioConcil=null; filtroIncompletosConcil=false; renderConciliacao(); }
-function trocarContaConcil(id){ currentContaConcil=id; currentTabConcil='todos'; selectedIdsConcil.clear(); resultadoUltimaAcaoConcil.clear(); bulkSumarioConcil=null; filtroIncompletosConcil=false; renderConciliacao(); }
+function trocarConfiancaConcil(id){ currentTabConcil=id; selectedIdsConcil.clear(); resultadoUltimaAcaoConcil.clear(); bulkSumarioConcil=null; filtroIncompletosConcil=false; renderConciliacao(); }
+function trocarEstadoConcil(id){ currentEstadoConcil=id; selectedIdsConcil.clear(); resultadoUltimaAcaoConcil.clear(); bulkSumarioConcil=null; filtroIncompletosConcil=false; renderConciliacao(); }
+function trocarContaConcil(id){ currentContaConcil=id; currentTabConcil='todos'; currentEstadoConcil='todos'; selectedIdsConcil.clear(); resultadoUltimaAcaoConcil.clear(); bulkSumarioConcil=null; filtroIncompletosConcil=false; renderConciliacao(); }
 
 function ativarFiltroIncompletosConcil() { filtroIncompletosConcil = true; renderConciliacao(); }
 function limparBulkSumarioConcil() { bulkSumarioConcil = null; filtroIncompletosConcil = false; renderConciliacao(); }
@@ -1075,10 +1113,11 @@ function showToastConcil(msg,type) {
   if (!wrap) return;
   var el=document.createElement('div');
   el.className='toast toast-'+type;
-  el.innerHTML='<i data-lucide="'+(type==='success'?'circle-check':'alert-triangle')+'"></i>'+msg;
+  el.style.cssText='display:flex;align-items:center;gap:8px;padding-right:8px';
+  el.innerHTML='<i data-lucide="'+(type==='success'?'circle-check':'alert-triangle')+'"></i><span style="flex:1">'+msg+'</span><button onclick="this.closest(\'.toast\').remove()" style="background:none;border:none;color:rgba(255,255,255,0.7);cursor:pointer;padding:2px 4px;margin-left:4px;border-radius:4px;display:flex;align-items:center" title="Fechar"><i data-lucide="x" style="width:13px;height:13px"></i></button>';
   wrap.appendChild(el);
   refreshIcons();
-  setTimeout(function(){ el.style.opacity='0'; el.style.transform='translateY(10px)'; setTimeout(function(){el.remove();},300); },3000);
+  var timer = setTimeout(function(){ el.style.opacity='0'; el.style.transform='translateY(10px)'; setTimeout(function(){el.remove();},300); },5000);
 }
 </script>
 <script src="cockpit-core.js"></script>
