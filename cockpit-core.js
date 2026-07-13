@@ -60,6 +60,10 @@
   .field-group { display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px 24px; }
   .field-group-2 { grid-template-columns: repeat(2, 1fr); }
   .field-group-3 { grid-template-columns: repeat(3, 1fr); }
+  #task-summary-backdrop .field-group { grid-template-columns: repeat(2, 1fr); gap: 14px 20px; }
+  /* Campos do acordeon no modal: fonte densa, consistente com o miolo do Autopilot. */
+  #task-summary-backdrop .field-label { font-size: 10.5px; margin-bottom: 3px; }
+  #task-summary-backdrop .field-value { font-size: 12.5px; }
   .badge { display: inline-flex; align-items: center; gap: 6px; padding: 4px 10px; border-radius: 999px; font-size: 12px; font-weight: 500; }
   .badge-success { background: var(--success-soft); color: var(--success); }
   .badge-danger { background: var(--danger-soft); color: var(--danger); }
@@ -156,6 +160,11 @@
   .stats-row-sublabel { font-size: 11px; color: var(--text-tertiary); margin-top: 2px; }
   .stats-row-value { font-size: 24px; font-weight: 700; color: var(--text-primary); line-height: 1; }
   .stats-row-value.warning { color: var(--warning); }
+  .stats-row-value.brand { color: var(--brand-pink); }
+  .lo-pager { display: flex; align-items: center; justify-content: flex-end; gap: 12px; margin-top: 12px; }
+  .lo-pager-info { font-size: 12px; color: var(--text-tertiary); }
+  .lo-pager .btn { padding: 6px 12px; font-size: 12.5px; }
+  .lo-pager .btn[disabled] { opacity: 0.45; cursor: not-allowed; }
   .contact-tag { display: inline-flex; align-items: center; padding: 2px 8px; border-radius: 4px; font-size: 10px; font-weight: 600; text-transform: lowercase; letter-spacing: 0.02em; background: var(--surface-muted); color: var(--text-secondary); border: 1px solid var(--border); white-space: nowrap; line-height: 1.6; }
   .contact-tag-client { background: #fde7ea; color: var(--brand-pink); border-color: #f9c5cb; }
   .hidden { display: none !important; }
@@ -186,6 +195,8 @@
   .tl-dot-done { background: var(--success-soft); color: var(--success); }
   .tl-dot-active { background: var(--brand-pink); color: #fff; box-shadow: 0 0 0 4px rgba(242,84,97,0.12); }
   .tl-dot-pending { background: var(--surface-muted); color: var(--text-tertiary); border: 2px solid var(--border); }
+  .tl-dot-warn { background: var(--warning); color: #fff; box-shadow: 0 0 0 4px rgba(245,158,11,0.15); }
+  .tl-item-h.warn:not(:last-child)::after { background: var(--success); }
   .decision-card { background: linear-gradient(to bottom, var(--surface-subtle), #fff); border: 2px solid var(--border); border-radius: 14px; padding: 24px 28px; margin-top: 16px; }
   .decision-card .decision-title { font-size: 16px; font-weight: 700; color: var(--text-primary); margin-bottom: 6px; }
   .decision-card .decision-desc { font-size: 13px; color: var(--text-secondary); margin-bottom: 20px; line-height: 1.55; }
@@ -194,6 +205,25 @@
   .btn-decision-yes:hover { background: #15803d; }
   .btn-decision-no { background: #fff; color: var(--text-primary); padding: 12px 24px; border-radius: 10px; font-size: 14px; font-weight: 500; cursor: pointer; border: 1.5px solid var(--border-strong); display: inline-flex; align-items: center; gap: 8px; transition: all .15s; }
   .btn-decision-no:hover { border-color: var(--brand-pink); color: var(--brand-pink); }
+  /* Ação terciária da validação: devolver à fila (peso menor que os dois primários) */
+  /* Ação "Devolver à fila" — no header da tarefa, alinhada à direita (mesmo lugar em validação e execução). Vermelho do projeto. */
+  .btn-return-queue { background: none; border: none; color: var(--danger); font-size: 12.5px; font-weight: 500; cursor: pointer; display: inline-flex; align-items: center; gap: 5px; padding: 2px; text-underline-offset: 3px; white-space: nowrap; }
+  .btn-return-queue:hover { color: #b91c1c; text-decoration: underline; }
+  /* Botão primário destrutivo (vermelho do projeto) — confirmar da devolução */
+  .btn-danger-solid { background: var(--danger); color: #fff; }
+  .btn-danger-solid:hover { background: #b91c1c; }
+  .btn-danger-solid:disabled { opacity: 0.5; cursor: not-allowed; }
+  /* Bloco "De → Para" — reaproveitado do gerente.html para o modal de devolução */
+  .from-to-block { display: flex; align-items: stretch; gap: 10px; margin: 4px 0 4px; }
+  .ft-side { flex: 1; min-width: 0; }
+  .ft-side .ft-label { font-size: 10px; font-weight: 700; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px; }
+  .ft-card { background: var(--surface-muted); border: 1px solid var(--border); border-radius: 10px; padding: 10px 12px; display: flex; align-items: center; gap: 10px; min-height: 60px; }
+  .ft-card .av { width: 34px; height: 34px; border-radius: 50%; color: #fff; font-weight: 700; font-size: 11.5px; display: flex; align-items: center; justify-content: center; flex-shrink: 0; background: var(--brand-blue); }
+  .ft-card .av.inbox { background: var(--brand-pink); }
+  .ft-card .info { min-width: 0; }
+  .ft-card .info .name { font-size: 13px; font-weight: 600; color: var(--text-primary); line-height: 1.2; }
+  .ft-card .info .role { font-size: 11px; color: var(--text-tertiary); margin-top: 2px; }
+  .ft-arrow { display: flex; align-items: center; color: var(--text-tertiary); padding-top: 22px; }
   .exec-step .step-action { display: inline-flex; align-items: center; gap: 6px; padding: 8px 14px; background: #fff; border: 1px solid var(--border-strong); border-radius: 8px; font-size: 12.5px; font-weight: 500; color: var(--text-primary); cursor: pointer; transition: all .15s; white-space: nowrap; }
   .exec-step .step-action:hover { border-color: var(--brand-pink); color: var(--brand-pink); }
   .exec-step .step-action.done { background: var(--success-soft); border-color: transparent; color: var(--success); }
@@ -259,7 +289,7 @@
 
   /* Tabela densa de tarefas (padrão V1 — admin do gerente + lista do operador + fila invisível dos fluxos) */
   .lo-table-wrap { background: #fff; border: 1px solid var(--border); border-radius: 14px; overflow: hidden; margin-bottom: 16px; }
-  .lo-table-head, .lo-row { display: grid; grid-template-columns: 32px minmax(220px, 1.8fr) minmax(150px, 1.2fr) minmax(150px, 1fr) minmax(170px, 1.1fr) 50px; align-items: center; gap: 14px; padding: 10px 16px; }
+  .lo-table-head, .lo-row { display: grid; grid-template-columns: 30px 12px minmax(140px, 1.8fr) minmax(104px, 1.2fr) minmax(124px, 1fr) minmax(138px, 1.1fr) 40px; align-items: center; gap: 12px; padding: 10px 14px; }
   .lo-table-head { background: var(--surface-muted); border-bottom: 1px solid var(--border); }
   .lo-table-head .h-cell { font-size: 11.5px; font-weight: 600; color: var(--text-secondary); }
   .lo-row { position: relative; background: #fff; transition: background .12s; }
@@ -267,15 +297,43 @@
   .lo-row.clickable { cursor: pointer; }
   .lo-row.clickable:hover { background: var(--surface-subtle); }
   .lo-row.execucao      { box-shadow: inset 3px 0 0 var(--brand-pink); }
-  .lo-row.responded     { box-shadow: inset 3px 0 0 var(--brand-pink); }
   .lo-row.stationed-row { box-shadow: inset 3px 0 0 var(--warning); }
   .lo-row.next-up       { box-shadow: inset 3px 0 0 var(--brand-pink); }
   .lo-row .type-icon { width: 32px; height: 32px; border-radius: 8px; background: var(--brand-blue-soft); color: var(--brand-blue); display: flex; align-items: center; justify-content: center; flex-shrink: 0; }
   .lo-row .lo-solic { min-width: 0; display: flex; flex-direction: column; gap: 2px; }
   .lo-row .lo-solic .client-name { font-size: 13.5px; font-weight: 600; color: var(--text-primary); line-height: 1.3; word-break: break-word; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  /* Bolinha de "cliente respondeu, ainda não aberto" (GDocs). Vive numa COLUNA fina entre o
+     ícone e o nome (2ª coluna do grid) pra saltar aos olhos e alinhar entre as linhas, em vez
+     de se perder colada ao nome. Azul de marca (--brand-blue) — consistente com a UI e
+     distinto do ponto rosa do sino. Só na lista do operador. (COCKPIT-958) */
+  .lo-table-head .lo-dot-cell, .lo-row .lo-dot-cell { display: flex; align-items: center; justify-content: center; }
+  .lo-row .update-dot { width: 8px; height: 8px; border-radius: 50%; background: var(--brand-blue); }
   .lo-row .lo-solic .client-cnpj { font-size: 11px; color: var(--text-tertiary); font-family: 'JetBrains Mono', monospace; }
   .lo-row .lo-solic .ctx-line { font-size: 11px; color: var(--text-tertiary); }
-  .lo-row .lo-tipo { font-size: 12.5px; color: var(--text-primary); font-weight: 500; line-height: 1.3; word-break: break-word; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .lo-row .lo-tipo { font-size: 12.5px; color: var(--text-primary); font-weight: 500; min-width: 0; display: flex; flex-direction: column; gap: 2px; }
+  .lo-row .lo-tipo .lo-proc { line-height: 1.3; word-break: break-word; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
+  .lo-row .lo-tipo .lo-colab { color: var(--text-secondary); font-weight: 400; font-size: 11.5px; }
+  /* Tag HITL na tarefa de origem Autopilot — mesmo selo/valores do acompanhamento
+     (tarefa que o robô gerou pra uma pessoa resolver). Fonte única aqui.
+     Fica num bloco ACIMA do nome do processo, igual ao acompanhamento (apt-proc-top). */
+  .lo-row .lo-tipo .lo-proc-top { margin-bottom: 1px; }
+  .tag-autopilot { display: inline-flex; align-items: center; font-size: 9.5px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.03em; color: #6b7280; background: #f3f4f6; border-radius: 3px; padding: 1px 6px; white-space: nowrap; }
+  /* Link "Abrir página do cliente" no header da tarefa (ao lado do CNPJ).
+     Fonte única aqui — vale pra toda tarefa (Hub e Autopilot); os fluxos do Hub
+     não carregam operador-ui.css, então o estilo precisa morar no core. */
+  .client-link { display: inline-flex; align-items: center; margin-left: 10px; color: var(--brand-pink); text-decoration: none; vertical-align: middle; transition: opacity .12s; }
+  .client-link:hover { opacity: 0.65; }
+  .client-link svg { width: 16px; height: 16px; stroke: currentColor; stroke-width: 2.25; }
+  /* ERP operado + Origem — mesmo padrão de texto do Cockpit (rótulo neutro +
+     valor em destaque). */
+  .dom-meta { font-size: 11.5px; color: var(--text-primary); white-space: nowrap; }
+  .dom-meta .dom-k { color: var(--text-tertiary); font-weight: 400; }
+  .dom-meta .dom-v { font-weight: 600; }
+  .dom-meta .dom-sep { color: var(--text-tertiary); margin: 0 5px; }
+  /* Na lista, esses metadados são secundários: leves (peso médio + cinza) pra não
+     competir com o nome do cliente. No header da tarefa seguem em preto/bold. */
+  .lo-row .dom-meta { color: var(--text-secondary); }
+  .lo-row .dom-meta .dom-v { font-weight: 500; color: var(--text-secondary); }
   .lo-row .icon-btn { width: 28px; height: 28px; border: 1px solid var(--border); border-radius: 6px; background: transparent; color: var(--text-secondary); cursor: pointer; display: inline-flex; align-items: center; justify-content: center; transition: all .12s; }
   .lo-row .icon-btn:hover { border-color: var(--brand-blue); color: var(--brand-blue); background: #fff; }
 
@@ -285,7 +343,7 @@
   .state-pill.na-fila           { color: var(--text-secondary); border-color: #c8ccd1; }
   .state-pill.proxima           { color: var(--brand-pink); border-color: var(--brand-pink); background: var(--brand-pink-soft); }
   .state-pill.em-espera         { color: #b45309; border-color: #f59e0b; }
-  .state-pill.cliente-respondeu { color: var(--brand-pink); border-color: var(--brand-pink); background: var(--brand-pink-soft); }
+  .state-pill.em-processamento  { color: var(--brand-blue); border-color: var(--brand-blue); }
 
   /* Prazo cell */
   .prazo-cell { display: flex; flex-direction: column; gap: 3px; min-width: 0; }
@@ -302,6 +360,69 @@
   .section-head .sh-text { display: flex; flex-direction: column; min-width: 0; }
   .section-head .sh-title { font-size: 19px; font-weight: 700; color: var(--text-primary); line-height: 1.2; }
   .section-head .sh-sub { font-size: 12px; color: var(--text-tertiary); margin-top: 2px; }
+  /* Títulos das seções da fila do operador (Atribuídas a mim / Fila geral) um
+     pouco menores — escopado por ID pra não afetar outras telas. */
+  #ol-atribuidas .sh-title, #ol-list-head .sh-title { font-size: 15px; }
+
+  /* Container "Em espera — aguardando cliente" (recolhível) */
+  .espera-wrap { border: 1px solid var(--border); border-radius: 14px; overflow: hidden; margin-bottom: 16px; background: #fff; }
+  .espera-head { width: 100%; display: flex; align-items: center; gap: 9px; padding: 12px 16px; background: #fff; border: none; cursor: pointer; text-align: left; font-size: 13.5px; font-weight: 600; color: var(--text-primary); }
+  .espera-head:hover { background: var(--surface-subtle); }
+  .espera-head .esp-chev { margin-left: auto; color: var(--text-tertiary); transition: transform .15s; }
+  .espera-head.open { border-bottom: 1px solid var(--border); }
+  .espera-head.open .esp-chev { transform: rotate(180deg); }
+
+  /* Filtros — dropdowns no estilo do cockpit (dhub: shadcn/Radix neutro) */
+  .flt-bar { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin: 0 0 12px; }
+  .flt { position: relative; }
+  .flt-trigger { display: inline-flex; align-items: center; gap: 8px; height: 36px; padding: 0 12px; background: #fff; border: 1px solid #ebebeb; border-radius: 10px; font-size: 14px; color: var(--text-primary); cursor: pointer; box-shadow: 0 1px 3px rgba(0,0,0,0.05); white-space: nowrap; }
+  .flt-trigger:hover { background: #fafafa; }
+  .flt-trigger.has-val { border-color: var(--brand-blue); color: var(--brand-blue); font-weight: 500; }
+  .flt-chev { color: #8d8d8d; }
+  .flt-clear { display: inline-flex; color: #8d8d8d; }
+  .flt-trigger.has-val .flt-chev, .flt-trigger.has-val .flt-clear { color: var(--brand-blue); }
+  .flt-clear:hover { color: var(--brand-pink); }
+  .flt-menu { position: absolute; top: calc(100% + 4px); left: 0; min-width: 230px; max-height: 300px; overflow-y: auto; background: #fff; border: 1px solid #ebebeb; border-radius: 6px; box-shadow: 0 4px 12px rgba(0,0,0,0.12); z-index: 60; padding: 4px; }
+  .flt-search { width: 100%; box-sizing: border-box; height: 34px; padding: 0 10px; border: 1px solid #ebebeb; border-radius: 6px; font-size: 13.5px; outline: none; margin-bottom: 4px; }
+  .flt-search:focus { border-color: var(--brand-blue); }
+  .flt-item { display: flex; align-items: center; gap: 8px; padding: 8px; border-radius: 4px; font-size: 14px; color: var(--text-primary); cursor: pointer; }
+  .flt-item:hover { background: #f8f8f8; }
+  .flt-item .flt-check { margin-left: auto; color: var(--brand-blue); flex-shrink: 0; }
+  .flt-item .flt-cnpj { font-size: 11px; color: #8d8d8d; font-family: 'JetBrains Mono', monospace; }
+  .flt-limpar { background: none; border: none; color: var(--brand-blue); font-size: 13px; cursor: pointer; padding: 0 6px; height: 36px; }
+  .flt-limpar:hover { text-decoration: underline; }
+
+  /* Seletor de período (presets + calendário de range) — MÓDULO COMPARTILHADO
+     (fila do operador "Solicitado em" + painel de acompanhamento). Espelha
+     .flt-trigger (mesma altura/borda/fonte). */
+  .pp-wrap { position: relative; display: inline-flex; }
+  .pp-btn { display: inline-flex; align-items: center; gap: 8px; height: 36px; padding: 0 12px; border: 1px solid #ebebeb; border-radius: 10px; background: #fff; font-size: 14px; color: var(--text-primary); cursor: pointer; box-shadow: 0 1px 3px rgba(0,0,0,0.05); white-space: nowrap; }
+  .pp-btn:hover { background: var(--surface-subtle); }
+  .pp-btn.open, .pp-btn.has-val { border-color: var(--brand-blue); color: var(--brand-blue); }
+  .pp-btn.has-val { font-weight: 500; }
+  .pp-pop { position: absolute; top: calc(100% + 6px); left: 0; z-index: 70; display: flex; background: #fff; border: 1px solid var(--border); border-radius: 12px; box-shadow: 0 8px 28px rgba(0,0,0,0.16); overflow: hidden; }
+  .pp-presets { display: flex; flex-direction: column; padding: 8px; border-right: 1px solid var(--border); min-width: 154px; background: var(--surface-subtle); }
+  .pp-preset { text-align: left; padding: 8px 12px; font-size: 13px; color: var(--text-secondary); background: none; border: none; border-radius: 8px; cursor: pointer; white-space: nowrap; }
+  .pp-preset:hover { background: #fff; color: var(--text-primary); }
+  .pp-preset.active { background: var(--brand-blue-soft); color: var(--brand-blue); font-weight: 600; }
+  .pp-preset.pp-clear { color: var(--brand-pink); margin-top: 4px; border-top: 1px solid var(--border); border-radius: 0; }
+  .pp-cal { padding: 12px; width: 262px; }
+  .pp-cal-head { display: flex; align-items: center; justify-content: space-between; margin-bottom: 8px; }
+  .pp-cal-head span { font-size: 13px; font-weight: 600; color: var(--text-primary); }
+  .pp-cal-head button { background: none; border: none; cursor: pointer; color: var(--text-secondary); padding: 4px; border-radius: 6px; display: inline-flex; }
+  .pp-cal-head button:hover { background: var(--surface-subtle); color: var(--text-primary); }
+  .pp-cal-grid { display: grid; grid-template-columns: repeat(7, 1fr); gap: 2px; }
+  .pp-cal-dow { font-size: 10.5px; color: var(--text-tertiary); text-align: center; padding: 4px 0; font-weight: 600; }
+  .pp-cal-day { font-size: 12.5px; text-align: center; padding: 7px 0; border-radius: 7px; cursor: pointer; color: var(--text-primary); }
+  .pp-cal-day:hover:not(.empty) { background: var(--surface-subtle); }
+  .pp-cal-day.empty { cursor: default; }
+  .pp-cal-day.in-range { background: var(--brand-blue-soft); border-radius: 0; }
+  .pp-cal-day.range-start, .pp-cal-day.range-end { background: var(--brand-blue); color: #fff; }
+  .pp-cal-day.range-start { border-radius: 7px 0 0 7px; }
+  .pp-cal-day.range-end { border-radius: 0 7px 7px 0; }
+  .pp-cal-day.range-start.range-end, .pp-cal-day.picked { border-radius: 7px; background: var(--brand-blue); color: #fff; }
+  .pp-cal-day.today { box-shadow: inset 0 0 0 1.5px var(--brand-pink); font-weight: 700; }
+  .pp-cal-hint { font-size: 11px; color: var(--text-tertiary); margin-top: 8px; text-align: center; }
   `;
   document.head.appendChild(style);
 })();
@@ -316,10 +437,14 @@ function _buildShell() {
     <div class="icon-wrap"><i data-lucide="users" class="w-5 h-5"></i></div>
     <div class="label">Clientes</div>
   </div>
-  <div class="sidebar-item active" data-nav="tarefas">
-    <div class="icon-wrap"><i data-lucide="list-todo" class="w-5 h-5"></i></div>
+  <div class="sidebar-item" data-nav="tarefas">
+    <div class="icon-wrap"><i data-lucide="check-circle" class="w-5 h-5"></i></div>
     <div class="label">Tarefas</div>
   </div>
+  <a href="lista-operador.html" class="sidebar-item active" title="Tarefas de DP" style="text-decoration:none;">
+    <div class="icon-wrap"><i data-lucide="list-todo" class="w-5 h-5"></i></div>
+    <div class="label">Tarefas de DP</div>
+  </a>
   <div class="sidebar-item" data-nav="solicitacoes">
     <div class="icon-wrap"><i data-lucide="megaphone" class="w-5 h-5"></i></div>
     <div class="label">Solicitações</div>
@@ -345,8 +470,8 @@ function _buildShell() {
       <div class="notif-panel hidden" id="notif-panel">
         <div style="padding: 14px 16px; border-bottom: 1px solid var(--border); font-weight: 600;">Notificações</div>
         <div id="notif-list"></div>
-        <div style="border-top: 1px solid var(--border); background: var(--surface-subtle); padding: 10px 16px;">
-          <div style="font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; color: var(--text-tertiary); font-weight: 600; margin-bottom: 8px;">🛠 Controles do protótipo</div>
+        <div style="border-top: 1px solid var(--border); background: #3f3f46; padding: 10px 16px;">
+          <div style="font-size: 10px; text-transform: uppercase; letter-spacing: 0.08em; color: #fff; font-weight: 600; margin-bottom: 8px;">🛠 Controles do protótipo</div>
           <div style="display: flex; flex-direction: column; gap: 4px;">
             <button onclick="simularRespostaCliente()" style="text-align: left; font-size: 12px; color: var(--text-primary); background: #fff; border: 1px solid var(--border); padding: 7px 10px; border-radius: 6px; cursor: pointer;">↩︎ Simular resposta do cliente</button>
             <button onclick="resetDemo()" style="text-align: left; font-size: 12px; color: var(--text-primary); background: #fff; border: 1px solid var(--border); padding: 7px 10px; border-radius: 6px; cursor: pointer;">⟲ Resetar demo</button>
@@ -359,30 +484,8 @@ function _buildShell() {
 
   <div class="flex-1 p-8" id="screens-container">
 
-    <section class="screen" id="screen-home">
-      <div class="container-wide">
-        <div id="return-banner" class="alert-banner hidden">
-          <div style="width:32px;height:32px;background:var(--brand-pink-soft);border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--brand-pink);flex-shrink:0;">
-            <i data-lucide="message-circle-reply" class="w-4 h-4"></i>
-          </div>
-          <div class="flex-1">
-            <div style="font-weight: 600; margin-bottom: 2px;">Cliente respondeu uma tarefa em espera</div>
-            <div style="font-size: 12px; color: var(--text-secondary);" id="return-banner-detail">—</div>
-          </div>
-          <button class="btn btn-primary" onclick="pegarProximaTarefa()">Pegar tarefa respondida <i data-lucide="arrow-right" class="w-4 h-4"></i></button>
-        </div>
-        <div class="home-top-grid">
-          <div class="section-card" id="home-header" style="margin-bottom: 0;"></div>
-          <div class="section-card" id="home-stats" style="margin-bottom: 0; padding: 0;"></div>
-        </div>
-        <div class="section-head" id="stationed-head"></div>
-        <div id="stationed-list"></div>
-
-        <div class="section-head" id="queue-head"></div>
-        <div id="queue-preview"></div>
-        <span id="queue-count-badge" class="hidden">0</span>
-      </div>
-    </section>
+    <!-- Home do operador: preenchida pelo módulo compartilhado (olMount) via renderHome -->
+    <section class="screen" id="screen-home"></section>
 
     <section class="screen hidden" id="screen-task">
       <div class="container-wide">
@@ -392,22 +495,25 @@ function _buildShell() {
             <span>/</span>
             <span>Tarefa #<span id="task-id-label">—</span></span>
           </div>
-          <div class="flex items-start justify-between gap-4" style="flex-wrap: wrap;">
-            <div class="flex items-start gap-4" style="flex: 1; min-width: 280px;">
-              <div id="task-client-logo" style="display:none;">—</div>
-              <div style="min-width: 0;">
-                <h1 style="font-size: 22px; font-weight: 700; margin: 0 0 4px;" id="task-type-label">—</h1>
-                <div style="font-size: 13px; margin-bottom: 12px;"><strong id="task-client-name" style="font-weight: 600; color: var(--text);">—</strong><span style="color: var(--text-tertiary);"> · </span><span style="color: var(--text-secondary); font-family: 'JetBrains Mono', monospace;" id="task-client-cnpj">—</span></div>
-                <div style="border-top: 1px solid var(--border); margin-bottom: 12px;"></div>
-                <div style="font-size: 13px; color: var(--text-secondary); display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
-                  <span>Iniciado automaticamente · <strong style="color: var(--text-primary); font-weight: 600;" id="task-solicitante">—</strong></span>
-                  <span id="task-solicitante-tags" style="display: inline-flex; gap: 4px;"></span>
-                  <span style="color: var(--text-tertiary);">·</span>
-                  <span id="task-timestamp" style="color: var(--text-tertiary);">—</span>
-                  <span id="task-sla-inline"></span>
-                  <span id="task-deadline"></span>
-                </div>
-              </div>
+          <div class="flex items-start gap-4" style="flex-wrap: wrap;">
+            <div id="task-client-logo" style="display:none;">—</div>
+            <div style="min-width: 0; flex: 1;">
+              <h1 style="font-size: 22px; font-weight: 700; margin: 0 0 4px;" id="task-type-label">—</h1>
+              <div style="font-size: 13px;"><strong id="task-client-name" style="font-weight: 600; color: var(--text);">—</strong><span style="color: var(--text-tertiary);"> · </span><span style="color: var(--text-secondary); font-family: 'JetBrains Mono', monospace;" id="task-client-cnpj">—</span></div>
+              <div id="task-meta-strip" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:8px;font-size:12px;color:var(--text-tertiary);"></div>
+            </div>
+          </div>
+          <div style="border-top: 1px solid var(--border); margin: 12px 0;"></div>
+          <div style="font-size: 13px; color: var(--text-secondary); display: flex; align-items: center; gap: 12px; flex-wrap: wrap; justify-content: space-between;">
+            <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap; min-width: 0;">
+              <span><span id="task-solicitante-label">Solicitado por</span> <strong style="color: var(--text-primary); font-weight: 600;" id="task-solicitante">—</strong></span>
+              <span id="task-solicitante-tags" style="display: inline-flex; gap: 4px;"></span>
+              <span style="color: var(--text-tertiary);">·</span>
+              <span id="task-timestamp" style="color: var(--text-tertiary);">—</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+              <span>Atribuído a <strong style="color: var(--text-primary); font-weight: 600;" id="task-assignee">—</strong></span>
+              <button class="btn-return-queue" onclick="openReturnQueueModal()"><i data-lucide="corner-up-left" class="w-4 h-4"></i>Devolver à fila</button>
             </div>
           </div>
         </div>
@@ -433,7 +539,7 @@ function _buildShell() {
           <div id="form-content"></div>
         </div>
         <div class="section-card hidden" id="attachments-block">
-          <div class="section-title"><i data-lucide="paperclip"></i>Materiais · no GDocs<span id="attachments-count-badge" class="badge badge-neutral" style="margin-left: 8px; font-size: 10px;">0</span></div>
+          <div class="section-title"><i data-lucide="paperclip"></i>Anexos enviados pelo cliente<span id="attachments-count-badge" class="badge badge-neutral" style="margin-left: 8px; font-size: 10px;">0</span></div>
           <div class="flex flex-wrap gap-2" id="attachments-list"></div>
         </div>
         <div class="decision-card">
@@ -451,25 +557,32 @@ function _buildShell() {
       <div class="container-wide">
         <div class="section-card" style="padding: 20px 28px;">
           <div class="flex items-center gap-3" style="font-size: 12px; color: var(--text-secondary); margin-bottom: 20px;">
-            <span class="cursor-pointer hover:text-rose-500" onclick="voltarParaAnalise()">← Voltar</span>
-            <span>/</span>
-            <span class="cursor-pointer hover:text-rose-500" onclick="voltarParaAnalise()">Tarefa #<span id="exec-id-label">—</span></span>
-            <span>/</span>
-            <span>Execução</span>
+            <span id="exec-bc-backs" style="display:contents;">
+              <span class="cursor-pointer hover:text-rose-500" onclick="goHome()">← Voltar ao cockpit</span>
+              <span>/</span>
+              <span class="cursor-pointer hover:text-rose-500" onclick="voltarParaConferencia()">← Voltar para validação</span>
+              <span>/</span>
+            </span>
+            <span>Processamento</span>
           </div>
-          <div class="flex items-start justify-between gap-4" style="flex-wrap: wrap;">
-            <div style="min-width: 0;">
+          <div class="flex items-start gap-4" style="flex-wrap: wrap;">
+            <div style="min-width: 0; flex: 1;">
               <h1 style="font-size: 22px; font-weight: 700; margin: 0 0 4px;" id="exec-type-label">—</h1>
-              <div style="font-size: 13px; margin-bottom: 12px;"><strong id="exec-client-label" style="font-weight: 600; color: var(--text);">—</strong><span style="color: var(--text-tertiary);"> · </span><span style="color: var(--text-secondary); font-family: 'JetBrains Mono', monospace;" id="exec-client-cnpj">—</span></div>
-              <div style="border-top: 1px solid var(--border); margin-bottom: 12px;"></div>
-              <div style="font-size: 13px; color: var(--text-secondary); display: flex; align-items: center; gap: 6px; flex-wrap: wrap;">
-                <span>Iniciado automaticamente · <strong style="color: var(--text-primary); font-weight: 600;" id="exec-solicitante">—</strong></span>
-                <span id="exec-solicitante-tags" style="display: inline-flex; gap: 4px;"></span>
-                <span style="color: var(--text-tertiary);">·</span>
-                <span id="exec-timestamp" style="color: var(--text-tertiary);">—</span>
-                <span id="exec-sla-inline"></span>
-                <span id="exec-deadline"></span>
-              </div>
+              <div style="font-size: 13px;"><strong id="exec-client-label" style="font-weight: 600; color: var(--text);">—</strong><span style="color: var(--text-tertiary);"> · </span><span style="color: var(--text-secondary); font-family: 'JetBrains Mono', monospace;" id="exec-client-cnpj">—</span></div>
+              <div id="exec-meta-strip" style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:8px;font-size:12px;color:var(--text-tertiary);"></div>
+            </div>
+          </div>
+          <div style="border-top: 1px solid var(--border); margin: 12px 0;"></div>
+          <div style="font-size: 13px; color: var(--text-secondary); display: flex; align-items: center; gap: 12px; flex-wrap: wrap; justify-content: space-between;">
+            <div style="display: flex; align-items: center; gap: 6px; flex-wrap: wrap; min-width: 0;">
+              <span><span id="exec-solicitante-label">Solicitado por</span> <strong style="color: var(--text-primary); font-weight: 600;" id="exec-solicitante">—</strong></span>
+              <span id="exec-solicitante-tags" style="display: inline-flex; gap: 4px;"></span>
+              <span style="color: var(--text-tertiary);">·</span>
+              <span id="exec-timestamp" style="color: var(--text-tertiary);">—</span>
+            </div>
+            <div style="display: flex; align-items: center; gap: 12px; flex-wrap: wrap;">
+              <span>Atribuído a <strong style="color: var(--text-primary); font-weight: 600;" id="exec-assignee">—</strong></span>
+              <button class="btn-return-queue" onclick="openReturnQueueModal()"><i data-lucide="corner-up-left" class="w-4 h-4"></i>Devolver à fila</button>
             </div>
           </div>
         </div>
@@ -477,14 +590,14 @@ function _buildShell() {
           <div class="timeline-horizontal" id="exec-timeline"></div>
         </div>
         <div class="section-card">
-          <div class="section-title"><i data-lucide="bot"></i>Processamento automático</div>
-          <p style="color: var(--text-secondary); font-size: 13px; margin-bottom: 20px;">Com a pendência resolvida, o Autopilot retomou e seguiu sozinho com o resto do fechamento — você só acompanha.</p>
+          <div class="section-title"><i data-lucide="list-checks"></i>Passos de execução</div>
+          <p style="color: var(--text-secondary); font-size: 13px; margin-bottom: 20px;">Execute cada passo e marque como feito para avançar. Ao concluir o último, o cliente será notificado.</p>
           <div id="exec-steps"></div>
         </div>
         <div class="section-card" style="background: var(--surface-subtle);">
           <div class="flex items-start gap-3">
             <i data-lucide="info" class="w-5 h-5" style="color: var(--info); flex-shrink: 0; margin-top: 2px;"></i>
-            <div style="font-size: 13px; color: var(--text-secondary);"><strong style="color: var(--text-primary);">Sistema invisível:</strong> esses passos rodam por trás. Mostramos aqui só para ilustrar o que o Autopilot faz com a sua resolução — na versão final, o operador veria apenas a confirmação.</div>
+            <div style="font-size: 13px; color: var(--text-secondary);"><strong style="color: var(--text-primary);">Dica:</strong> as ações abrem em nova aba / simulam o arquivo. O botão <strong>Marcar como feito</strong> é o que avança o fluxo.</div>
           </div>
         </div>
       </div>
@@ -495,7 +608,6 @@ function _buildShell() {
         <div class="success-hero">
           <div class="icon-circle"><i data-lucide="check" style="width: 36px; height: 36px;"></i></div>
           <h1>Solicitação concluída</h1>
-          <p id="success-message">A solicitação foi processada e o cliente já foi notificado.</p>
         </div>
         <div class="summary-list" id="success-summary"></div>
         <div class="flex justify-center gap-3">
@@ -523,6 +635,9 @@ function _buildShell() {
       <div id="modal-history" style="max-height: 280px; overflow-y: auto; padding: 8px; background: var(--surface-subtle); border-radius: 10px; border: 1px solid var(--border); margin-bottom: 20px;"></div>
       <div class="field-label mb-2">Sua mensagem</div>
       <textarea id="modal-message-text" placeholder="Descreva o que você precisa do cliente…" style="width: 100%; min-height: 120px; padding: 12px; border: 1px solid var(--border-strong); border-radius: 10px; font-family: inherit; font-size: 13px; resize: vertical; outline: none;" onfocus="this.style.borderColor='var(--brand-pink)'" onblur="this.style.borderColor='var(--border-strong)'"></textarea>
+      <input type="file" id="ask-client-file-input" style="display:none;" multiple onchange="handleAskClientFileSelect(event)" />
+      <div id="ask-client-files" style="display:flex;flex-wrap:wrap;gap:8px;margin-top:12px;"></div>
+      <div style="margin-top:12px;"><button type="button" onclick="document.getElementById('ask-client-file-input').click()" style="display:inline-flex;align-items:center;gap:6px;padding:8px 14px;background:#fff;border:1px solid var(--border-strong);border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;color:var(--text-primary);"><i data-lucide="paperclip" style="width:14px;height:14px;"></i> Anexar documento (opcional)</button></div>
       <div class="mt-4 p-3" style="background: var(--warning-soft); border-radius: 8px; font-size: 12px; color: var(--warning); display: flex; gap: 8px; align-items: flex-start;">
         <i data-lucide="alert-triangle" class="w-4 h-4" style="flex-shrink: 0; margin-top: 1px;"></i>
         <div>Ao enviar, a tarefa será <strong>colocada em espera</strong> aguardando resposta do cliente.</div>
@@ -578,6 +693,73 @@ function _buildShell() {
     </div>
   </div>
 </div>
+
+<!-- Modal: Devolver tarefa à fila -->
+<div class="modal-backdrop hidden" id="modal-return-queue" onclick="closeReturnQueueModal(event)">
+  <div class="modal-panel" role="dialog" aria-modal="true" aria-labelledby="return-queue-title" onclick="event.stopPropagation()" style="max-width: 600px;">
+    <div class="modal-header">
+      <div>
+        <div style="font-size: 11px; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.08em; font-weight: 500;">Atribuição</div>
+        <div id="return-queue-title" style="font-size: 16px; font-weight: 600; margin-top: 2px;">Devolver tarefa à fila?</div>
+      </div>
+      <button class="btn btn-ghost" onclick="closeReturnQueueModal()" style="padding: 6px;" aria-label="Fechar"><i data-lucide="x" class="w-4 h-4"></i></button>
+    </div>
+    <div class="modal-body">
+      <div class="from-to-block">
+        <div class="ft-side">
+          <div class="ft-label">De</div>
+          <div class="ft-card">
+            <div class="av" id="return-queue-from-av">—</div>
+            <div class="info">
+              <div class="name" id="return-queue-from-name">—</div>
+              <div class="role">Responsável atual</div>
+            </div>
+          </div>
+        </div>
+        <div class="ft-arrow"><i data-lucide="arrow-right" class="w-5 h-5"></i></div>
+        <div class="ft-side">
+          <div class="ft-label">Para</div>
+          <div class="ft-card">
+            <div class="av inbox"><i data-lucide="inbox" class="w-4 h-4"></i></div>
+            <div class="info">
+              <div class="name">Na fila</div>
+              <div class="role">Sem responsável</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <p style="font-size: 13px; color: var(--text-secondary); line-height: 1.55; margin: 16px 0 0;">Ela perde a atribuição e fica disponível pra qualquer operador pegar.</p>
+      <div style="background: var(--info-soft); border: 1px solid #bfdbfe; border-radius: 10px; padding: 12px 14px; display: flex; gap: 10px; align-items: flex-start; margin-top: 14px;">
+        <i data-lucide="shield-check" class="w-4 h-4" style="color: var(--info); flex-shrink: 0; margin-top: 2px;"></i>
+        <div id="return-queue-keep-text" style="font-size: 13px; color: #1e40af; line-height: 1.5;">Tudo que já foi salvo e editado, além das mensagens trocadas com o cliente, fica do jeito que está — nada é desfeito.</div>
+      </div>
+      <div id="return-queue-unsaved" class="hidden" style="background: var(--warning-soft); border: 1px solid #f59e0b; border-radius: 10px; padding: 12px 14px; display: flex; gap: 10px; align-items: flex-start; margin-top: 12px;">
+        <i data-lucide="alert-triangle" class="w-4 h-4" style="color: var(--warning); flex-shrink: 0; margin-top: 2px;"></i>
+        <div style="font-size: 13px; color: var(--warning); line-height: 1.5;"><strong>Há alterações não salvas no formulário.</strong> Elas <strong>não</strong> serão mantidas — é preciso salvar antes para preservá-las.</div>
+      </div>
+      <div style="margin-top: 18px; display: flex; flex-direction: column; gap: 12px;">
+        <div class="ef-field">
+          <div class="ef-label">Motivo da devolução</div>
+          <select class="ef-select" id="return-queue-reason" onchange="onReturnReasonChange(this)">
+            <option value="">— Selecione —</option>
+            <option value="Peguei por engano">Peguei por engano</option>
+            <option value="Fora da minha alçada">Fora da minha alçada</option>
+            <option value="Redistribuição">Redistribuição</option>
+            <option value="Outro">Outro</option>
+          </select>
+        </div>
+        <div class="ef-field">
+          <div class="ef-label" id="return-queue-detail-label">Observações (opcional)</div>
+          <textarea class="ef-textarea" id="return-queue-reason-detail" rows="2" style="resize: none; overflow: hidden;" oninput="autoGrowField(this); updateReturnConfirmState()" placeholder="Ex.: o que já foi feito nesta tarefa até aqui, pra quem pegar continuar"></textarea>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeReturnQueueModal()">Cancelar</button>
+      <button class="btn btn-danger-solid" id="return-queue-confirm" onclick="devolverParaFila()" disabled><i data-lucide="corner-up-left" class="w-4 h-4"></i>Devolver à fila</button>
+    </div>
+  </div>
+</div>
 `;
 }
 
@@ -603,6 +785,7 @@ function _initState() {
     _execActions: {},
     _execStepExpanded: {},
     _gdocsFiles: {},
+    _askClientFiles: [],
     _gdocsSkipped: {},
     _editMode: {},
     _editDraft: {},
@@ -661,6 +844,19 @@ function sortQueueBySLA() {
   state.queue.sort((a, b) => slaToMinutes(a.sla) - slaToMinutes(b.sla));
 }
 
+// Ordenação padrão das listas (regra fechada): por data de recebimento, mais nova
+// no topo. createdDaysAgo ascendente (0 = hoje = mais recente); desempate pela hora
+// de recebimento (receivedAt) mais tarde primeiro. Fonte única — usada pela fila do
+// operador e pelo painel de acompanhamento. Sem pins (nada forçado no topo).
+function _receivedMinutes(t) {
+  const m = String(t.receivedAt || '').match(/(\d{1,2}):(\d{2})/);
+  return m ? parseInt(m[1], 10) * 60 + parseInt(m[2], 10) : 0;
+}
+function sortByRecebimento(list) {
+  return list.sort((a, b) =>
+    (a.createdDaysAgo || 0) - (b.createdDaysAgo || 0) || _receivedMinutes(b) - _receivedMinutes(a));
+}
+
 function getTypeMeta(typeCode) {
   const meta = window.FLOW_CONFIG.TYPE_METADATA;
   return (meta && meta[typeCode]) || { icon: 'file-text', label: 'Solicitação', desc: '—', color: '#64748b' };
@@ -706,7 +902,144 @@ function computePrazo(t) {
   return { dateStr: `${_pad2(dia)}/${_pad2(mes)}/${ano}`, timeStr: `${_pad2(dh)}:${_pad2(dm)}`, status: t.slaStatus || 'normal' };
 }
 
+// Data dd/mm/aa a partir de "quantos dias atrás", relativo a MOCK_TODAY. Rollback
+// simples de mês (protótipo: no máx. 1 dia atrás nos mocks).
+function _dmyFromDaysAgo(daysAgo) {
+  let dia = MOCK_TODAY.dia - (daysAgo || 0), mes = MOCK_TODAY.mes, ano = MOCK_TODAY.ano;
+  while (dia < 1) { mes -= 1; if (mes < 1) { mes = 12; ano -= 1; } dia += 30; }
+  return `${_pad2(dia)}/${_pad2(mes)}/${String(ano).slice(-2)}`;
+}
+// Header: "Solicitado em dd/mm/aa hh:mm" (data derivada de createdDaysAgo + receivedAt).
+function solicitadoEmLabel(t) {
+  return `${_dmyFromDaysAgo(t.createdDaysAgo)} ${t.receivedAt || ''}`.trim();
+}
+// Header (concluída): "Concluído em dd/mm/aa hh:mm" (data de finishedDaysAgo, hora extraída de finishedAt).
+function concluidoEmLabel(t) {
+  const hora = String(t.finishedAt || '').match(/\d{1,2}:\d{2}/);
+  return `${_dmyFromDaysAgo(t.finishedDaysAgo)}${hora ? ' ' + hora[0] : ''}`;
+}
+// Célula "Solicitado em" das TABELAS de lista: data em cima, horário embaixo (2 linhas,
+// coluna estreita). Fonte única — fila do operador e painel de acompanhamento.
+function solicitadoEmCellHtml(t) {
+  const data = _dmyFromDaysAgo(t.createdDaysAgo);
+  const hora = t.receivedAt || '';
+  return `<div class="prazo-cell"><div class="prazo-when">${esc(data)}</div>${hora ? `<div class="prazo-when" style="color:var(--text-secondary);font-weight:400;">${esc(hora)}</div>` : ''}</div>`;
+}
+
+/* ============================================================
+   Seletor de período (presets + calendário de range) — MÓDULO
+   COMPARTILHADO. Fonte única: usado pelo painel de acompanhamento e
+   pela fila do operador (filtro "Solicitado em"). Mudou aqui, muda nos
+   dois. Cada tela cria uma instância (ppCreate) com seu estado/callback.
+   "Hoje" gira em torno do MOCK_TODAY do protótipo.
+   ============================================================ */
+const PP_MONTHS = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+const PP_DOWS = ['S','T','Q','Q','S','S','D']; // semana começa na segunda
+function ppToday() { return new Date(MOCK_TODAY.ano, MOCK_TODAY.mes - 1, MOCK_TODAY.dia); }
+function _ppStrip(d) { return new Date(d.getFullYear(), d.getMonth(), d.getDate()); }
+function _ppAddDays(d, n) { const x = new Date(d); x.setDate(x.getDate() + n); return x; }
+function _ppDaysAgo(n) { return _ppAddDays(ppToday(), -(n || 0)); }
+function _ppSameDay(a, b) { return !!a && !!b && a.getFullYear() === b.getFullYear() && a.getMonth() === b.getMonth() && a.getDate() === b.getDate(); }
+function _ppFmt(d) { return String(d.getDate()).padStart(2, '0') + '/' + String(d.getMonth() + 1).padStart(2, '0'); }
+const PP_PRESETS = [
+  { id:'hoje', label:'Hoje', range:() => ({ from:ppToday(), to:ppToday() }) },
+  { id:'ontem', label:'Ontem', range:() => ({ from:_ppDaysAgo(1), to:_ppDaysAgo(1) }) },
+  { id:'7d', label:'Últimos 7 dias', range:() => ({ from:_ppDaysAgo(6), to:ppToday() }) },
+  { id:'30d', label:'Últimos 30 dias', range:() => ({ from:_ppDaysAgo(29), to:ppToday() }) },
+  { id:'mes', label:'Este mês', range:() => ({ from:new Date(MOCK_TODAY.ano, MOCK_TODAY.mes - 1, 1), to:ppToday() }) },
+  { id:'mespassado', label:'Mês passado', range:() => ({ from:new Date(MOCK_TODAY.ano, MOCK_TODAY.mes - 2, 1), to:new Date(MOCK_TODAY.ano, MOCK_TODAY.mes - 1, 0) }) },
+];
+
+const _pp = {}; // registry: id -> instância
+function ppCreate(id, cfg) {
+  const init = cfg.initialRange || null;
+  const base = (init ? init.to : ppToday());
+  _pp[id] = {
+    mount: cfg.mount, range: init, calMonth: new Date(base.getFullYear(), base.getMonth(), 1),
+    calPick: null, open: false, onChange: cfg.onChange || function () {}, onOpen: cfg.onOpen || null,
+    emptyLabel: cfg.emptyLabel || 'Período', allowEmpty: cfg.allowEmpty !== false,
+  };
+  return _pp[id];
+}
+function ppGetRange(id) { return _pp[id] ? _pp[id].range : null; }
+function ppLabel(inst) {
+  const r = inst.range;
+  if (!r) return inst.emptyLabel;
+  for (const p of PP_PRESETS) { const pr = p.range(); if (_ppSameDay(pr.from, r.from) && _ppSameDay(pr.to, r.to)) return p.label; }
+  return _ppSameDay(r.from, r.to) ? _ppFmt(r.from) : `${_ppFmt(r.from)} – ${_ppFmt(r.to)}`;
+}
+function ppRender(id) {
+  const inst = _pp[id]; if (!inst) return;
+  const el = document.getElementById(inst.mount); if (!el) return;
+  // "Ver todos" (só quando o filtro pode ficar vazio, ex.: fila) — 1º da lista e
+  // destacado quando não há período aplicado; clicar volta a mostrar tudo.
+  const verTodos = inst.allowEmpty ? `<button class="pp-preset ${!inst.range ? 'active' : ''}" onclick="event.stopPropagation(); ppClear('${id}')">Ver todos</button>` : '';
+  const presets = PP_PRESETS.map(p => {
+    const pr = p.range();
+    const active = inst.range && !inst.calPick && _ppSameDay(pr.from, inst.range.from) && _ppSameDay(pr.to, inst.range.to);
+    return `<button class="pp-preset ${active ? 'active' : ''}" onclick="event.stopPropagation(); ppApplyPreset('${id}','${p.id}')">${p.label}</button>`;
+  }).join('');
+  const pop = inst.open
+    ? `<div class="pp-pop"><div class="pp-presets">${verTodos}${presets}</div><div class="pp-cal">${_ppCalHtml(id)}<div class="pp-cal-hint">${inst.calPick ? 'Escolha a data final' : 'Clique pra escolher um intervalo'}</div></div></div>`
+    : '';
+  el.innerHTML = `<button class="pp-btn ${inst.open ? 'open' : ''} ${inst.range ? 'has-val' : ''}" onclick="event.stopPropagation(); ppToggle('${id}')"><i data-lucide="calendar" style="width:15px;height:15px;"></i><span>${esc(ppLabel(inst))}</span><i data-lucide="chevron-down" style="width:15px;height:15px;"></i></button>${pop}`;
+  refreshIcons();
+}
+function _ppCalHtml(id) {
+  const inst = _pp[id], m = inst.calMonth, y = m.getFullYear(), mo = m.getMonth();
+  const startDow = (new Date(y, mo, 1).getDay() + 6) % 7;
+  const daysInMonth = new Date(y, mo + 1, 0).getDate();
+  const from = inst.range ? _ppStrip(inst.range.from) : null, to = inst.range ? _ppStrip(inst.range.to) : null, pick = inst.calPick ? _ppStrip(inst.calPick) : null;
+  let cells = '';
+  for (let i = 0; i < startDow; i++) cells += `<div class="pp-cal-day empty"></div>`;
+  for (let d = 1; d <= daysInMonth; d++) {
+    const ds = new Date(y, mo, d); let cls = '';
+    if (pick) { if (_ppSameDay(ds, pick)) cls = 'picked'; }
+    else if (from && to) { if (ds >= from && ds <= to) cls = 'in-range'; if (_ppSameDay(ds, from)) cls += ' range-start'; if (_ppSameDay(ds, to)) cls += ' range-end'; }
+    if (_ppSameDay(ds, ppToday())) cls += ' today';
+    cells += `<div class="pp-cal-day ${cls}" onclick="event.stopPropagation(); ppCalPick('${id}',${y},${mo},${d})">${d}</div>`;
+  }
+  return `<div class="pp-cal-head"><button onclick="event.stopPropagation(); ppCalNav('${id}',-1)"><i data-lucide="chevron-left" style="width:16px;height:16px;"></i></button><span>${PP_MONTHS[mo]} ${y}</span><button onclick="event.stopPropagation(); ppCalNav('${id}',1)"><i data-lucide="chevron-right" style="width:16px;height:16px;"></i></button></div><div class="pp-cal-grid">${PP_DOWS.map(d => `<div class="pp-cal-dow">${d}</div>`).join('')}${cells}</div>`;
+}
+function ppToggle(id) {
+  const inst = _pp[id]; if (!inst) return;
+  inst.open = !inst.open; inst.calPick = null;
+  if (inst.open) { const b = inst.range ? inst.range.to : ppToday(); inst.calMonth = new Date(b.getFullYear(), b.getMonth(), 1); if (inst.onOpen) inst.onOpen(); }
+  ppRender(id);
+}
+function ppApplyPreset(id, pid) {
+  const inst = _pp[id], p = PP_PRESETS.find(x => x.id === pid); if (!inst || !p) return;
+  inst.range = p.range(); inst.calPick = null; inst.open = false; inst.onChange(); ppRender(id);
+}
+function ppClear(id) {
+  const inst = _pp[id]; if (!inst) return;
+  inst.range = null; inst.calPick = null; inst.open = false; inst.onChange(); ppRender(id);
+}
+function ppCalNav(id, delta) {
+  const inst = _pp[id]; if (!inst) return;
+  inst.calMonth = new Date(inst.calMonth.getFullYear(), inst.calMonth.getMonth() + delta, 1); ppRender(id);
+}
+function ppCalPick(id, y, mo, d) {
+  const inst = _pp[id]; if (!inst) return;
+  const date = new Date(y, mo, d);
+  if (!inst.calPick) { inst.calPick = date; ppRender(id); return; }
+  let from = inst.calPick, to = date; if (to < from) { const tmp = from; from = to; to = tmp; }
+  inst.range = { from, to }; inst.calPick = null; inst.open = false; inst.onChange(); ppRender(id);
+}
+function ppCloseIfOutside(id, target, selector) {
+  const inst = _pp[id];
+  if (inst && inst.open && !target.closest(selector)) { inst.open = false; inst.calPick = null; ppRender(id); }
+}
+// Filtro: a data de recebimento da tarefa (createdDaysAgo) cai no range da instância?
+function ppInRange(id, t) {
+  const r = ppGetRange(id); if (!r) return true;
+  const d = _ppStrip(_ppDaysAgo(t.createdDaysAgo));
+  return d >= _ppStrip(r.from) && d <= _ppStrip(r.to);
+}
+
 function prazoCellHtml(t) {
+  if (t.status === 'completed') return `<div class="prazo-cell"><div class="prazo-when" style="color:var(--success);font-weight:600;">Entregue</div>${t.finishedAt?`<div class="client-cnpj">${esc(t.finishedAt)}</div>`:''}</div>`;
+  if (t.status === 'cancelled') return `<div class="prazo-cell"><div class="prazo-when" style="color:var(--danger);font-weight:600;">Cancelada</div>${t.cancelledAt?`<div class="client-cnpj">${esc(t.cancelledAt)}</div>`:''}</div>`;
   const p = computePrazo(t);
   let tag = '';
   if (p.status === 'risk') {
@@ -718,11 +1051,96 @@ function prazoCellHtml(t) {
   return `<div class="prazo-cell"><div class="${whenCls}">${p.dateStr}<span class="sep">·</span>${p.timeStr}</div>${tag}</div>`;
 }
 
+// ── ERP operado + Origem: FONTE ÚNICA pra TODOS os protótipos ───────────────
+// São dados POR CLIENTE (não por tarefa). Os protótipos são mocks, então
+// simulamos com valores REAIS do Cockpit: ERP de silver_customers_customer.operations_erp
+// e origem de silver_customers_origin.name.
+// resolveClientOps(): se a tarefa já traz erpOperado/origem (clientes curados da
+// lista), usa esses; senão gera um par real ESTÁVEL por CNPJ a partir dos pools.
+// Assim qualquer protótipo — atual ou novo — já mostra dado coerente sem editar
+// tarefa por tarefa. Mudou aqui (pools), mudou em todos os protótipos.
+const ERP_POOL = ['DOMINIO_141935','DOMINIO_141935','DOMINIO_111057','DOMINIO_85223','DOMINIO_115398','DOMINIO_143257','DOMINIO_95072','DOMINIO_165133','DOMINIO_178895','OUTROS_ERP_PARCEIRO','TOTVS_PROPRIO','NA'];
+const ORIGEM_POOL = ['ContJet','Efforts','Partwork','BR Experts','BHub','CTZ','São Lucas','Quality','Accord','Carnevale','SERAC','Valor'];
+// Clientes curados (por CNPJ) — garante que o MESMO cliente mostre o MESMO ERP/origem
+// em qualquer protótipo (lista, fluxos…). Licença 141935 repetida = mesmo login.
+const CLIENT_OPS_OVERRIDE = {
+  '18452771000109': { erpOperado: 'DOMINIO_141935',     origem: 'ContJet' },    // Padaria Bom Dia ME
+  '40221099000144': { erpOperado: 'DOMINIO_111057',     origem: 'Efforts' },    // Tech Studio Criativo
+  '12998301000122': { erpOperado: 'DOMINIO_141935',     origem: 'ContJet' },    // Mercearia Central
+  '07119554000187': { erpOperado: 'DOMINIO_143257',     origem: 'Partwork' },   // Construtora Solo Firme
+  '23880041000112': { erpOperado: 'DOMINIO_115398',     origem: 'BR Experts' }, // Restaurante Bella Vista
+  '55401778000150': { erpOperado: 'DOMINIO_141935',     origem: 'ContJet' },    // Logística Express
+  '60118220000109': { erpOperado: 'OUTROS_ERP_PARCEIRO',origem: 'Quality' },    // Doce Lar Confeitaria
+  '88553107000167': { erpOperado: 'DOMINIO_85223',      origem: 'BHub' },       // Auto Center Roda Solta
+  '15220881000130': { erpOperado: 'DOMINIO_95072',      origem: 'CTZ' },        // Café da Esquina
+  '33011997000155': { erpOperado: 'DOMINIO_165133',     origem: 'São Lucas' },  // Salão Beleza Pura
+  '21448770000115': { erpOperado: 'NA',                 origem: 'BHub' },       // Padaria São Pedro (ERP vazio → "-")
+  '07882115000109': { erpOperado: 'TOTVS_PROPRIO',      origem: 'Efforts' },    // Indústria Alfa
+};
+function cnpjDigits(c) { return (c || '').replace(/\D/g, ''); }
+function resolveClientOps(task) {
+  const d = cnpjDigits(task && task.cnpj);
+  if (CLIENT_OPS_OVERRIDE[d]) return CLIENT_OPS_OVERRIDE[d];
+  if (task && (task.erpOperado || task.origem)) {
+    return { erpOperado: task.erpOperado || '', origem: task.origem || '' };
+  }
+  let h = 0; for (let i = 0; i < d.length; i++) h = (h * 31 + d.charCodeAt(i)) >>> 0;
+  return { erpOperado: ERP_POOL[h % ERP_POOL.length], origem: ORIGEM_POOL[Math.floor(h / 7) % ORIGEM_POOL.length] };
+}
+
+// Deixa o ERP operado legível, no MESMO texto que o Cockpit mostra. O valor cru
+// vem do Cockpit (cockpit.silver_customers_customer.operations_erp), ex.:
+// "DOMINIO_141935" → "Domínio - Licença 141935". Vazio/NA → "-".
+// A licença (nº) é o eixo de agrupamento: mesma licença Domínio = mesmo login.
+function formatErp(raw) {
+  if (!raw || raw === 'NA' || raw === 'PENDENTE_TOMBAMENTO' || raw === 'NAO_TOMBADO_CONTRATO_ENCERRADO') return '-';
+  const m = raw.match(/^DOMINIO_(\d+)$/);
+  if (m) return 'Domínio - Licença ' + m[1];
+  const map = {
+    DOMINIO_PARCEIRO: 'Domínio - Parceiro',
+    DOMINIO_FRANQUEADO: 'Domínio - Franqueado',
+    OUTROS_ERP_PARCEIRO: "Outros ERP's do Parceiro",
+    TOTVS_PROPRIO: 'TOTVS Próprio',
+    BPO_FINANCEIRO_SEM_ERP: 'BPO Financeiro (sem ERP)',
+    SENIOR: 'Senior',
+  };
+  return map[raw] || raw;
+}
+
+// ERP operado e Origem, no padrão de texto do Cockpit (rótulo neutro + valor em
+// destaque). Reaproveitado na lista e no header da tarefa. ERP sempre aparece
+// (mostra "-" quando não há), igual ao Cockpit.
+function domMetaParts(t) {
+  const ops = resolveClientOps(t);
+  // ERP e Origem SEMPRE aparecem; vazio vira "-" (igual ao Cockpit).
+  const erp = `<span class="dom-meta"><span class="dom-k">ERP operado:</span> <span class="dom-v">${esc(formatErp(ops.erpOperado))}</span></span>`;
+  const origem = `<span class="dom-meta"><span class="dom-k">Origem:</span> <span class="dom-v">${esc(ops.origem || '-')}</span></span>`;
+  return { erp, origem };
+}
+
+// Colaborador da solicitação: na tarefa (lista) ou no formData (fluxos).
+// Só aparece em processos que têm o campo de EMPREGADO (nome + CPF no início do
+// form): admissão CLT/estagiário, férias, rescisão, afastamento. Ficam de fora:
+// RPA (é prestador, não empregado), apontamentos em folha (vários, sem nome único)
+// e solicitação geral (sem vínculo a 1 colaborador). Ver handoff colaborador-origem-erp.md.
+const TIPOS_SEM_COLABORADOR = ['admissao_rpa', 'admissao_rpa_planilha', 'apontamentos_folha', 'solicitacao_geral'];
+function taskColaborador(t) {
+  if (!t || TIPOS_SEM_COLABORADOR.includes(t.typeCode)) return '';
+  return t.colaborador || (t.formData && t.formData.colaborador && t.formData.colaborador.nome) || '';
+}
+
 function statePillHtml(t, opts) {
   opts = opts || {};
+  // Concluída / Cancelada não aparecem na fila, mas aparecem no painel de
+  // acompanhamento (mesma fonte de linha). Additivo — não muda a fila.
+  if (t.status === 'completed') return `<span class="state-pill" style="color:var(--success);border-color:var(--success);"><i data-lucide="check-circle-2" class="w-3 h-3"></i>Concluída</span>`;
+  if (t.status === 'cancelled') return `<span class="state-pill" style="color:var(--danger);border-color:var(--danger);"><i data-lucide="x-circle" class="w-3 h-3"></i>Cancelada</span>`;
   let cls, icon, label;
-  if (t.status === 'active') { cls = 'em-execucao'; icon = 'play-circle'; label = 'Em execução'; }
-  else if (t.status === 'stationed' && t.clientResponded) { cls = 'cliente-respondeu'; icon = 'message-circle-reply'; label = 'Cliente respondeu'; }
+  // Tarefa cujo cliente já respondeu volta a ser uma atribuída normal: exibe
+  // "Em execução" como qualquer ativa (COCKPIT-959). O sinal de que o cliente
+  // respondeu deixa de ser estado e passa pra tarja dentro da tarefa / bolinha.
+  if (t.status === 'processing') { cls = 'em-processamento'; icon = 'refresh-cw'; label = 'Em processamento'; }
+  else if (t.status === 'active' || (t.status === 'stationed' && t.clientResponded)) { cls = 'em-execucao'; icon = 'play-circle'; label = 'Em execução'; }
   else if (t.status === 'stationed') { cls = 'em-espera'; icon = 'pause-circle'; label = 'Em espera'; }
   else if (opts.isNext) { cls = 'proxima'; icon = 'play-circle'; label = 'Próxima'; }
   else { cls = 'na-fila'; icon = 'list'; label = 'Na fila'; }
@@ -733,10 +1151,11 @@ function _taskTableHead() {
   return `
     <div class="lo-table-head">
       <div></div>
-      <div class="h-cell">Solicitação</div>
-      <div class="h-cell">Tipo</div>
+      <div class="lo-dot-cell"></div>
+      <div class="h-cell">Cliente</div>
+      <div class="h-cell">Processo</div>
       <div class="h-cell">Estado</div>
-      <div class="h-cell">Prazo de entrega</div>
+      <div class="h-cell">Solicitado em</div>
       <div></div>
     </div>
   `;
@@ -751,20 +1170,13 @@ function _renderTaskRow(t, opts) {
 
   let cls = 'lo-row';
   if (clickable) cls += ' clickable';
-  if (t.status === 'active') cls += ' execucao';
-  else if (t.status === 'stationed' && t.clientResponded) cls += ' responded';
+  if (t.status === 'active' || (t.status === 'stationed' && t.clientResponded)) cls += ' execucao';
   else if (t.status === 'stationed') cls += ' stationed-row';
   else if (isNext) cls += ' next-up';
 
-  let ctxLine = '';
-  if (t.status === 'stationed') {
-    ctxLine = `<div class="ctx-line">${t.clientResponded
-      ? `Cliente respondeu ${esc(t.respondedAt || '')}`
-      : `Em espera desde ${esc(t.stationedAt || '')}${t.stationedReason ? ` · ${esc(t.stationedReason)}` : ''}`}</div>`;
-  }
-
-  const eyeBtn = withEye && onClick
-    ? `<button class="icon-btn" title="Ver detalhes" onclick="event.stopPropagation(); ${onClick}"><i data-lucide="eye" class="w-3.5 h-3.5"></i></button>`
+  const eyeAction = opts.eyeClick || onClick;
+  const eyeBtn = withEye && eyeAction
+    ? `<button class="icon-btn" title="Ver detalhes" onclick="event.stopPropagation(); ${eyeAction}"><i data-lucide="eye" class="w-3.5 h-3.5"></i></button>`
     : '';
 
   const onClickAttr = clickable && onClick ? ` onclick="${onClick}"` : '';
@@ -772,14 +1184,14 @@ function _renderTaskRow(t, opts) {
   return `
     <div class="${cls}"${onClickAttr}>
       <div class="type-icon" title="${esc(t.type || '')}"><i data-lucide="${getTypeIcon(t.typeCode)}" class="w-4 h-4"></i></div>
+      <div class="lo-dot-cell">${(t.status === 'stationed' && t.clientResponded) ? '<span class="update-dot" title="Cliente respondeu — você ainda não abriu"></span>' : ''}</div>
       <div class="lo-solic">
         <span class="client-name">${esc(t.clientName || '')}</span>
-        <span class="client-cnpj">${esc(t.cnpj || '')}</span>
-        ${ctxLine}
+        ${(() => { const m = domMetaParts(t); return `<span style="display:flex;flex-wrap:wrap;align-items:center;gap:0 6px;"><span class="client-cnpj">${esc(t.cnpj || '')}</span>${m.origem ? `<span class="dom-sep" style="margin:0;">·</span>${m.origem}` : ''}</span>${m.erp}`; })()}
       </div>
-      <div class="lo-tipo">${esc(t.type || '')}</div>
+      <div class="lo-tipo">${t.origin === 'autopilot' ? '<div class="lo-proc-top"><span class="tag-autopilot">HITL</span></div>' : ''}<span class="lo-proc">${esc(t.type || '')}</span>${(() => { const c = taskColaborador(t); return c ? `<span class="lo-colab">${esc(c)}</span>` : ''; })()}</div>
       <div>${statePillHtml(t, { isNext })}</div>
-      <div>${prazoCellHtml(t)}</div>
+      <div>${solicitadoEmCellHtml(t)}</div>
       <div style="display: flex; justify-content: flex-end;">${eyeBtn}</div>
     </div>
   `;
@@ -792,8 +1204,19 @@ function showScreen(name) {
   qsa('.screen').forEach(s => s.classList.add('hidden'));
   qs('#screen-' + name).classList.remove('hidden');
   state.currentScreen = name;
+  // No Processamento, o breadcrumb NÃO tem "voltar" nos fluxos do Autopilot.
+  // HUB: o operador processa por passos, pode voltar ao cockpit ou à validação.
+  // Autopilot: a tarefa foi devolvida ao motor; a única saída é o botão de baixo
+  // ("Voltar para minhas tarefas"), liberado ao fim do reprocessamento — deixar um
+  // "voltar" no topo daria uma saída paralela indevida. Ver autopilot.md.
+  if (name === 'execution') {
+    const t = getTaskById(state.currentTaskId);
+    const backs = qs('#exec-bc-backs');
+    if (backs) backs.style.display = (t && t.origin === 'autopilot') ? 'none' : 'contents';
+  }
   window.scrollTo({ top: 0, behavior: 'smooth' });
   refreshIcons();
+  if (typeof _syncAcompanhamentoBtn === 'function') _syncAcompanhamentoBtn();
 }
 
 function _checkEditGuard(onProceed) {
@@ -820,104 +1243,723 @@ function goHome() {
 /* ============================================================
    RENDER: HOME
    ============================================================ */
-function renderHome() {
-  const qcb = qs('#queue-count-badge');
-  if (qcb) qcb.textContent = state.queue.length;
+/* ============================================================
+   LISTA DO OPERADOR — módulo compartilhado (home dos fluxos + hub)
+   FONTE ÚNICA: editar aqui reflete nos 11 fluxos E no lista-operador.html.
+   Recebe dados (array flat com `status`) + um handler de clique.
+   ============================================================ */
 
-  const slaAtRisk = state.queue.filter(t => t.slaStatus === 'risk' || t.slaStatus === 'overdue').length;
-  qs('#home-stats').innerHTML = `
-    <div class="stats-row clickable" onclick="openDrawer('concluidas')">
-      <div><div class="stats-row-label">Concluídas hoje</div><div class="stats-row-sublabel" style="color: var(--success);">meta: 8 tarefas</div></div>
-      <div style="display: flex; align-items: center; gap: 10px;"><div class="stats-row-value">${state.completed.length}</div><i data-lucide="chevron-right" class="w-4 h-4" style="color: var(--text-tertiary);"></i></div>
-    </div>
-    <div class="stats-row">
-      <div><div class="stats-row-label">SLA em risco</div><div class="stats-row-sublabel">na sua fila</div></div>
-      <div class="stats-row-value ${slaAtRisk > 0 ? 'warning' : ''}">${slaAtRisk}</div>
-    </div>
-    <div class="stats-row clickable" onclick="openDrawer('estacionadas')">
-      <div><div class="stats-row-label">Aguardando cliente</div><div class="stats-row-sublabel">tarefas em espera</div></div>
-      <div style="display: flex; align-items: center; gap: 10px;"><div class="stats-row-value">${state.stationed.length}</div><i data-lucide="chevron-right" class="w-4 h-4" style="color: var(--text-tertiary);"></i></div>
-    </div>
-  `;
+// typeCode → arquivo do fluxo (navegação, path B). Cobre vocabulário fino
+// (lista-operador) e grosso (mocks dos fluxos).
+const OL_FLOW_HREF = {
+  admissao_clt: 'admissao-clt.html', admissao_rpa: 'admissao-rpa.html',
+  admissao_estagiario: 'admissao-estagiario.html', admissao_rpa_planilha: 'admissao-rpa-planilha.html',
+  ferias: 'ferias-aviso-previo.html', ferias_aviso_previo: 'ferias-aviso-previo.html', ferias_calculo: 'ferias-calculo.html',
+  rescisao: 'rescisao-calculo.html', rescisao_aviso_previo: 'rescisao-aviso-previo.html', rescisao_calculo: 'rescisao-calculo.html',
+  afastamento: 'afastamento.html', afastamento_empregado: 'afastamento.html',
+  apontamentos: 'apontamentos.html', apontamentos_folha: 'apontamentos.html',
+  geral: 'solicitacao-geral.html', solicitacao_geral: 'solicitacao-geral.html',
+};
+function olFlowHref(t) { return (t && (t.flowHref || OL_FLOW_HREF[t.typeCode])) || null; }
+function olFamily(typeCode) {
+  const c = String(typeCode || '');
+  if (c.indexOf('admissao') === 0) return 'admissao';
+  if (c.indexOf('ferias') === 0) return 'ferias';
+  if (c.indexOf('rescisao') === 0) return 'rescisao';
+  if (c.indexOf('afastamento') === 0) return 'afastamento';
+  if (c.indexOf('apontamentos') === 0) return 'apontamentos';
+  return 'geral';
+}
 
-  const homeHeader = qs('#home-header');
-  if (state.active) {
-    homeHeader.innerHTML = `
-      <div><div style="font-size: 12px; color: var(--brand-pink); text-transform: uppercase; letter-spacing: 0.08em; font-weight: 600; margin-bottom: 6px;">Tarefa em andamento</div>
-      <h1 style="font-size: 22px; font-weight: 700; margin-bottom: 6px;">${state.active.type} · ${state.active.clientName}</h1>
-      <p style="color: var(--text-secondary); font-size: 14px;">Você ainda não finalizou essa tarefa. Continue de onde parou.</p></div>
-      <div class="mt-6 flex gap-3"><button class="btn btn-primary btn-lg" onclick="pegarProximaTarefa()"><i data-lucide="arrow-right" class="w-4 h-4"></i>Continuar tarefa atual</button></div>
-    `;
-  } else {
-    homeHeader.innerHTML = `
-      <div><div style="font-size: 12px; color: var(--text-tertiary); text-transform: uppercase; letter-spacing: 0.08em; font-weight: 500; margin-bottom: 6px;">${(window.FLOW_CONFIG && FLOW_CONFIG.operacaoLabel) || 'Operação Fiscal'}</div>
-      <h1 style="font-size: 24px; font-weight: 700; margin-bottom: 6px;">Olá, Daniele</h1>
-      <p style="color: var(--text-secondary); font-size: 14px;">Você não tem nenhuma tarefa em execução no momento.</p></div>
-      <div class="mt-6 flex gap-3"><button class="btn btn-primary btn-lg" onclick="pegarProximaTarefa()"><i data-lucide="play" class="w-4 h-4"></i>Pegar próxima tarefa</button></div>
-    `;
-  }
+const _ol = { tarefas: [], onOpenTask: null, filtros: { cliente: null, tipo: null, estado: null }, openFlt: null, atribuidasOpen: true, entregues: 0, page: 1 };
 
-  const responded = state.stationed.find(t => t.clientResponded);
-  const banner = qs('#return-banner');
-  if (responded) {
-    banner.classList.remove('hidden');
-    qs('#return-banner-detail').textContent = `${responded.type} · ${responded.clientName} · respondido ${responded.respondedAt}`;
-  } else {
-    banner.classList.add('hidden');
-  }
+// Navegação padrão (path B): abre o fluxo certo daquela tarefa.
+function _olNavigate(id) {
+  const t = _ol.tarefas.find(x => x.id === id), href = olFlowHref(t);
+  if (href) window.location.href = `${href}?ref=lista&taskId=${encodeURIComponent(id)}`;
+}
+function olOpenTask(id) { (_ol.onOpenTask || _olNavigate)(id); }
+// Clique na linha → sempre espiar (mesmo gesto do olho), qualquer estado. Entrar
+// na tarefa é só pelo botão do modal. Padronizado em todo o projeto. (modal-espiada.md)
+function olRowClick(id) { olVerDetalhes(id); }
 
-  // --- Tarefas em espera (tabela densa V1) ---
-  const stationedHead = qs('#stationed-head');
-  if (stationedHead) {
-    stationedHead.innerHTML = `
-      <div class="sh-text">
-        <div class="sh-title">Tarefas em espera (${state.stationed.length})</div>
-        <div class="sh-sub">Aguardando cliente · respondidas no topo</div>
+function olMount(containerEl, opts) {
+  if (!containerEl) return;
+  opts = opts || {};
+  _ol.tarefas = opts.tarefas || [];
+  _ol.onOpenTask = opts.onOpenTask || _olNavigate;
+  _ol.filtros = { cliente: null, origem: null, tipo: null, estado: null };
+  _ol.openFlt = null;
+  _ol.atribuidasOpen = true;
+  _ol.entregues = opts.entregues || 0;
+  _ol.page = 1;
+  containerEl.innerHTML = `
+    <div class="container-wide" style="min-width: 800px;">
+      <div class="home-top-grid" style="grid-template-columns: 1fr;">
+        <div class="section-card" id="ol-header" style="margin-bottom: 0;"></div>
+        <!-- COCKPIT-957: card de stats da fila ocultado (foco/enxugar; SLA em risco já aparece por linha). Ocultar ≠ remover — pode voltar. -->
+        <!-- <div class="section-card" id="ol-stats" style="margin-bottom: 0; padding: 0;"></div> -->
       </div>
-    `;
-  }
-  const stationedEl = qs('#stationed-list');
-  if (state.stationed.length === 0) {
-    stationedEl.innerHTML = `
-      <div class="lo-table-wrap">
-        <div style="padding: 22px 16px; text-align: center; color: var(--text-tertiary); font-size: 13px;">Nenhuma tarefa em espera.</div>
+      <div class="flt-bar"><div class="pp-wrap" id="ol-period"></div><div id="ol-filtros" style="display:contents;"></div></div>
+      <div id="ol-atribuidas"></div>
+      <div class="section-head" id="ol-list-head"></div>
+      <div id="ol-list"></div>
+      <div style="text-align:center; font-size:12px; color:var(--text-tertiary); padding:16px 0;">
+        <i data-lucide="info" class="w-3 h-3" style="display:inline; vertical-align:-2px;"></i>
+        Os filtros valem para as duas listas. Ordenadas por data de recebimento, mais novas no topo.
       </div>
-    `;
-  } else {
-    const orderedStationed = [...state.stationed].sort((a, b) => {
-      const aResp = a.clientResponded ? 0 : 1;
-      const bResp = b.clientResponded ? 0 : 1;
-      return aResp - bResp;
-    });
-    const stRows = orderedStationed.map(t => _renderTaskRow(t, {
-      clickable: true, withEye: true, onClick: `abrirEstacionada('${t.id}')`,
-    })).join('');
-    stationedEl.innerHTML = `<div class="lo-table-wrap">${_taskTableHead()}${stRows}</div>`;
-  }
-
-  // --- Próximas na fila (tabela densa V1, sem clique — fila invisível) ---
-  const queueHead = qs('#queue-head');
-  if (queueHead) {
-    queueHead.innerHTML = `
-      <div class="sh-text">
-        <div class="sh-title">Próximas na fila (${state.queue.length})</div>
-        <div class="sh-sub">Direcionamento automático · ordenadas por SLA</div>
-      </div>
-    `;
-  }
-  const queueEl = qs('#queue-preview');
-  if (state.queue.length === 0) {
-    queueEl.innerHTML = `
-      <div class="lo-table-wrap">
-        <div style="padding: 22px 16px; text-align: center; color: var(--text-tertiary); font-size: 13px;">Fila vazia. 🎉</div>
-      </div>
-    `;
-  } else {
-    const qRows = state.queue.map((t, i) => _renderTaskRow(t, { isNext: i === 0 })).join('');
-    queueEl.innerHTML = `<div class="lo-table-wrap">${_taskTableHead()}${qRows}</div>`;
-  }
-
+    </div>`;
+  // Filtro "Solicitado em" — mesmo módulo de calendário do acompanhamento (ppCreate).
+  // Default sem filtro (mostra tudo); recorta por data de recebimento quando escolhido.
+  ppCreate('ol', {
+    mount: 'ol-period', emptyLabel: 'Solicitado em', allowEmpty: true, initialRange: null,
+    onChange: () => { _ol.page = 1; olRenderAtribuidas(); olRenderList(); },
+    onOpen: () => { if (_ol.openFlt) { _ol.openFlt = null; olRenderFiltros(); } },
+  });
+  olRenderHeader(); olRenderStats(); olRenderFiltros(); olRenderAtribuidas(); olRenderList(); ppRender('ol');
   refreshIcons();
+  if (typeof _syncAcompanhamentoBtn === 'function') _syncAcompanhamentoBtn();
+}
+
+// --- derivações ---
+function olEstadoDe(t) {
+  // Cliente respondeu deixou de ser estado (COCKPIT-959): a tarefa volta a
+  // contar como "Em execução", então o filtro de Estado a pega como ativa.
+  if (t.status === 'active' || (t.status === 'stationed' && t.clientResponded)) return 'active';
+  if (t.status === 'stationed') return 'espera';
+  return 'fila';
+}
+function olGetAtiva() { return _ol.tarefas.find(t => t.status === 'active') || null; }
+function olGetProxima() {
+  const w = _ol.tarefas.filter(t => t.status === 'queue');
+  w.sort((a, b) => slaToMinutes(a.sla) - slaToMinutes(b.sla));
+  return w[0] || null;
+}
+// Atribuídas a mim = TODAS as tarefas do operador, em qualquer status aberto
+// (em execução — incluindo as cujo cliente respondeu — e aguardando cliente).
+// O status vira pill na linha e é filtrável pelo filtro "Estado". Ordenação por
+// data de recebimento, mais nova no topo (sortByRecebimento) — sem pins.
+function olGetAtribuidas() {
+  return sortByRecebimento(_ol.tarefas.filter(t => t.status === 'active' || t.status === 'stationed'));
+}
+// Fila geral = tarefas não atribuídas a ninguém (status 'queue').
+function olBaseList() {
+  return sortByRecebimento(_ol.tarefas.filter(t => t.status === 'queue'));
+}
+const OL_PAGE_SIZE = 20;
+const OL_ESTADO_OPTS = [{ v: 'active', label: 'Em execução' }, { v: 'espera', label: 'Em espera' }, { v: 'fila', label: 'Na fila' }];
+// Opções de Cliente/Tipo cobrem as DUAS listas (atribuídas + fila geral),
+// já que os filtros do topo valem para ambas.
+function olClienteOpts() {
+  const seen = new Set(), out = [];
+  _ol.tarefas.forEach(t => { if (!seen.has(t.cnpj)) { seen.add(t.cnpj); out.push({ v: t.cnpj, label: t.clientName, cnpj: t.cnpj }); } });
+  return out.sort((a, b) => a.label.localeCompare(b.label));
+}
+function olTipoOpts() {
+  const seen = new Set(), out = [];
+  _ol.tarefas.forEach(t => { if (!seen.has(t.typeCode)) { seen.add(t.typeCode); out.push({ v: t.typeCode, label: t.type }); } });
+  return out.sort((a, b) => a.label.localeCompare(b.label));
+}
+// Origem: lista COMPLETA das origens da BHub (não só as presentes na fila) — no
+// protótipo, o pool de origens reais (ORIGEM_POOL); na produção, o cadastro de
+// parceiros de origem. Dedupe + ordem A→Z. (COCKPIT-1005)
+function olOrigemOpts() {
+  return [...new Set(ORIGEM_POOL)].sort((a, b) => a.localeCompare(b)).map(o => ({ v: o, label: o }));
+}
+function olTemFiltro() { return Object.values(_ol.filtros).some(Boolean) || !!ppGetRange('ol'); }
+function olPassa(t) {
+  const f = _ol.filtros;
+  if (f.cliente && t.cnpj !== f.cliente) return false;
+  // Origem é dado POR CLIENTE (resolveClientOps), não fica na tarefa — mesmo dado
+  // que a coluna Cliente exibe (COCKPIT-685).
+  if (f.origem && resolveClientOps(t).origem !== f.origem) return false;
+  if (f.tipo && t.typeCode !== f.tipo) return false;
+  if (f.estado && olEstadoDe(t) !== f.estado) return false;
+  if (!ppInRange('ol', t)) return false; // filtro "Solicitado em" (data de recebimento)
+  return true;
+}
+
+// --- render ---
+function olRenderHeader() {
+  const el = document.getElementById('ol-header'); if (!el) return;
+  const ativa = olGetAtiva(), proxima = olGetProxima(), alvo = ativa || proxima, cont = !!ativa;
+  let btn;
+  if (alvo) {
+    const ic = cont ? 'arrow-right' : 'play', lb = cont ? 'Continuar tarefa atual' : 'Pegar próxima tarefa';
+    btn = `<button class="btn btn-primary btn-lg" onclick="olOpenTask('${alvo.id}')"><i data-lucide="${ic}" class="w-4 h-4"></i>${lb}</button>`;
+  } else {
+    btn = `<button class="btn btn-primary btn-lg" disabled title="Nada na fila pra pegar agora" style="opacity:0.5;cursor:not-allowed;"><i data-lucide="play" class="w-4 h-4"></i>Pegar próxima tarefa</button>`;
+  }
+  let prev = '';
+  if (alvo) {
+    prev = `<div style="display:flex;flex-direction:column;gap:2px;min-width:0;">
+      <div style="font-size:11px;color:var(--text-tertiary);text-transform:uppercase;letter-spacing:0.05em;font-weight:600;">${cont ? 'Em execução' : 'Próxima'}</div>
+      <div style="font-size:13.5px;color:var(--text-primary);font-weight:600;line-height:1.3;">${esc(alvo.clientName)}</div>
+      <div style="font-size:12px;color:var(--text-secondary);">${esc(alvo.type)} · Solicitado em ${esc(solicitadoEmLabel(alvo))}</div></div>`;
+  }
+  el.innerHTML = `<div>
+    <div style="font-size:12px;color:var(--text-tertiary);text-transform:uppercase;letter-spacing:0.08em;font-weight:500;margin-bottom:6px;">Operação DP</div>
+    <h1 style="font-size:24px;font-weight:700;margin-bottom:6px;">Olá, Daniele</h1>
+    <p style="color:var(--text-secondary);font-size:14px;">Sua fila do dia. Deixe o sistema pegar a próxima pela prioridade ou escolha manualmente na lista.</p>
+    <div style="margin-top:16px;display:flex;align-items:center;gap:16px;flex-wrap:wrap;">${btn}${prev}</div></div>`;
+}
+function olRenderStats() {
+  const el = document.getElementById('ol-stats'); if (!el) return;
+  const ts = _ol.tarefas;
+  const fila = ts.filter(t => t.status === 'active' || t.status === 'queue').length;
+  const risco = ts.filter(t => (t.status === 'active' || t.status === 'queue') && (t.slaStatus === 'risk' || t.slaStatus === 'overdue')).length;
+  const espera = ts.filter(t => t.status === 'stationed').length;
+  const resp = ts.filter(t => t.status === 'stationed' && t.clientResponded).length;
+  const entregues = _ol.entregues || 0;
+  const row = (label, sub, val, cls) => `<div class="stats-row"><div><div class="stats-row-label">${label}</div><div class="stats-row-sublabel">${sub}</div></div><div class="stats-row-value ${cls || ''}">${val}</div></div>`;
+  // Total na fila e Entregues sempre; SLA em risco e Em espera só quando > 0.
+  let html = row('Total na fila', 'ativa + próximas', fila);
+  if (risco > 0) html += row('SLA em risco', 'priorize estas', risco, 'warning');
+  if (espera > 0) html += row('Em espera', resp > 0 ? `${resp} já com resposta` : 'aguardando cliente', espera);
+  html += row('Entregues', 'concluídas hoje', entregues, 'brand');
+  el.innerHTML = html;
+}
+// Bloco "Atribuídas a mim" — componente recolhível (.espera-wrap, reaproveitado
+// do antigo bloco de espera). Nasce expandido: é o conjunto de trabalho do
+// operador, pra ele transitar entre as próprias tarefas. Clique na linha abre
+// a tarefa no ponto/etapa em que ela está (olOpenTask). Respeita os filtros do
+// topo (olPassa), que valem para as duas listas.
+function olRenderAtribuidas() {
+  const el = document.getElementById('ol-atribuidas'); if (!el) return;
+  const ts = olGetAtribuidas().filter(olPassa);
+  if (!ts.length) { el.innerHTML = ''; return; }
+  // Olho E clique → sempre espiar (olVerDetalhes, aba Resumo). Igual à fila e ao
+  // acompanhamento: o gesto de espiar é o mesmo em todo o projeto. Entrar na tarefa
+  // é só pelo botão do modal. (COCKPIT-956 — modal-espiada.md)
+  const rows = ts.map(t => _renderTaskRow(t, { clickable: true, onClick: `olVerDetalhes('${t.id}')`, withEye: true })).join('');
+  el.innerHTML = `<div class="section-head"><div class="sh-text"><div class="sh-title">Atribuídas a mim (${ts.length})</div><div class="sh-sub">Suas tarefas em andamento, aguardando cliente ou já respondidas · ordenadas por data de recebimento</div></div></div>
+    <div class="lo-table-wrap">${_taskTableHead()}${rows}</div>`;
+  refreshIcons();
+}
+
+// Olho → resumo da tarefa (contexto + mensagem do cliente), sem entrar.
+function olVerDetalhes(id) {
+  const t = _ol.tarefas.find(x => x.id === id);
+  if (!t) return;
+  const isQueue = t.status === 'queue';
+  // Resumo da tarefa unificado (3 abas) — fonte única, mesmo modal do painel.
+  taskSummaryModal(t, { context: 'fila', primary: { label: isQueue ? 'Atribuir a mim e executar' : 'Abrir tarefa', icon: isQueue ? 'play' : 'arrow-right', onClick: `closeTaskSummary(); olOpenTask('${id}')` } });
+}
+
+// Clique numa atribuída EM ESPERA → modal com a conversa com o cliente (mesmo
+// modelo de chat dos fluxos: history-list + renderHistoryMessage). Como o hub
+// não roda o state de um fluxo, a conversa vem de state.messages (se houver) ou
+// é montada a partir da clientMessage da tarefa.
+function olAbrirConversa(id) {
+  const t = _ol.tarefas.find(x => x.id === id);
+  if (!t) return;
+  // Atribuída → mesmo modal de resumo, abrindo já na aba Conversa.
+  taskSummaryModal(t, { context: 'atribuida', tab: 'conversa', primary: { label: 'Abrir tarefa', icon: 'arrow-right', onClick: `closeTaskSummary(); _olNavigate('${id}')` } });
+}
+
+/* ============================================================
+   MODAL ÚNICO "RESUMO DA TAREFA" (3 abas) — FONTE ÚNICA
+   Reusado na fila do operador E no painel de acompanhamento. É o resumo
+   da tarefa que qualquer pessoa (gestor) ou o próprio operador consulta.
+   Abas: Resumo · Conversa · O que foi feito. (COCKPIT-179 / COCKPIT-956)
+   opts: { context, tab, primary:{label,icon,onClick}|null }
+   ============================================================ */
+let _tsmTask = null;
+
+// Normaliza os dados da solicitação em seções colapsáveis {titulo, campos:[{l,v,changed}]}.
+// Campos por PROCESSO (definidos uma vez, valem pra toda tarefa daquele tipo —
+// igual o que a Admissão CLT já fazia, estendido aos demais). No real, é onde o
+// modal lê os campos do formulário daquele processo. Mesmas seções/subseções do form.
+function secoesPorTipo(t) {
+  const colab = t.colaborador || '—';
+  const S = (titulo, campos) => ({ titulo, campos });
+  const MAP = {
+    admissao_clt: [
+      { titulo: '1. Geral', subsecoes: [
+        S('Dados básicos', { 'Nome': colab, 'Nome social': '—', 'CPF': '123.456.789-00', 'Cargo': 'Analista', 'Matrícula': '0318', 'Serviço (sede onde ficará alocado)': 'Matriz', 'Departamento': 'Administrativo', 'Centro de custo': 'CC 01 — Matriz', 'Sindicato': 'Sindicato dos Comerciários' }),
+        S('Admissão', { 'Primeiro Emprego': 'NÃO', 'Categoria': 'Mensalista', 'Vínculo Empregatício': 'Celetista', 'Data da admissão': '15/05/2026', 'Salário': 'R$ 2.800,00' }),
+        S('Contrato de Experiência', { 'Contrato de Experiência': '45', 'Dias de Prorrogação': '45', 'Data fim da experiência': '29/06/2026', 'Data fim da prorrogação': '13/08/2026' }),
+        S('Horário', { 'Jornada': '09:00 AS 18:00 DE SEGUNDA A SEXTA', 'Carga Horária': '220' }),
+      ]},
+      { titulo: '2. Profissional', subsecoes: [
+        S('CTPS', { 'Número': '5518234', 'Série': '0034-SP', 'Data de Expedição': '10/02/2021', 'UF': 'SP' }),
+        S('PIS', { 'Número': '120.4567.89-0', 'Data de cadastro': '10/02/2021' }),
+        S('Pagamento', { 'Forma de Pagamento': 'Crédito em conta', 'Banco': '237 — Bradesco', 'Agência': '1582', 'Conta': '00112345-6' }),
+      ]},
+      { titulo: '3. Pessoal', subsecoes: [
+        S('Endereço', { 'CEP': '01310-100', 'Logradouro': 'Av. Paulista, 1000', 'Bairro': 'Bela Vista', 'Cidade/UF': 'São Paulo/SP' }),
+        S('Dados pessoais', { 'Data de nascimento': '12/03/1996', 'Estado civil': 'Solteiro(a)', 'Nacionalidade': 'Brasileira' }),
+      ]},
+    ],
+    admissao_estagiario: [
+      { titulo: '1. Geral', subsecoes: [
+        S('Dados básicos', { 'Nome': colab, 'CPF': '456.789.123-00', 'Cargo': 'Estagiário', 'Centro de custo': 'CC 02 — Operações' }),
+        S('Instituição de ensino', { 'Instituição': 'Universidade Anhembi', 'Curso': 'Gastronomia', 'Nível': 'Superior', 'Previsão de conclusão': '12/2027' }),
+      ]},
+      { titulo: '2. Estágio', subsecoes: [
+        S('Contrato', { 'Bolsa-auxílio': 'R$ 1.200,00', 'Auxílio-transporte': 'R$ 220,00', 'Carga horária': '6h/dia', 'Início': '02/06/2026', 'Término previsto': '02/06/2027' }),
+      ]},
+    ],
+    admissao_rpa: [
+      { titulo: '1. Prestador', subsecoes: [
+        S('Dados', { 'Prestador': colab || 'Prestador de serviço', 'CPF/CNPJ': '987.654.321-00', 'Serviço': 'Consultoria de design', 'ISS retido': 'Sim' }),
+      ]},
+      { titulo: '2. Pagamento', subsecoes: [
+        S('Valores', { 'Valor bruto': 'R$ 3.500,00', 'INSS': 'R$ 385,00', 'IRRF': 'R$ 262,50', 'Valor líquido': 'R$ 2.852,50', 'Competência': '05/2026' }),
+      ]},
+    ],
+    ferias_calculo: [
+      { titulo: '1. Férias', subsecoes: [
+        S('Cálculo', { 'Colaborador': colab, 'Período aquisitivo': '2024/2025', 'Dias de férias': '30', 'Abono pecuniário': 'Não', 'Adiantamento 13º': 'Não', 'Início do gozo': '10/06/2026', 'Fim do gozo': '09/07/2026' }),
+      ]},
+    ],
+    ferias_aviso_previo: [
+      { titulo: '1. Férias', subsecoes: [
+        S('Aviso de férias', { 'Colaborador': colab, 'Período aquisitivo': '2024/2025', 'Início do gozo': '10/06/2026', 'Fim do gozo': '09/07/2026', 'Dias': '30', 'Abono pecuniário': 'Não' }),
+      ]},
+    ],
+    rescisao_calculo: [
+      { titulo: '1. Rescisão', subsecoes: [
+        S('Cálculo', { 'Colaborador': colab, 'Tipo de rescisão': 'Sem justa causa', 'Data do aviso': '01/05/2026', 'Data do desligamento': '31/05/2026', 'Aviso prévio': 'Indenizado', 'Saldo de FGTS': 'R$ 4.120,00' }),
+      ]},
+    ],
+    rescisao_aviso_previo: [
+      { titulo: '1. Rescisão', subsecoes: [
+        S('Aviso prévio', { 'Colaborador': colab, 'Tipo de rescisão': 'Sem justa causa', 'Data do aviso': '01/05/2026', 'Data do desligamento': '31/05/2026', 'Aviso prévio': 'Indenizado' }),
+      ]},
+    ],
+    afastamento_empregado: [
+      { titulo: '1. Afastamento', subsecoes: [
+        S('Dados', { 'Colaborador': colab, 'Motivo': 'Auxílio-doença (INSS)', 'Início': '05/05/2026', 'Previsão de retorno': '05/07/2026', 'CID': 'M54.5', 'Médico responsável': 'Dr. Paulo Menezes — CRM 123456' }),
+      ]},
+    ],
+    apontamentos_folha: [
+      { titulo: '1. Apontamentos', subsecoes: [
+        S('Competência', { 'Competência': '05/2026', 'Tipo de apontamento': 'Horas extras + faltas', 'Horas extras': '12h50', 'Faltas': '2', 'Adicional noturno': 'Conferir', 'Observação': 'Planilha enviada pelo cliente' }),
+      ]},
+    ],
+    solicitacao_geral: [
+      { titulo: 'Solicitação', subsecoes: [ S('Detalhes', { 'Assunto': 'Declaração de vínculo', 'Descrição': t.clientMessage || 'Emissão de documento solicitada pelo cliente.' }) ]},
+    ],
+  };
+  return MAP[t.typeCode] || [{ titulo: 'Dados da solicitação', subsecoes: [ S('Dados', { 'Colaborador': colab }) ] }];
+}
+// Rótulos amigáveis para as chaves do formData (abas e subseções). Dicionário
+// para as mais comuns; o resto cai no humanizador (camelCase/snake → Título).
+const _TSM_LABELS = {
+  geral: 'Geral', profissional: 'Profissional', pessoal: 'Pessoal', dependentes: 'Dependentes', documentos: 'Documentos', anexos: 'Anexos',
+  dadosBasicos: 'Dados básicos', admissao: 'Admissão', contratoExperiencia: 'Contrato de experiência', horario: 'Horário',
+  ctps: 'CTPS', pis: 'PIS', pagamento: 'Pagamento', sindicais: 'Dados sindicais',
+  endereco: 'Endereço', pessoais: 'Dados pessoais', contato: 'Contato', deficiencia: 'Deficiência',
+  calculo: 'Cálculo', ferias: 'Férias', rescisao: 'Rescisão', afastamento: 'Afastamento', apontamentos: 'Apontamentos',
+  valores: 'Valores', competencia: 'Competência', dados: 'Dados', detalhes: 'Detalhes', servico: 'Serviço', contrato: 'Contrato',
+};
+function _tsmHumanize(key) {
+  if (_TSM_LABELS[key]) return _TSM_LABELS[key];
+  const s = String(key).replace(/[_-]+/g, ' ').replace(/([a-z])([A-Z])/g, '$1 $2').trim();
+  return s ? s.charAt(0).toUpperCase() + s.slice(1) : key;
+}
+function _tsmTabLabels(t) {
+  const map = {};
+  try {
+    const tabs = window.FLOW_CONFIG && window.FLOW_CONFIG.FORM_TABS_BY_TYPE && window.FLOW_CONFIG.FORM_TABS_BY_TYPE[t.typeCode];
+    if (Array.isArray(tabs)) tabs.forEach(tab => { map[tab.id] = tab.label; });
+  } catch (e) { /* sem FLOW_CONFIG (telas de lista) → usa humanizador */ }
+  return map;
+}
+// Converte o formData.abas da tarefa (a MESMA fonte que o formulário do fluxo lê)
+// em seções/subseções read-only pro modal. Type-agnóstico: funciona pra qualquer
+// processo, em qualquer tela — o modal reflete os campos reais da tarefa.
+function _tsmAbasSecoes(t) {
+  const abas = t.formData && t.formData.abas;
+  if (!abas || typeof abas !== 'object') return null;
+  const tabLabels = _tsmTabLabels(t);
+  const out = [];
+  Object.entries(abas).forEach(([abaId, abaData]) => {
+    if (!abaData || typeof abaData !== 'object' || abaData.disabled) return;
+    const subsecoes = [];
+    const diretos = {};
+    Object.entries(abaData).forEach(([subKey, subVal]) => {
+      if (subKey === 'disabled' || subKey === 'reason') return;
+      if (subVal && typeof subVal === 'object' && !Array.isArray(subVal)) {
+        const campos = {};
+        Object.entries(subVal).forEach(([k, v]) => { if (v == null || typeof v !== 'object') campos[k] = v; });
+        if (Object.keys(campos).length) subsecoes.push({ titulo: _tsmHumanize(subKey), campos });
+      } else if (subVal != null && typeof subVal !== 'object') {
+        diretos[_tsmHumanize(subKey)] = subVal;
+      }
+    });
+    if (Object.keys(diretos).length) subsecoes.unshift({ titulo: '', campos: diretos });
+    if (subsecoes.length) out.push({ titulo: tabLabels[abaId] || _tsmHumanize(abaId), subsecoes });
+  });
+  return out.length ? out : null;
+}
+function _tsmSecoes(t) {
+  if (Array.isArray(t.secoes) && t.secoes.length) return t.secoes;
+  if (Array.isArray(t.feito) && t.feito.length) return [{ titulo: 'Dados da solicitação', campos: t.feito }];
+  if (Array.isArray(t.campos) && t.campos.length) return [{ titulo: 'Dados da solicitação', campos: t.campos }];
+  const fromAbas = _tsmAbasSecoes(t); // fonte real da tarefa (mesma do formulário)
+  if (fromAbas) return fromAbas;
+  return secoesPorTipo(t); // fallback por processo — só quando a tarefa não tem dados próprios
+}
+function _tsmMsgs(t) {
+  const real = (state.messages && state.messages[t.id] && state.messages[t.id].length) ? state.messages[t.id] : null;
+  if (real) return real;
+  if (Array.isArray(t.messages) && t.messages.length) return t.messages;
+  // Em espera (stationed, aguardando cliente) sempre teve troca: o cliente pediu,
+  // o operador respondeu pedindo um complemento — então a ÚLTIMA é do operador.
+  // Coerência do estado; vale em qualquer tela (mesmo modal). (modal-espiada.md)
+  if (t.status === 'stationed' && !t.clientResponded) {
+    return [
+      { from: 'client', text: t.clientMessage || 'Segue a solicitação.', timestamp: t.receivedAt || '' },
+      { from: 'operator', text: 'Recebi a solicitação. Para dar sequência, preciso de um complemento — deixei o detalhe na tarefa. Fico no aguardo do retorno.', timestamp: t.receivedAt || '' },
+    ];
+  }
+  return [];
+}
+function _tsmLog(t) {
+  if (Array.isArray(t.log) && t.log.length) return t.log;
+  return ((state._editLog && state._editLog[t.id]) || []).map(e => ({ field: e.field, before: e.before, after: e.after, by: e.changedBy, at: e.changedAt }));
+}
+function _tsmStepIdx(t) {
+  if (t.status === 'completed') return TIMELINE_STEPS.length;
+  if (t.status === 'queue') return 1; // só "recebida" concluída; sem etapa ativa (na fila)
+  if (t.status === 'processing') return 2; // passo "Processamento" da timeline
+  return (typeof t.timelineStep === 'number') ? t.timelineStep : 1;
+}
+function _tsmEmpty(icon, title, desc) {
+  return `<div style="text-align:center;padding:30px 16px;"><div style="width:50px;height:50px;border-radius:14px;background:var(--surface-muted);color:var(--text-tertiary);display:inline-flex;align-items:center;justify-content:center;margin-bottom:10px;"><i data-lucide="${icon}" style="width:25px;height:25px;"></i></div><div style="font-size:14px;font-weight:600;color:var(--text-primary);">${esc(title)}</div><div style="font-size:12.5px;color:var(--text-secondary);margin-top:3px;">${esc(desc)}</div></div>`;
+}
+// Campo read-only = MESMO componente do formulário (roField → .field-label/.field-value).
+// Campo alterado (vista original×feito) reusa as mesmas classes + destaque "alterado".
+function _tsmFieldRO(c) {
+  if (!c.changed) return roField(c.l, c.v);
+  return `<div><div class="field-label">${esc(c.l)}</div><div class="field-value" style="color:#92400e;font-weight:600;">${esc(c.v)} <span style="font-size:9.5px;font-weight:700;color:#b45309;background:rgba(245,158,11,0.15);border:1px solid #f59e0b;border-radius:4px;padding:0 4px;vertical-align:middle;">alterado</span></div></div>`;
+}
+// Item de acordeon CONECTADO — mesmo padrão da etapa de processamento: cada seção é um
+// .exec-ref-item empilhado dentro de UM .exec-ref-card só (borda compartilhada), não um card
+// por seção. Economiza espaço e fica consistente com a tela da tarefa.
+function _tsmRefItem(s, openByDefault) {
+  let body, alt = 0;
+  if (Array.isArray(s.subsecoes)) {
+    // Seções com subseções → reusa renderSubsection (mesmo .subsection-title + .field-group do form).
+    body = s.subsecoes.map(ss => renderSubsection(ss.titulo, ss.campos)).join('');
+  } else {
+    const campos = s.campos || [];
+    alt = campos.filter(c => c.changed).length;
+    body = `<div class="field-group">${campos.map(_tsmFieldRO).join('')}</div>`;
+  }
+  // Sem contagem de campos no título; só o aviso de "alterados" (vista original × feito).
+  const altTag = alt ? ` <span style="color:var(--text-tertiary);font-weight:500;">· ${alt} alterado${alt > 1 ? 's' : ''}</span>` : '';
+  return `<div class="exec-ref-item">
+    <button class="exec-ref-trigger ${openByDefault ? 'open' : ''}" onclick="toggleExecRefItem(this)"><span>${esc(s.titulo)}${altTag}</span><i data-lucide="chevron-down" class="exec-ref-chevron" style="width:16px;height:16px;"></i></button>
+    <div class="exec-ref-content" style="display:${openByDefault ? 'block' : 'none'};">${body}</div>
+  </div>`;
+}
+function tsmAcc(btn) { btn.classList.toggle('open'); const b = btn.nextElementSibling; if (b) b.style.display = (b.style.display === 'none') ? 'block' : 'none'; }
+
+function taskSummaryModal(t, opts) {
+  if (!t) return;
+  opts = opts || {};
+  _tsmTask = t;
+  _tsmTab = opts.tab || 'resumo';
+  let bd = document.getElementById('task-summary-backdrop');
+  if (!bd) { bd = document.createElement('div'); bd.id = 'task-summary-backdrop'; bd.className = 'modal-backdrop hidden'; bd.onclick = (e) => { if (e.target === bd) closeTaskSummary(); }; document.body.appendChild(bd); }
+
+  const cancelled = t.status === 'cancelled';
+  const completed = t.status === 'completed';
+  const op = (typeof acOp === 'function') ? acOp(t.operatorId) : null;
+  const quem = op ? op.nome : (t.assignee || (t.operatorId ? '' : ''));
+  const isAutopilot = t.origin === 'autopilot';
+  const senderName = t.senderName || t.colaborador || '—';
+  const senderTags = isAutopilot
+    ? `<span class="contact-tag">robô</span>`
+    : `<span class="contact-tag contact-tag-client">cliente</span>${(t.senderScopes || []).map(s => `<span class="contact-tag">${esc(s)}</span>`).join('')}`;
+  const atribTxt = quem ? `Atribuído a <strong style="color:var(--text-primary);font-weight:600;">${esc(quem)}</strong>` : `<span style="color:var(--text-tertiary);">Não atribuída ainda</span>`;
+  let deadlineHtml;
+  if (completed) deadlineHtml = `<span style="color:var(--success);font-weight:600;">Concluído em ${esc(concluidoEmLabel(t))}</span>`;
+  else if (cancelled) deadlineHtml = `<span style="color:var(--danger);font-weight:600;">Cancelada ${esc(t.cancelledAt || '')}</span>`;
+  else deadlineHtml = ''; // Prazo removido do modal (por enquanto) — colunas de prazo das tabelas ficam pra outra tarefa
+
+  // Cancelamento: mesmo acabamento suave do card de erro do Autopilot (.stopped-card),
+  // título "Cancelada" + "Justificativa:". Vai no CORPO (depois da linha do header), não no header.
+  const cancelNote = cancelled
+    ? `<div class="stopped-card" style="margin-bottom:16px;"><div class="problem-head"><i data-lucide="x-circle"></i>Cancelada</div><div class="problem-text">Justificativa: ${esc(t.cancelReason || '—')}</div></div>`
+    : '';
+
+  // Log de alterações (antes→depois). O botão fica DENTRO da aba Resumo (não abaixo do
+  // progresso) — aparece quando há histórico (tarefa concluída/em execução).
+  const log = _tsmLog(t);
+  const logBtn = log.length
+    ? `<button class="btn btn-secondary" style="margin-top:16px;" onclick="taskLogModal()"><i data-lucide="list" class="w-4 h-4"></i>Ver alterações (${log.length})</button>`
+    : '';
+
+  // ---- Aba Resumo ----
+  // Tarefa do Autopilot: espelha o miolo da tela (o que já rodou / de onde parou /
+  // o que precisa ser feito), pela MESMA fonte usada em renderFormTab (apMiolo).
+  let resumoPane;
+  if (isAutopilot && typeof apMiolo === 'function') {
+    // t.autopilot já vem pronto no acompanhamento; nas telas de tarefa monta na hora a partir
+    // do processo (apFluxo). Fallback FLOW_CONFIG mantém compat.
+    const apSrc = t.autopilot || (t.apFluxo && typeof apBuildMiolo === 'function' ? apBuildMiolo(t) : (window.FLOW_CONFIG || {}));
+    resumoPane = apMiolo(apSrc);
+  } else {
+    // Miolo do Resumo = o MESMO componente da etapa de checagem (renderFormReference):
+    // todas as abas do formulário, todos os campos (vazios inclusos), dependentes como
+    // cards, anexos. Quando a tela tem o renderizador de campos do fluxo, usa ele; senão
+    // (telas de lista sem o renderizador) cai no resumo por processo. (modal-espiada.md)
+    const _FC = window.FLOW_CONFIG;
+    const temCheckComp = t.formData && _FC && typeof _FC.renderFormTab === 'function'
+      && _FC.FORM_TABS_BY_TYPE && _FC.FORM_TABS_BY_TYPE[t.typeCode] && typeof renderFormReference === 'function';
+    let dados;
+    if (temCheckComp) {
+      dados = renderFormReference(t, false); // acordeons fechados por padrão
+    } else {
+      const secoes = _tsmSecoes(t);
+      dados = secoes.length
+        ? `<div class="exec-ref-card">${secoes.map(s => _tsmRefItem(s, false)).join('')}</div>`
+        : `<div style="font-size:12.5px;color:var(--text-tertiary);padding:4px 0;">Sem dados de formulário registrados nesta tarefa.</div>`;
+    }
+    // Sem bloco "Mensagem do cliente" no Resumo — a mensagem vive na aba Conversa.
+    // O acordeon traz os DADOS DA SOLICITAÇÃO ORIGINAL (o que o cliente pediu); as mudanças
+    // que o operador fez ficam no "Ver alterações" (log). (modal-espiada.md)
+    resumoPane = `
+      <div style="font-size:11px;color:var(--text-tertiary);text-transform:uppercase;letter-spacing:0.06em;font-weight:600;margin-bottom:10px;">Dados da solicitação original</div>
+      ${dados}
+      ${logBtn}`;
+  }
+
+  // ---- Aba Conversa ----
+  const msgs = _tsmMsgs(t);
+  const conversaPane = msgs.length
+    ? `<div class="history-list">${msgs.map(m => renderHistoryMessage(m, t)).join('')}</div>`
+    : _tsmEmpty('messages-square', 'Nenhuma mensagem ainda', 'Não houve troca de mensagens com o cliente nesta tarefa.');
+
+  // ---- Progresso ("em que etapa está") ----
+  // Vai pro TOPO do corpo (não é mais uma aba) — visível em TODOS os modais, igual ao robô.
+  // Tarefa do robô: o acompanhamento troca a timeline pelo stepper de fases (apRoboModalAjusta).
+  const progressoTop = cancelled ? '' : `
+    <div class="tsm-progress" id="tsm-progress">
+      <div class="timeline-horizontal" id="tsm-timeline"></div>
+    </div>`;
+
+  const tab = (id, label) => `<button class="form-tab tsm-tab" data-tab="${id}" onclick="tsmShowTab('${id}')">${label}</button>`;
+  const pane = (id, html) => `<div class="tsm-pane" data-pane="${id}" style="display:none;">${html}</div>`;
+
+  // Tarefa encerrada (concluída/cancelada) não abre nem se repassa: sem "Copiar link" nem
+  // botão primário — só "Fechar".
+  const encerrada = completed || cancelled;
+  const _dl = encerrada ? null : taskDeepLink(t);
+  const copyBtn = _dl ? `<button class="btn btn-ghost" style="margin-right:auto;" onclick="copyTaskLink(this)"><i data-lucide="link" class="w-4 h-4"></i>Copiar link</button>` : '';
+  const primaryBtn = (!encerrada && opts.primary) ? `<button class="btn btn-primary" onclick="${opts.primary.onClick}">${opts.primary.icon ? `<i data-lucide="${opts.primary.icon}" class="w-4 h-4"></i>` : ''}${esc(opts.primary.label)}</button>` : '';
+  const footer = `${copyBtn}<button class="btn btn-secondary" onclick="closeTaskSummary()">Fechar</button>${primaryBtn}`;
+
+  bd.innerHTML = `<div class="modal-panel" onclick="event.stopPropagation()" style="max-width:720px;">
+    <div class="modal-header" style="display:block;">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;gap:12px;">
+        <div style="min-width:0;flex:1;">
+          <div style="font-size:11px;color:var(--text-tertiary);text-transform:uppercase;letter-spacing:0.06em;font-weight:500;">${esc(t.type || '')}</div>
+          <h1 style="font-size:20px;font-weight:700;line-height:1.15;margin:2px 0 4px;">${esc(t.clientName || '')}</h1>
+          <div style="font-size:13px;color:var(--text-secondary);font-family:'JetBrains Mono',monospace;">${esc(t.cnpj || '')}</div>
+          <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-top:8px;font-size:12px;color:var(--text-tertiary);">${olMetaStripHtml(t)}<span style="color:var(--text-tertiary);">·</span><span>${atribTxt}</span></div>
+        </div>
+        <button class="btn btn-ghost" style="padding:8px;flex-shrink:0;" onclick="closeTaskSummary()"><i data-lucide="x" class="w-4 h-4"></i></button>
+      </div>
+      <div style="border-top:1px solid var(--border);margin:12px 0;"></div>
+      <div style="font-size:12.5px;color:var(--text-secondary);display:flex;align-items:center;gap:8px;flex-wrap:wrap;">
+        <span>${isAutopilot ? 'Iniciado pelo' : 'Solicitado por'} <strong style="color:var(--text-primary);font-weight:600;">${esc(senderName)}</strong></span>
+        <span style="display:inline-flex;gap:4px;">${senderTags}</span>
+        <span style="color:var(--text-tertiary);">·</span>
+        <span style="color:var(--text-tertiary);">Solicitado em ${esc(solicitadoEmLabel(t))}</span>
+        ${statePillHtml(t)}
+        ${deadlineHtml}
+      </div>
+    </div>
+    <div class="modal-body" style="padding-top:18px;">
+      ${cancelNote}
+      ${progressoTop}
+      ${isAutopilot
+        ? `<div${progressoTop ? ' style="margin-top:20px;"' : ''}>${resumoPane}</div>`
+        : `<div class="form-tabs"${progressoTop ? ' style="margin-top:20px;"' : ''}>${tab('resumo', 'Resumo')}${tab('conversa', 'Mensagens')}</div>
+           <div style="padding-top:16px;">${pane('resumo', resumoPane)}${pane('conversa', conversaPane)}</div>`}
+    </div>
+    <div class="modal-footer">${footer}</div>
+  </div>`;
+  bd.classList.remove('hidden');
+  if (t.status !== 'cancelled') { const tl = document.getElementById('tsm-timeline'); if (tl) renderTimelineHorizontal(tl, _tsmStepIdx(t), t, { noActive: t.status === 'queue' }); }
+  tsmShowTab(_tsmTab);
+  refreshIcons();
+}
+function tsmShowTab(tabId) {
+  _tsmTab = tabId;
+  document.querySelectorAll('#task-summary-backdrop .tsm-tab').forEach(b => b.classList.toggle('active', b.dataset.tab === tabId));
+  document.querySelectorAll('#task-summary-backdrop .tsm-pane').forEach(p => { p.style.display = (p.dataset.pane === tabId) ? 'block' : 'none'; });
+}
+function closeTaskSummary() { const bd = document.getElementById('task-summary-backdrop'); if (bd) bd.classList.add('hidden'); }
+
+// Link direto da tarefa — o gestor copia e repassa pra outro operador finalizar,
+// sem reatribuição pelo sistema (caso: operador adoece, tarefa fica parada).
+function taskDeepLink(t) {
+  const href = (typeof olFlowHref === 'function') ? olFlowHref(t) : null;
+  if (!href || !t) return null;
+  const base = location.href.replace(/[^/]*(\?.*)?$/, '');
+  return base + href + '?ref=acompanhamento&taskId=' + encodeURIComponent(t.id);
+}
+function tsmAbrirTarefa() {
+  const t = _tsmTask; if (!t) return;
+  const u = taskDeepLink(t);
+  const go = () => { closeTaskSummary(); if (u) window.location.href = u; else alert('No protótipo: abriria a tela da tarefa.'); };
+  // Tarefa sem operador → abrir atribui a quem está abrindo (igual a pegar na fila). Avisa antes.
+  const semDono = !t.operatorId && t.status !== 'completed' && t.status !== 'cancelled';
+  if (semDono && typeof showConfirmModal === 'function') {
+    showConfirmModal({
+      title: 'Atribuir a você?',
+      message: 'Esta tarefa ainda não tem operador. Ao abrir, ela será <strong>atribuída a você</strong> — o mesmo que pegar uma tarefa na fila.',
+      confirmLabel: 'Atribuir e abrir',
+      onConfirm: go,
+    });
+  } else { go(); }
+}
+function _copyFeedback(btn) { if (!btn) return; const old = btn.innerHTML; btn.innerHTML = '<i data-lucide="check" class="w-4 h-4"></i>Copiado!'; refreshIcons(); setTimeout(() => { btn.innerHTML = old; refreshIcons(); }, 1600); }
+function copyLinkUrl(url, btn) {
+  if (!url) return;
+  (navigator.clipboard ? navigator.clipboard.writeText(url) : Promise.reject()).then(() => _copyFeedback(btn)).catch(() => {
+    try { const ta = document.createElement('textarea'); ta.value = url; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove(); _copyFeedback(btn); }
+    catch (e) { prompt('Copie o link da tarefa:', url); }
+  });
+}
+function copyTaskLink(btn) { copyLinkUrl(taskDeepLink(_tsmTask), btn); }
+
+// Log de alterações — modal à parte (mesmo papel do "Histórico de alterações"
+// de dentro da tarefa), reusado a partir do modal de resumo.
+function taskLogModal() {
+  const t = _tsmTask; if (!t) return;
+  const log = _tsmLog(t);
+  let bd = document.getElementById('task-log-backdrop');
+  if (!bd) { bd = document.createElement('div'); bd.id = 'task-log-backdrop'; bd.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.4);z-index:300;display:flex;align-items:center;justify-content:center;'; bd.onclick = (e) => { if (e.target === bd) bd.remove(); }; }
+  else bd.style.display = 'flex';
+  const rows = log.length
+    ? log.map(e => `<div style="padding:12px 0;border-top:1px solid var(--border);font-size:13px;">
+        <div style="font-weight:600;color:var(--text-primary);">${esc(e.field || '')}</div>
+        <div style="margin-top:4px;display:flex;align-items:center;gap:8px;flex-wrap:wrap;"><span style="text-decoration:line-through;color:var(--text-tertiary);">${esc(e.before || '—')}</span><i data-lucide="arrow-right" style="width:14px;height:14px;color:var(--text-tertiary);"></i><span style="color:#92400e;font-weight:600;">${esc(e.after || '—')}</span></div>
+        ${(e.by || e.at) ? `<div style="margin-top:3px;font-size:11px;color:var(--text-tertiary);">${esc(e.by || '')}${e.by && e.at ? ' · ' : ''}${esc(e.at || '')}</div>` : ''}
+      </div>`).join('')
+    : `<div style="padding:18px 0;font-size:13px;color:var(--text-tertiary);">Nenhuma alteração registrada.</div>`;
+  bd.innerHTML = `<div class="modal-panel" onclick="event.stopPropagation()" style="max-width:560px;">
+    <div class="modal-header"><div style="font-size:15px;font-weight:700;">Histórico de alterações</div><button class="btn btn-ghost" style="padding:8px;" onclick="document.getElementById('task-log-backdrop').remove()"><i data-lucide="x" class="w-4 h-4"></i></button></div>
+    <div class="modal-body">${rows}</div>
+  </div>`;
+  document.body.appendChild(bd);
+  refreshIcons();
+}
+
+// Hub (lista-operador): ENTRAR na tarefa é sempre navegar pro fluxo dela. Espiar
+// (olho/clique na linha) é o modal de resumo; entrar é o botão do modal e os
+// botões do header ("Continuar/Pegar próxima"). Sem desvio por estado. A conversa
+// com o cliente segue acessível pela aba Conversa do modal. (modal-espiada.md)
+function olHubOpenTask(id) { _olNavigate(id); }
+function _olFltLabel(k) {
+  if (k === 'cliente') { const o = olClienteOpts().find(o => o.v === _ol.filtros.cliente); return o ? o.label : 'Cliente'; }
+  if (k === 'origem') { const o = olOrigemOpts().find(o => o.v === _ol.filtros.origem); return o ? o.label : 'Origem'; }
+  if (k === 'tipo') { const o = olTipoOpts().find(o => o.v === _ol.filtros.tipo); return o ? o.label : 'Processo'; }
+  const o = OL_ESTADO_OPTS.find(o => o.v === _ol.filtros.estado); return o ? o.label : 'Estado';
+}
+function _olFltTrigger(k) {
+  const has = !!_ol.filtros[k];
+  const clear = has ? `<span class="flt-clear" onclick="event.stopPropagation(); olLimparFiltro('${k}')"><i data-lucide="x" style="width:14px;height:14px;"></i></span>` : '';
+  return `<button class="flt-trigger ${has ? 'has-val' : ''}" onclick="event.stopPropagation(); olToggleFlt('${k}')"><span>${esc(_olFltLabel(k))}</span>${clear}<i data-lucide="chevron-down" class="flt-chev" style="width:16px;height:16px;"></i></button>`;
+}
+function _olFltMenu(k) {
+  if (_ol.openFlt !== k) return '';
+  const chk = (v) => _ol.filtros[k] === v ? '<i data-lucide="check" class="flt-check" style="width:16px;height:16px;"></i>' : '';
+  if (k === 'cliente') {
+    const items = olClienteOpts().map(o => `<div class="flt-item" data-search="${esc((o.label + ' ' + o.cnpj).toLowerCase())}" onclick="olSetFiltro('cliente','${esc(o.v)}')"><div style="display:flex;flex-direction:column;min-width:0;"><span>${esc(o.label)}</span><span class="flt-cnpj">${esc(o.cnpj)}</span></div>${chk(o.v)}</div>`).join('');
+    return `<div class="flt-menu"><input class="flt-search" id="ol-flt-cliente-search" placeholder="Buscar nome ou CNPJ…" oninput="olFiltraCliente(this)">${items}</div>`;
+  }
+  if (k === 'origem') {
+    const items = olOrigemOpts().map(o => `<div class="flt-item" data-search="${esc(o.label.toLowerCase())}" onclick="olSetFiltro('origem','${esc(o.v)}')"><span>${esc(o.label)}</span>${chk(o.v)}</div>`).join('');
+    return `<div class="flt-menu"><input class="flt-search" id="ol-flt-origem-search" placeholder="Buscar origem…" oninput="olFiltraCliente(this)">${items}</div>`;
+  }
+  const opts = k === 'tipo' ? olTipoOpts() : OL_ESTADO_OPTS;
+  const items = opts.map(o => `<div class="flt-item" onclick="olSetFiltro('${k}','${esc(o.v)}')"><span>${esc(o.label)}</span>${chk(o.v)}</div>`).join('');
+  return `<div class="flt-menu">${items}</div>`;
+}
+function olRenderFiltros() {
+  const el = document.getElementById('ol-filtros'); if (!el) return;
+  const keys = ['cliente', 'origem', 'tipo', 'estado'];
+  el.innerHTML = keys.map(k => `<div class="flt">${_olFltTrigger(k)}${_olFltMenu(k)}</div>`).join('') + (olTemFiltro() ? `<button class="flt-limpar" onclick="olLimparTodos()">Limpar filtros</button>` : '');
+  refreshIcons();
+  if (_ol.openFlt === 'cliente') { const s = document.getElementById('ol-flt-cliente-search'); if (s) setTimeout(() => s.focus(), 0); }
+  if (_ol.openFlt === 'origem') { const s = document.getElementById('ol-flt-origem-search'); if (s) setTimeout(() => s.focus(), 0); }
+}
+function olToggleFlt(k) { _ol.openFlt = (_ol.openFlt === k) ? null : k; if (_ol.openFlt && _pp.ol && _pp.ol.open) { _pp.ol.open = false; ppRender('ol'); } olRenderFiltros(); }
+function olSetFiltro(k, v) { _ol.filtros[k] = v; _ol.openFlt = null; _ol.page = 1; olRenderFiltros(); olRenderAtribuidas(); olRenderList(); }
+function olLimparFiltro(k) { _ol.filtros[k] = null; _ol.openFlt = null; _ol.page = 1; olRenderFiltros(); olRenderAtribuidas(); olRenderList(); }
+function olLimparTodos() { Object.keys(_ol.filtros).forEach(k => _ol.filtros[k] = null); _ol.openFlt = null; _ol.page = 1; if (_pp.ol) { _pp.ol.range = null; _pp.ol.calPick = null; ppRender('ol'); } olRenderFiltros(); olRenderAtribuidas(); olRenderList(); }
+function olFiltraCliente(inp) { const q = inp.value.toLowerCase().trim(); inp.parentElement.querySelectorAll('.flt-item').forEach(it => { it.style.display = (!q || (it.dataset.search || '').includes(q)) ? '' : 'none'; }); }
+function olRenderList() {
+  const head = document.getElementById('ol-list-head'), mount = document.getElementById('ol-list'); if (!mount) return;
+  const ts = olBaseList().filter(olPassa);
+  if (head) head.innerHTML = `<div class="sh-text"><div class="sh-title">Fila geral (${ts.length})</div><div class="sh-sub">Não atribuídas · escolha manualmente ou deixe o sistema pegar a próxima · ordenadas por data de recebimento, mais novas no topo</div></div>`;
+  if (!ts.length) { mount.innerHTML = `<div class="lo-table-wrap"><div style="padding:28px 16px;text-align:center;color:var(--text-tertiary);font-size:13px;">${olTemFiltro() ? 'Nenhuma tarefa com esses filtros.' : 'Nenhuma tarefa na fila geral agora.'}</div></div>`; refreshIcons(); return; }
+  const pages = Math.max(1, Math.ceil(ts.length / OL_PAGE_SIZE));
+  if (_ol.page > pages) _ol.page = pages;
+  const start = (_ol.page - 1) * OL_PAGE_SIZE;
+  const pageItems = ts.slice(start, start + OL_PAGE_SIZE);
+  const rows = pageItems.map(t => _renderTaskRow(t, { clickable: true, onClick: `olVerDetalhes('${t.id}')`, withEye: true })).join('');
+  const from = start + 1, to = start + pageItems.length;
+  const hasPrev = _ol.page > 1, hasNext = to < ts.length;
+  const pager = `<div class="lo-pager">
+    <button class="btn btn-secondary" ${hasPrev ? '' : 'disabled'} onclick="olGoPage(${_ol.page - 1})"><i data-lucide="chevron-left" class="w-4 h-4"></i>Anterior</button>
+    <span class="lo-pager-info">Mostrando ${from}–${to} de ${ts.length}</span>
+    <button class="btn btn-secondary" ${hasNext ? '' : 'disabled'} onclick="olGoPage(${_ol.page + 1})">Próxima<i data-lucide="chevron-right" class="w-4 h-4"></i></button>
+  </div>`;
+  mount.innerHTML = `<div class="lo-table-wrap">${_taskTableHead()}${rows}</div>${pager}`;
+  refreshIcons();
+}
+function olGoPage(p) { _ol.page = p; olRenderList(); }
+
+// fecha o dropdown de filtro aberto ao clicar fora
+document.addEventListener('click', (e) => { if (_ol.openFlt && !e.target.closest('.flt')) { _ol.openFlt = null; olRenderFiltros(); } ppCloseIfOutside('ol', e.target, '#ol-period'); });
+
+/* ---- Contexto FLUXO: deriva do state + abre in-page (ativa) ou navega (B) ---- */
+function _olTasksFromState() {
+  const out = [];
+  if (state.active) out.push({ ...state.active, status: 'active' });
+  (state.queue || []).forEach(t => out.push({ ...t, status: 'queue' }));
+  (state.stationed || []).forEach(t => out.push({ ...t, status: 'stationed' }));
+  return out;
+}
+function _flowOpenTask(id) {
+  // ENTRAR na tarefa (chamado pelo botão do modal de espiada e pelos botões do
+  // header). Espiar é olVerDetalhes (olho/clique na linha). Mesma regra da outra
+  // porta do hub (olHubOpenTask): entrar sempre navega pro fluxo da tarefa; a
+  // conversa segue acessível pela aba Conversa do modal. (modal-espiada.md)
+  _olNavigate(id);
+}
+
+// Abre uma tarefa específica da fila/estacionadas in-page (deep-link de chegada).
+function openTaskById(id) {
+  let task = (state.queue || []).find(t => t.id === id);
+  if (task) { state.queue = state.queue.filter(t => t.id !== id); }
+  else { task = (state.stationed || []).find(t => t.id === id); if (task) { state.stationed = state.stationed.filter(t => t.id !== id); if (task.clientResponded) task.clientResponded = false; } }
+  if (!task) { pegarProximaTarefa(); return; }
+  if (state.active && state.active.id !== id) state.queue.unshift(state.active);
+  state.active = task; state.currentTaskId = id;
+  renderTask(task); showScreen('task');
+}
+
+// Ao chegar de uma lista (?ref=lista), abre uma tarefa DO TIPO deste fluxo.
+function _olOpenOnArrival() {
+  const fam = olFamily(window.FLOW_CONFIG && window.FLOW_CONFIG.typeCode);
+  const resp = (state.stationed || []).find(t => t.clientResponded && olFamily(t.typeCode) === fam);
+  const fila = (state.queue || []).find(t => olFamily(t.typeCode) === fam);
+  const alvo = resp || fila;
+  if (alvo) openTaskById(alvo.id); else pegarProximaTarefa();
+}
+
+function renderHome() {
+  olMount(qs('#screen-home'), { tarefas: _olTasksFromState(), onOpenTask: _flowOpenTask, entregues: (state.completed || []).length });
 }
 
 /* ============================================================
@@ -1918,37 +2960,92 @@ function showAlertModal({ title, message }) {
    TIMELINE
    ============================================================ */
 const TIMELINE_STEPS = [
-  { id: 'received',   label: 'Recebida' },
-  { id: 'operador',   label: 'Atuação do operador' },
+  { id: 'received',   label: 'Solicitação recebida' },
+  { id: 'validation', label: 'Validação do operador' },
   { id: 'processing', label: 'Processamento' },
   { id: 'done',       label: 'Concluída' },
 ];
 
-function renderTimelineHorizontal(targetEl, currentStepIdx, task) {
-  targetEl.innerHTML = TIMELINE_STEPS.map((step, i) => {
-    let dotClass, dotContent, itemClass = '', metaText = '';
-    if (i < currentStepIdx) { dotClass = 'tl-dot-done'; dotContent = '<i data-lucide="check" class="w-3 h-3"></i>'; metaText = 'Concluído'; itemClass = 'done'; }
-    else if (i === currentStepIdx) { dotClass = 'tl-dot-active'; dotContent = String(i + 1); metaText = 'Em andamento'; itemClass = 'active'; }
-    else { dotClass = 'tl-dot-pending'; dotContent = String(i + 1); itemClass = 'pending'; metaText = 'Aguardando'; }
-    return `<div class="tl-item-h ${itemClass}"><div class="tl-dot ${dotClass}">${dotContent}</div><div class="tl-step">${step.label}</div><div class="tl-meta">${metaText}</div></div>`;
+// Componente ÚNICO de linha do tempo (dots + linha + label + sub). Usado pela timeline do
+// cliente (estados da tarefa) E pelo stepper do Autopilot (macroetapas do fluxo) — muda só a
+// lista de passos, o visual é sempre o mesmo. Mexeu aqui, muda em todos.
+// steps: [{ label, meta, state }], state ∈ 'done' | 'active' | 'warn' (travou) | 'pending'.
+function tlStepperHTML(steps) {
+  const dotCls = { done: 'tl-dot-done', active: 'tl-dot-active', warn: 'tl-dot-warn', pending: 'tl-dot-pending' };
+  return steps.map((s, i) => {
+    const dot = s.state === 'done' ? '<i data-lucide="check" class="w-3 h-3"></i>' : String(i + 1);
+    return `<div class="tl-item-h ${s.state}"><div class="tl-dot ${dotCls[s.state] || 'tl-dot-pending'}">${dot}</div><div class="tl-step">${esc(s.label)}</div><div class="tl-meta">${esc(s.meta || '')}</div></div>`;
   }).join('');
+}
+
+function renderTimelineHorizontal(targetEl, currentStepIdx, task, opts) {
+  // Um fluxo pode sobrescrever os rótulos das etapas (ex.: Autopilot usa
+  // "Atuação do operador" no lugar de "Validação do operador"). Sem override,
+  // usa o padrão do DP. Mesmo mecanismo dos demais overrides do FLOW_CONFIG.
+  // noActive: sem etapa "em andamento" — usado quando a tarefa está na fila
+  // (só "recebida" concluída, o resto aguardando; ninguém está tocando ainda).
+  const noActive = !!(opts && opts.noActive);
+  const steps = (window.FLOW_CONFIG && FLOW_CONFIG.timelineSteps) || TIMELINE_STEPS;
+  const mapped = steps.map((step, i) => {
+    if (i < currentStepIdx) return { label: step.label, meta: 'Concluído', state: 'done' };
+    if (i === currentStepIdx && !noActive) return { label: step.label, meta: 'Em andamento', state: 'active' };
+    return { label: step.label, meta: 'Aguardando', state: 'pending' };
+  });
+  targetEl.innerHTML = tlStepperHTML(mapped);
 }
 
 /* ============================================================
    RENDER: TASK ANALYSIS
    ============================================================ */
+// Faixa de identificação do header (base da Domínio, origem e colaborador).
+// Mesmo conjunto que aparece na lista, pra o operador reconhecer a solicitação
+// pelos mesmos âncoras. Campos vêm do mock (ver TAREFAS em lista-operador.html).
+// Faixa abaixo do nome no header: Origem · ERP operado (origem primeiro). O
+// colaborador NÃO entra aqui — já aparece no miolo (Dados da solicitação).
+function olMetaStripHtml(task) {
+  const sep = '<span style="color:var(--text-tertiary);">·</span>';
+  const m = domMetaParts(task);
+  return [m.origem, m.erp].join(sep);
+}
+
+/* Link "Abrir página do cliente" — injetado no header da tarefa, ao lado do CNPJ.
+   Fonte única: vale pra QUALQUER tarefa (Hub e Autopilot), já que o header é o
+   mesmo (renderTask). Idempotente — a tela de execução é reusada entre tarefas. */
+function montarLinkCliente() {
+  const cnpj = qs('#task-client-cnpj');
+  if (!cnpj || qs('#client-page-link')) { refreshIcons(); return; }
+  const a = document.createElement('a');
+  a.id = 'client-page-link';
+  a.className = 'client-link';
+  a.href = 'https://app.bhub.ai/clientes/exemplo'; // link fake — abre em nova aba
+  a.target = '_blank';
+  a.rel = 'noopener';
+  a.title = 'Abrir página do cliente';
+  a.setAttribute('aria-label', 'Abrir página do cliente');
+  a.innerHTML = '<i data-lucide="external-link"></i>'; // só o ícone; rótulo vai no tooltip
+  cnpj.parentNode.appendChild(a);
+  refreshIcons();
+}
+
 function renderTask(task) {
   qs('#task-id-label').textContent = task.id;
   qs('#task-type-label').textContent = task.type;
   qs('#task-client-name').textContent = task.clientName;
   qs('#task-client-cnpj').textContent = task.cnpj;
+  qs('#task-meta-strip').innerHTML = olMetaStripHtml(task);
   qs('#task-client-logo').textContent = task.logoText;
+  montarLinkCliente(); // botão "Abrir página do cliente" no header — toda tarefa
   qs('#task-solicitante').textContent = task.senderName;
+  // Header alinhado ao modal de espiada: tarefa do robô = "Iniciado pelo … robô";
+  // solicitação de cliente = "Solicitado por … cliente" + escopos.
+  const isAP = task.origin === 'autopilot';
+  qs('#task-solicitante-label').textContent = isAP ? 'Iniciado pelo' : 'Solicitado por';
   const scopes = task.senderScopes || [];
-  qs('#task-solicitante-tags').innerHTML = scopes.map(s => `<span class="contact-tag">${s}</span>`).join('');
-  qs('#task-timestamp').textContent = `hoje às ${task.receivedAt}`;
-  qs('#task-sla-inline').innerHTML = `<span class="badge badge-neutral" style="font-size:11px;"><i data-lucide="clock" class="w-3 h-3"></i> SLA ${task.sla}</span>`;
-  qs('#task-deadline').innerHTML = deadlineBadge(task.slaStatus, computeDeadline(task.receivedAt, task.sla));
+  qs('#task-solicitante-tags').innerHTML = isAP
+    ? `<span class="contact-tag">robô</span>`
+    : [`<span class="contact-tag contact-tag-client">cliente</span>`, ...scopes.map(s => `<span class="contact-tag">${s}</span>`)].join('');
+  qs('#task-timestamp').textContent = `Solicitado em ${solicitadoEmLabel(task)}`;
+  qs('#task-assignee').textContent = OPERATOR_NAME;
   renderTimelineHorizontal(qs('#task-timeline'), 1, task);
   renderClientAttachments(task);
 
@@ -2012,8 +3109,8 @@ function renderFileItem(file, options) {
 
 function renderHistoryMessage(m, task) {
   const isOperator = m.from === 'operator';
-  const author = isOperator ? 'Daniele Ribeiro' : task.senderName;
-  const initials = author.split(' ').map(n => n[0]).slice(0, 2).join('');
+  const author = isOperator ? (typeof OPERATOR_NAME !== 'undefined' && OPERATOR_NAME ? OPERATOR_NAME : 'Operador') : (task.senderName || task.colaborador || 'Cliente');
+  const initials = (author || '?').trim().split(/\s+/).map(n => n[0]).slice(0, 2).join('');
   const scopes = task.senderScopes || [];
   const tagsHtml = isOperator
     ? `<span class="contact-tag" style="background:#fff5f6;color:var(--brand-pink);border-color:#f9c5cb;">operador</span>`
@@ -2027,6 +3124,7 @@ function renderHistoryMessage(m, task) {
         <span class="history-msg-timestamp">${m.timestamp}</span>
       </div>
       <div class="history-msg-text">${m.text}</div>
+      ${(m.attachments && m.attachments.length) ? `<div class="history-msg-attachments">${m.attachments.map(f => renderFileItem(f)).join('')}</div>` : ''}
     </div>
   `;
 }
@@ -2087,10 +3185,20 @@ function abrirEstacionada(id) {
     </div>
     <div class="section-title" style="font-size: 11px; margin-bottom: 10px;"><i data-lucide="message-square"></i>Histórico</div>
     <div class="history-list" id="drawer-history"></div>
+    <div style="margin-top: 18px; display: flex; justify-content: flex-end;">
+      <button class="btn btn-primary" onclick="retomarEstacionada('${task.id}')"><i data-lucide="play" class="w-4 h-4"></i>Retomar tarefa</button>
+    </div>
   `;
   renderHistoryInto(qs('#drawer-history'), task);
   qs('#modal-drawer').classList.remove('hidden');
   refreshIcons();
+}
+
+// Retoma uma tarefa em espera sem precisar da resposta do cliente — abre a
+// partir do estágio atual.
+function retomarEstacionada(id) {
+  qs('#modal-drawer').classList.add('hidden');
+  openTaskById(id);
 }
 
 function aceitarTarefa() {
@@ -2099,15 +3207,138 @@ function aceitarTarefa() {
     if (!task) return;
     state._editMode[task.id] = false;
     delete state._editDraft[task.id];
+    task.timelineStep = 2; // entra em Processamento (reflete no acompanhamento do cliente)
     renderExecution(task);
     showScreen('execution');
   });
 }
 
-function voltarParaAnalise() {
+/* ------------------------------------------------------------
+   Voltar pra conferência de dados — do Processamento, o operador
+   volta um passo pra ajustar algo que já conferiu (descobriu algo na
+   Domínio, precisa corrigir um dado). NÃO é troca de tela silenciosa:
+   regride a etapa da tarefa, o que reflete pro cliente e pro operador.
+   Por isso passa por confirmação. Ver decisoes/voltar-a-conferencia.md.
+   ------------------------------------------------------------ */
+function voltarParaConferencia() {
   const task = getTaskById(state.currentTaskId);
   if (!task) return;
+  showConfirmModal({
+    title: 'Voltar para validação?',
+    message: `
+      <p style="margin:0 0 10px;">A tarefa volta pra etapa de <strong>Validação</strong>.</p>
+      <ul style="margin:0;padding-left:18px;display:flex;flex-direction:column;gap:6px;">
+        <li>O status muda pra <strong>"Em andamento"</strong> — pro cliente e pra você.</li>
+        <li>Os passos de <strong>Processamento</strong> que você já marcou serão <strong>desmarcados</strong>; você refaz ao reavançar.</li>
+      </ul>`,
+    confirmLabel: 'Voltar para validação',
+    cancelLabel: 'Cancelar',
+    onConfirm: () => _doVoltarParaConferencia(task),
+  });
+}
+
+function _doVoltarParaConferencia(task) {
+  // Zera o processamento — editar a conferência pode invalidar o que já rodou,
+  // então é mais seguro refazer do que arrastar estado possivelmente inconsistente.
+  state._execProgress[task.id] = 0;
+  if (state._execActions) state._execActions[task.id] = {};
+  if (state._execStepExpanded) state._execStepExpanded[task.id] = {};
+  // Regride a etapa (a timeline do acompanhamento do cliente lê task.timelineStep).
+  task.timelineStep = 1;
+  // Volta pra conferência em leitura — o operador clica em "Editar" quando/se quiser
+  // mexer. Evita edição acidental e aviso de "não salvo" pra quem só quer reler.
+  state._editMode[task.id] = false;
+  delete state._editDraft[task.id];
+  renderTask(task);
   showScreen('task');
+  flash('Tarefa voltou para validação — status "Em andamento".', 'info');
+}
+
+/* ------------------------------------------------------------
+   Devolver à fila — operador abre mão da atribuição (troca interna,
+   invisível pro cliente). A tarefa volta pra fila geral com tudo que
+   já foi feito preservado; outro operador continua de onde parou.
+   ------------------------------------------------------------ */
+let _returnReason = null;
+
+function _attribInitials(name) {
+  return String(name || '').trim().split(/\s+/).map(p => p[0]).slice(0, 2).join('').toUpperCase();
+}
+
+// Cresce o textarea conforme o conteúdo (sem barra de rolagem).
+function autoGrowField(el) {
+  el.style.height = 'auto';
+  el.style.height = el.scrollHeight + 'px';
+}
+
+// Motivo (obrigatório) via dropdown. Em "Outro", as observações também viram obrigatórias.
+function onReturnReasonChange(sel) {
+  _returnReason = sel.value || null;
+  const lbl = qs('#return-queue-detail-label');
+  if (lbl) lbl.textContent = _returnReason === 'Outro' ? 'Observações (obrigatório)' : 'Observações (opcional)';
+  updateReturnConfirmState();
+}
+
+// Habilita o confirmar: precisa de motivo; se for "Outro", precisa também de observações.
+function updateReturnConfirmState() {
+  const detail = ((qs('#return-queue-reason-detail') || {}).value || '').trim();
+  const ok = !!_returnReason && (_returnReason !== 'Outro' || detail.length > 0);
+  const btn = qs('#return-queue-confirm');
+  if (btn) btn.disabled = !ok;
+}
+
+function openReturnQueueModal() {
+  const task = getTaskById(state.currentTaskId);
+  if (!task) return;
+  qs('#return-queue-from-av').textContent = _attribInitials(OPERATOR_NAME);
+  qs('#return-queue-from-name').textContent = OPERATOR_NAME;
+  // Avisa se há rascunho de edição não salvo (será descartado ao devolver).
+  const hasUnsaved = !!(task.id && state._editMode[task.id]);
+  qs('#return-queue-unsaved').classList.toggle('hidden', !hasUnsaved);
+  // Reforço extra quando a devolução vem da execução (já há progresso nos passos).
+  const fromExec = !qs('#screen-execution').classList.contains('hidden');
+  qs('#return-queue-keep-text').textContent = fromExec
+    ? 'Tudo que já foi salvo e editado, as mensagens com o cliente e o progresso dos passos já concluídos ficam do jeito que estão — nada é desfeito.'
+    : 'Tudo que já foi salvo e editado, além das mensagens trocadas com o cliente, fica do jeito que está — nada é desfeito.';
+  // Reset do motivo a cada abertura (motivo é obrigatório).
+  _returnReason = null;
+  const sel = qs('#return-queue-reason'); if (sel) sel.value = '';
+  const detail = qs('#return-queue-reason-detail'); if (detail) { detail.value = ''; detail.style.height = ''; }
+  const lbl = qs('#return-queue-detail-label'); if (lbl) lbl.textContent = 'Observações (opcional)';
+  updateReturnConfirmState();
+  qs('#modal-return-queue').classList.remove('hidden');
+  refreshIcons();
+}
+
+function closeReturnQueueModal(ev) {
+  if (ev && ev.target && !ev.target.classList.contains('modal-backdrop')) return;
+  const m = qs('#modal-return-queue');
+  if (m) m.classList.add('hidden');
+}
+
+function devolverParaFila() {
+  if (!_returnReason) return; // motivo é obrigatório
+  const task = state.active;
+  const detail = ((qs('#return-queue-reason-detail') || {}).value || '').trim();
+  closeReturnQueueModal();
+  if (!task) return;
+  // Trilha de auditoria da devolução (quem/quando/motivo/transição). No protótipo
+  // fica no objeto da tarefa; no real vai pro audit log (ver handoff §6/§7).
+  task._returnLog = { by: OPERATOR_NAME, at: 'agora mesmo', reason: _returnReason, detail, from: OPERATOR_NAME, to: null };
+  // Descarta apenas o rascunho de edição não salvo; tudo que foi salvo (formulário,
+  // anexos, conversa, progresso dos passos de execução) é preservado no objeto.
+  state._editMode[task.id] = false;
+  delete state._editDraft[task.id];
+  // A tarefa sai da atribuição (active) e volta pra fila geral (queue),
+  // reordenada por SLA como qualquer tarefa não atribuída.
+  state.active = null;
+  state.currentTaskId = null;
+  state.queue.push(task);
+  state.queue.sort((a, b) => slaToMinutes(a.sla) - slaToMinutes(b.sla));
+  _returnReason = null;
+  renderHome();
+  showScreen('home');
+  flash('Tarefa devolvida à fila — disponível pra outro operador', 'success');
 }
 
 function openAskClientModal() {
@@ -2121,6 +3352,8 @@ function openAskClientModal() {
   `;
   renderHistoryInto(qs('#modal-history'), task);
   qs('#modal-message-text').value = '';
+  state._askClientFiles = [];
+  renderAskClientFiles();
   qs('#modal-ask-client').classList.remove('hidden');
   refreshIcons();
   setTimeout(() => qs('#modal-message-text').focus(), 100);
@@ -2128,13 +3361,34 @@ function openAskClientModal() {
 
 function closeAskClientModal() { qs('#modal-ask-client').classList.add('hidden'); }
 
+function renderAskClientFiles() {
+  const el = qs('#ask-client-files');
+  if (!el) return;
+  const files = state._askClientFiles || [];
+  el.innerHTML = files.map((f, idx) => renderFileItem(f, { removable: true, removeFn: `removeAskClientFile(${idx})` })).join('');
+  refreshIcons();
+}
+
+function handleAskClientFileSelect(e) {
+  Array.from(e.target.files).forEach(f => {
+    const sizeKB = (f.size / 1024).toFixed(0);
+    state._askClientFiles.push({ name: f.name, size: sizeKB > 1024 ? (sizeKB/1024).toFixed(1) + ' MB' : sizeKB + ' KB' });
+  });
+  e.target.value = '';
+  renderAskClientFiles();
+}
+
+function removeAskClientFile(idx) { state._askClientFiles.splice(idx, 1); renderAskClientFiles(); }
+
 function enviarPendenciaCliente() {
   const text = qs('#modal-message-text').value.trim();
   if (!text) { showAlertModal({ title: 'Campo obrigatório', message: 'Digite uma mensagem para o cliente antes de enviar.' }); return; }
   const task = getTaskById(state.currentTaskId);
   if (!task) return;
   if (!state.messages[task.id]) state.messages[task.id] = [];
-  state.messages[task.id].push({ from: 'operator', text, timestamp: 'agora mesmo' });
+  const attachments = (state._askClientFiles || []).slice();
+  state.messages[task.id].push({ from: 'operator', text, timestamp: 'agora mesmo', attachments });
+  state._askClientFiles = [];
   state.active = null;
   state.queue = state.queue.filter(t => t.id !== task.id);
   state.stationed.push({ ...task, stationedAt: 'agora mesmo', stationedReason: text.length > 80 ? text.substring(0, 80) + '...' : text, clientResponded: false, respondedAt: null });
@@ -2169,7 +3423,7 @@ const DEFAULT_EXEC_STEPS = [
   },
   {
     title: 'Conclusão da etapa',
-    desc: 'O processamento continua no Gestta/Domínio. Os documentos chegam automaticamente ao cliente quando ficarem prontos.',
+    desc: 'O processamento segue na sequência e o que precisar ser gerado chega ao cliente assim que ficar pronto.',
     type: 'final-message',
     timelineStep: 2,
   },
@@ -2200,7 +3454,27 @@ const NON_ADMISSION_STEPS = [
   },
   {
     title: 'Conclusão da etapa',
-    desc: 'O processamento continua no Gestta/Domínio. Os documentos chegam automaticamente ao cliente quando ficarem prontos.',
+    desc: 'O processamento segue na sequência e o que precisar ser gerado chega ao cliente assim que ficar pronto.',
+    type: 'final-message',
+    timelineStep: 2,
+  },
+];
+
+/* Passos do fluxo de Afastamento.
+   Registro na Domínio, SEM registro no Gestta — afastamento não gera documento
+   correlacionado no Gestta hoje. Por isso tem preset próprio em vez de
+   compartilhar o NON_ADMISSION_STEPS (que mantém o passo de Gestta). */
+const AFASTAMENTO_STEPS = [
+  {
+    title: 'Acessar a Domínio e fazer o processamento',
+    desc: 'Abra a Domínio, registre o afastamento e marque como feito quando concluído.',
+    timelineStep: 2,
+    type: 'form-reference',
+    defaultOpen: true,
+  },
+  {
+    title: 'Conclusão da etapa',
+    desc: 'O processamento segue na sequência e o que precisar ser gerado chega ao cliente assim que ficar pronto.',
     type: 'final-message',
     timelineStep: 2,
   },
@@ -2225,15 +3499,8 @@ const APONTAMENTOS_STEPS = [
     defaultOpen: true,
   },
   {
-    title: 'Registrar no Gestta',
-    desc: 'Copie o nome sugerido abaixo para garantir a correlação automática dos documentos.',
-    action: { label: 'Abrir Gestta', icon: 'external-link', doneLabel: 'Aberto', onClick: 'handleStepAction(2)' },
-    timelineStep: 2,
-    showTaskId: true,
-  },
-  {
     title: 'Conclusão da etapa',
-    desc: 'O processamento continua no Gestta/Domínio. Os documentos chegam automaticamente ao cliente quando ficarem prontos.',
+    desc: 'O processamento segue na sequência e o que precisar ser gerado chega ao cliente assim que ficar pronto.',
     type: 'final-message',
     timelineStep: 2,
   },
@@ -2272,18 +3539,31 @@ const ADMISSAO_PLANILHA_STEPS = [
   },
   {
     title: 'Conclusão da etapa',
-    desc: 'O processamento continua no Gestta/Domínio. Os documentos chegam automaticamente ao cliente quando ficarem prontos.',
+    desc: 'O processamento segue na sequência e o que precisar ser gerado chega ao cliente assim que ficar pronto.',
     type: 'final-message',
     timelineStep: 2,
+  },
+];
+
+/* Passos do fluxo de Solicitação Geral.
+   Não há Domínio nem Gestta: o operador apenas redige a resposta que será
+   enviada ao cliente e conclui. Passo único do tipo 'client-reply'. */
+const SOLICITACAO_GERAL_STEPS = [
+  {
+    title: 'Responder ao cliente',
+    desc: 'Descreva o que você fez nesta solicitação. Este texto será enviado ao cliente como resposta quando você concluir.',
+    timelineStep: 2,
+    type: 'client-reply',
   },
 ];
 
 const EXEC_STEP_PRESETS = {
   admissao:          DEFAULT_EXEC_STEPS,
   admissao_planilha: ADMISSAO_PLANILHA_STEPS,
+  solicitacao_geral: SOLICITACAO_GERAL_STEPS,
   ferias:            NON_ADMISSION_STEPS,
   rescisao:          NON_ADMISSION_STEPS,
-  afastamento:       NON_ADMISSION_STEPS,
+  afastamento:       AFASTAMENTO_STEPS,
   geral:             NON_ADMISSION_STEPS,
   apontamentos:      APONTAMENTOS_STEPS,
 };
@@ -2299,19 +3579,19 @@ function getExecSteps() {
    ============================================================ */
 function renderExecution(task) {
   const EXEC_STEPS = getExecSteps();
-  qs('#exec-id-label').textContent = task.id;
   qs('#exec-type-label').textContent = task.type;
   qs('#exec-client-label').textContent = task.clientName;
   qs('#exec-client-cnpj').textContent = task.cnpj;
+  qs('#exec-meta-strip').innerHTML = olMetaStripHtml(task);
   qs('#exec-solicitante').textContent = task.senderName;
+  const isAPx = task.origin === 'autopilot';
+  const _lblEx = qs('#exec-solicitante-label'); if (_lblEx) _lblEx.textContent = isAPx ? 'Iniciado pelo' : 'Solicitado por';
   const scopes = task.senderScopes || [];
-  qs('#exec-solicitante-tags').innerHTML = [
-    `<span class="contact-tag contact-tag-client">cliente</span>`,
-    ...scopes.map(s => `<span class="contact-tag">${s}</span>`),
-  ].join('');
-  qs('#exec-timestamp').textContent = `hoje às ${task.receivedAt}`;
-  qs('#exec-sla-inline').innerHTML = `<span class="badge badge-neutral" style="font-size:11px;"><i data-lucide="clock" class="w-3 h-3"></i> SLA ${task.sla}</span>`;
-  qs('#exec-deadline').innerHTML = deadlineBadge(task.slaStatus, computeDeadline(task.receivedAt, task.sla));
+  qs('#exec-solicitante-tags').innerHTML = isAPx
+    ? `<span class="contact-tag">robô</span>`
+    : [`<span class="contact-tag contact-tag-client">cliente</span>`, ...scopes.map(s => `<span class="contact-tag">${s}</span>`)].join('');
+  qs('#exec-timestamp').textContent = `Solicitado em ${solicitadoEmLabel(task)}`;
+  qs('#exec-assignee').textContent = OPERATOR_NAME;
 
   if (!state._execProgress[task.id]) state._execProgress[task.id] = 0;
   if (!state._execActions[task.id]) state._execActions[task.id] = {};
@@ -2330,7 +3610,7 @@ function renderExecution(task) {
     const done = i < progress;
     const active = i === progress;
     const pending = i > progress;
-    const hasBodyExtra = s.type === 'upload' || s.type === 'final-message' || s.type === 'form-reference' || s.showTaskId;
+    const hasBodyExtra = s.type === 'upload' || s.type === 'final-message' || s.type === 'form-reference' || s.type === 'client-reply' || s.showTaskId;
     const expanded = !!expandedMap[i];
     const showBody = active || (done && expanded);
     let bodyExtra = '';
@@ -2338,6 +3618,7 @@ function renderExecution(task) {
 
     if (s.type === 'upload' && showBody) bodyExtra += renderUploadSection(i, gdocsFiles, active);
     if (s.type === 'final-message' && showBody) bodyExtra += renderFinalMessageSection(i, task, active);
+    if (s.type === 'client-reply' && showBody) bodyExtra += renderClientReplySection(i, task, active);
     if (s.type === 'form-reference' && showBody) bodyExtra += renderFormReference(task, s.defaultOpen);
     if (s.showTaskId && showBody) bodyExtra += renderTaskIdPanel(task);
 
@@ -2361,7 +3642,9 @@ function renderExecution(task) {
       }
       const markDisabled = s.requiresFiles && gdocsFiles.length === 0;
       let markBtn = '';
-      if (!s.autoCompleteOnAction) {
+      if (s.type === 'client-reply') {
+        markBtn = `<button class="step-mark-done" onclick="enviarRespostaEConcluir(${i})"><i data-lucide="send" class="w-3.5 h-3.5"></i> Concluir e enviar resposta ao cliente</button>`;
+      } else if (!s.autoCompleteOnAction) {
         markBtn = markDisabled
           ? `<button class="step-mark-done" disabled style="opacity:0.5;cursor:not-allowed;" title="Adicione pelo menos um arquivo"><i data-lucide="check" class="w-3.5 h-3.5"></i> Marcar como feito</button>`
           : `<button class="step-mark-done" onclick="marcarPassoFeito(${i})"><i data-lucide="check" class="w-3.5 h-3.5"></i> Marcar como feito</button>`;
@@ -2507,13 +3790,59 @@ function renderFinalMessageSection(stepIdx, task, active) {
       <i data-lucide="info" style="width:18px;height:18px;color:var(--info);flex-shrink:0;margin-top:2px;"></i>
       <div style="flex:1;font-size:13px;line-height:1.55;color:#1e40af;">
         <div style="font-weight:600;margin-bottom:4px;">Sua parte nessa solicitação foi concluída.</div>
-        <div>Quando o processo for finalizado no Gestta/Domínio, os documentos gerados serão enviados automaticamente ao cliente pelo hub. Você pode marcar essa etapa como feita para fechar a solicitação.</div>
+        <div>Quando o processamento for concluído, o que precisar ser gerado é enviado automaticamente ao cliente pelo HUB. Você pode marcar essa etapa como feita para fechar a solicitação.</div>
       </div>
     </div>
     ${attachBtn}
     ${filesHtml}
     ${fileInput}
   `;
+}
+
+function renderClientReplySection(stepIdx, task, active) {
+  const sol = task.formData && task.formData.abas ? task.formData.abas.solicitacao : null;
+  const assunto = sol && sol.campos ? sol.campos['Assunto'] : null;
+  const pedido = sol && sol.descricao ? sol.descricao.texto : null;
+  if (!state._clientReply) state._clientReply = {};
+  const replyVal = state._clientReply[task.id] || '';
+  const manualFiles = state._gdocsFiles[task.id] || [];
+
+  const clientAttachments = task.attachments || [];
+  const clientFilesHtml = clientAttachments.length ? `
+      <div style="font-size:11px;color:var(--text-tertiary);text-transform:uppercase;letter-spacing:0.06em;font-weight:600;margin:12px 0 8px;">Anexos do cliente<span class="badge badge-neutral" style="margin-left:6px;font-size:10px;">${clientAttachments.length}</span></div>
+      <div style="display:flex;flex-wrap:wrap;gap:8px;">${clientAttachments.map(f => renderFileItem(f)).join('')}</div>` : '';
+  const pedidoHtml = (assunto || pedido || clientAttachments.length) ? `
+    <div style="background:var(--surface-subtle);border:1px solid var(--border);border-radius:10px;padding:12px 14px;margin-bottom:16px;">
+      <div style="font-size:11px;color:var(--text-tertiary);text-transform:uppercase;letter-spacing:0.06em;font-weight:600;margin-bottom:6px;">O que o cliente pediu</div>
+      ${assunto ? `<div style="font-weight:600;font-size:13px;margin-bottom:4px;">${esc(assunto)}</div>` : ''}
+      ${pedido ? `<div style="font-size:13px;color:var(--text-secondary);line-height:1.55;">${esc(pedido)}</div>` : ''}
+      ${clientFilesHtml}
+    </div>` : '';
+
+  const filesHtml = manualFiles.length > 0
+    ? `<div style="display:flex;flex-wrap:wrap;gap:8px;margin-top:14px;">${manualFiles.map((f, idx) => renderFileItem(f, { removable: active, removeFn: `removeGdocsFile(${idx})` })).join('')}</div>`
+    : '';
+  const fileInput = `<input type="file" id="gdocs-file-input" style="display:none;" multiple onchange="handleFileSelect(event)" />`;
+  const attachBtn = `<div style="margin-top:14px;"><button onclick="document.getElementById('gdocs-file-input').click()" style="display:inline-flex;align-items:center;gap:6px;padding:8px 14px;background:#fff;border:1px solid var(--border-strong);border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;color:var(--text-primary);"><i data-lucide="paperclip" style="width:14px;height:14px;"></i> Anexar documento (opcional)</button></div>`;
+
+  return `
+    ${pedidoHtml}
+    <div class="field-label mb-2">Sua resposta ao cliente <span style="color:var(--brand-pink);">*</span></div>
+    <textarea id="client-reply-text" oninput="setClientReply(this.value)" placeholder="Descreva o que você fez nesta solicitação. Ex.: Declaração de vínculo emitida e anexada, com cargo, salário e data de admissão." style="width:100%;min-height:130px;padding:12px;border:1px solid var(--border-strong);border-radius:10px;font-family:inherit;font-size:13px;line-height:1.55;resize:vertical;outline:none;" onfocus="this.style.borderColor='var(--brand-pink)'" onblur="this.style.borderColor='var(--border-strong)'">${esc(replyVal)}</textarea>
+    <div style="display:flex;gap:6px;align-items:center;font-size:12px;color:var(--text-secondary);margin-top:8px;">
+      <i data-lucide="send" style="width:13px;height:13px;flex-shrink:0;"></i> Esta mensagem será enviada ao cliente quando você concluir.
+    </div>
+    ${attachBtn}
+    ${filesHtml}
+    ${fileInput}
+  `;
+}
+
+function setClientReply(value) {
+  const task = getTaskById(state.currentTaskId);
+  if (!task) return;
+  if (!state._clientReply) state._clientReply = {};
+  state._clientReply[task.id] = value;
 }
 
 function handleDragOver(e) { e.preventDefault(); e.currentTarget.classList.add('dragover'); }
@@ -2653,6 +3982,20 @@ function marcarPassoFeito(stepIdx) {
   renderExecution(task);
 }
 
+function enviarRespostaEConcluir(stepIdx) {
+  const task = getTaskById(state.currentTaskId);
+  if (!task) return;
+  const reply = ((state._clientReply && state._clientReply[task.id]) || '').trim();
+  if (!reply) {
+    showAlertModal({ title: 'Resposta obrigatória', message: 'Escreva a resposta que será enviada ao cliente antes de concluir a solicitação.' });
+    return;
+  }
+  if (!state.messages[task.id]) state.messages[task.id] = [];
+  state.messages[task.id].push({ from: 'operator', text: reply, timestamp: 'agora mesmo' });
+  task._operatorReply = reply;
+  openConfirmFinish();
+}
+
 function toggleStepExpanded(stepIdx) {
   const task = getTaskById(state.currentTaskId);
   if (!task) return;
@@ -2690,12 +4033,6 @@ function confirmarFinalizacao() {
    RENDER: SUCCESS
    ============================================================ */
 function renderSuccess(task) {
-  const cfg = window.FLOW_CONFIG;
-  const mensagem = cfg.successMessage
-    ? cfg.successMessage(task)
-    : `A solicitação foi processada e o cliente já foi notificado.`;
-  qs('#success-message').innerHTML = mensagem;
-
   const colaborador = task.formData && task.formData.colaborador ? task.formData.colaborador.nome : null;
   const rows = [['Empresa', task.clientName], ['CNPJ', task.cnpj], ['Tipo', task.type]];
   if (colaborador) rows.push(['Colaborador', colaborador]);
@@ -2755,7 +4092,13 @@ function simularRespostaCliente() {
   const simMsg = cfg.simulateClientResponseText
     ? cfg.simulateClientResponseText(aguardando)
     : 'Prontinho, segue o documento reenviado em melhor qualidade. Qualquer outra coisa me avisa!';
-  state.messages[aguardando.id].push({ from: 'client', text: simMsg, timestamp: 'agora mesmo' });
+  const simAttachments = cfg.simulateClientResponseAttachments
+    ? cfg.simulateClientResponseAttachments(aguardando)
+    : [{ name: 'documento-reenviado.pdf', size: '480 KB' }];
+  state.messages[aguardando.id].push({ from: 'client', text: simMsg, timestamp: 'agora mesmo', attachments: simAttachments });
+  // Anexo do cliente também entra no bloco consolidado de anexos da tarefa (regra 04-comunicacao-cliente.md § Anexos em mensagens).
+  if (!aguardando.attachments) aguardando.attachments = [];
+  aguardando.attachments.push(...simAttachments);
   state.notifications.unshift({ id: Date.now(), text: `Cliente de ${aguardando.clientName} respondeu a tarefa em espera`, time: 'agora mesmo', unread: true });
   if (state.currentScreen === 'home') renderHome();
   renderNotifications();
@@ -2805,6 +4148,15 @@ function _initCockpit() {
   renderHome();
   renderNotifications();
   refreshIcons();
+
+  // Deep-link: se o operador chegou clicando numa tarefa na lista
+  // (lista-operador.html abre o fluxo com ?ref=lista), pula a home e abre
+  // direto a tela da tarefa — replica o que vai acontecer de verdade pra ele.
+  try {
+    if (new URLSearchParams(window.location.search).get('ref') === 'lista') {
+      _olOpenOnArrival();
+    }
+  } catch (e) { /* sem URL params, segue na home */ }
 }
 
 if (document.readyState === 'loading') {
@@ -2812,3 +4164,38 @@ if (document.readyState === 'loading') {
 } else {
   _initCockpit();
 }
+
+// Botão "Acompanhamento" no topbar (fonte única). Aparece SÓ quando a tela visível é
+// uma FILA de tarefas do operador — a que tem o hero "Pegar próxima tarefa" (#ol-header).
+// Isso cobre a fila dedicada (lista-operador) E a home de cada fluxo, e some nas telas de
+// execução da tarefa (#screen-task/execution/success), onde o #ol-header fica oculto.
+// _syncAcompanhamentoBtn() é chamado por showScreen() e olMount() a cada troca de tela.
+function _syncAcompanhamentoBtn() {
+  const btn = document.getElementById('btn-acompanhamento');
+  if (!btn) return;
+  const hero = document.getElementById('ol-header'); // hero da fila (Pegar próxima tarefa)
+  const naFila = !!(hero && hero.offsetParent !== null); // existe E está visível na tela
+  btn.style.display = naFila ? 'inline-flex' : 'none';
+}
+(function _injectAcompanhamentoBtn() {
+  const page = (location.pathname.split('/').pop() || '').replace(/\.html$/, '');
+  if (page === 'acompanhamento') return; // a própria tela de destino
+  let tries = 0;
+  (function place() {
+    if (document.getElementById('btn-acompanhamento')) { _syncAcompanhamentoBtn(); return; }
+    const right = document.querySelector('.topbar-right');
+    if (!right) { if (tries++ < 40) setTimeout(place, 50); return; } // gerente (.mgr-topbar) não entra: sem fila
+    const a = document.createElement('a');
+    a.id = 'btn-acompanhamento';
+    // Leva a origem (arquivo atual + hash) pra que o "Voltar pra fila" retorne pra cá.
+    const origem = (location.pathname.split('/').pop() || 'lista-operador.html') + location.search + location.hash;
+    a.href = 'acompanhamento.html?origem=' + encodeURIComponent(origem);
+    a.title = 'Painel de acompanhamento (gestores e coordenadores)';
+    // Começa oculto; _syncAcompanhamentoBtn decide a visibilidade pela tela atual.
+    a.style.cssText = 'display:none;align-items:center;gap:7px;height:38px;padding:0 14px;border:1px solid var(--border);border-radius:10px;background:#fff;color:var(--text-primary);font-size:13px;font-weight:500;text-decoration:none;margin-right:12px;';
+    a.innerHTML = '<i data-lucide="layout-dashboard" style="width:16px;height:16px;color:var(--brand-blue);"></i> Acompanhamento';
+    right.insertBefore(a, right.firstChild);
+    if (window.lucide) lucide.createIcons();
+    _syncAcompanhamentoBtn();
+  })();
+})();

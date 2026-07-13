@@ -218,22 +218,22 @@
 window.FLOW_CONFIG = {
   operacaoLabel: 'Operação Contábil',
   TYPE_METADATA: {
-    excecao_conciliacao: {
+    conciliacao_extratos: {
       icon: 'landmark',
-      label: 'Exceção de conciliação',
+      label: 'Conciliação de Extratos',
       desc: 'Transação do extrato que o Motor Contábil não conseguiu vincular automaticamente.',
       color: '#f25461',
     },
   },
   EXEC_STEPS: 'geral',
   FORM_TABS_BY_TYPE: {
-    excecao_conciliacao: [{ id: 'resumo', label: 'Resumo' }],
+    conciliacao_extratos: [{ id: 'resumo', label: 'Resumo' }],
   },
   getInitialState() {
     return {
       queue: [
         {
-          id: 'CTB-0091', type: 'Conciliação de Extratos', typeCode: 'conciliacao_extratos',
+          id: 'CTB-0091', type: 'Conciliação de Extratos', typeCode: 'conciliacao_extratos', flowHref: 'contabil-conciliacao.html',
           clientName: 'Padaria São Luís', clientFantasy: 'Padaria São Luís',
           cnpj: '12.345.678/0001-90', logoText: 'ES', sla: '4h', slaStatus: 'risk', receivedAt: '09:15',
           clientMessage: '', senderName: 'Autopilot · Motor Contábil', senderScopes: [],
@@ -244,7 +244,7 @@ window.FLOW_CONFIG = {
           formData: { abas: { resumo: {} } },
         },
         {
-          id: 'CTB-0092', type: 'Conciliação de Extratos', typeCode: 'conciliacao_extratos',
+          id: 'CTB-0092', type: 'Conciliação de Extratos', typeCode: 'conciliacao_extratos', flowHref: 'contabil-conciliacao.html',
           clientName: 'Padaria Bom Dia ME', clientFantasy: 'Bom Dia',
           cnpj: '18.452.771/0001-09', logoText: 'PB', sla: '8h', slaStatus: 'normal', receivedAt: '09:40',
           clientMessage: '', senderName: 'Autopilot · Motor Contábil', senderScopes: [],
@@ -720,8 +720,8 @@ function abrirDrawerConcil(rowId) {
   var t = TRANSACOES_CONCIL.find(function(x){return x.id===rowId;}); if (!t) return;
 
   var cands = NF_CANDIDATAS_CONCIL[t.id] || [];
-  activeNFConcil = (t.nf && t.nf !== '—') ? t.nf : (t.conf === 'alta' && cands.length > 0 ? cands[0].id : null);
-  activeNAConcil = false;
+  activeNFConcil = t.modoDoc ? null : (t.nfSelecionada || (t.conf === 'alta' && cands.length > 0 ? cands[0].id : null));
+  activeNAConcil = t.modoDoc || false;
   autosugCampoConcil = null;
   if (t.contaSugerida === undefined) t.contaSugerida = t[campoImpactoConcil(t)] || '';
   var cc = {alta:'conf-alta',media:'conf-media',baixa:'conf-baixa'}[t.conf];
@@ -864,7 +864,7 @@ function selecionarNFConcil(rowId, nfId) {
   if (btnNF_) btnNF_.style.cssText = '';
 
   var t = TRANSACOES_CONCIL.find(function(x){return x.id===rowId;});
-  if (t) { t.nf = nfId; t[campoImpactoConcil(t)] = t.contaSugerida || ''; renderContaSelectConcil(rowId); }
+  if (t) { t.nf = nfId; t.nfSelecionada = nfId; t.modoDoc = false; t[campoImpactoConcil(t)] = t.contaSugerida || ''; renderContaSelectConcil(rowId); }
   var t2 = TRANSACOES_CONCIL.find(function(x){return x.id===rowId;});
   if (t2) atualizarBotaoAprovarConcil(t2);
 
@@ -912,6 +912,7 @@ function naNotaClickConcil(rowId) {
   }
   var btnNA = document.getElementById('concil-btn-na-nota');
   var btnNF = document.getElementById('concil-btn-nf-pendente');
+  t.modoDoc = activeNAConcil;
   if (btnNA) btnNA.style.cssText = activeNAConcil==='na' ? 'background:var(--surface-muted);border-color:var(--text-primary);font-weight:600' : '';
   if (btnNF) btnNF.style.cssText = '';
   atualizarBotaoAprovarConcil(t);
@@ -949,6 +950,7 @@ function nfPendenteClickConcil(rowId) {
   renderSugestaoContaConcil();
   var btnNA = document.getElementById('concil-btn-na-nota');
   var btnNF = document.getElementById('concil-btn-nf-pendente');
+  t.modoDoc = activeNAConcil;
   if (btnNF) btnNF.style.cssText = activeNAConcil==='nf' ? 'background:var(--warning-soft);border-color:var(--warning);color:var(--warning);font-weight:600' : '';
   if (btnNA) btnNA.style.cssText = '';
   atualizarBotaoAprovarConcil(t);
